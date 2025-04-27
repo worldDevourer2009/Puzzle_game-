@@ -1,10 +1,12 @@
-using UnityEditor;
 using UnityEngine;
 
-public static class AddressablesHelper
+namespace Editor
 {
-    private static void DoSomething()
+    public static class AddressablesHelper
     {
-        Debug.Log("Doing something");
+        private static void DoSomething()
+        {
+            Debug.Log("Doing something");
+        }
     }
 }

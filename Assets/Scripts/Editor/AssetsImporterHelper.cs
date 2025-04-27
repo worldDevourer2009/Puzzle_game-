@@ -1,13 +1,16 @@
 using UnityEditor;
 
-public static class AssetsImporterHelper
+namespace Editor
 {
-    private static EditorWindow _window;
-    
-    [MenuItem("AssetsImporterHelper/Manage Import Settings")]
-    private static void ManageImportSettings()
+    public static class AssetsImporterHelper
     {
-        _window = EditorWindow.GetWindow<AssetImporterWindow>();
-        _window.Show();
+        private static EditorWindow _window;
+
+        [MenuItem("AssetsImporterHelper/Manage Import Settings")]
+        private static void ManageImportSettings()
+        {
+            _window = EditorWindow.GetWindow<AssetImporterWindow>();
+            _window.Show();
+        }
     }
 }
