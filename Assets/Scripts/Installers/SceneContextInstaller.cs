@@ -1,4 +1,3 @@
-using Core;
 using Zenject;
 
 namespace Installers
@@ -7,10 +6,6 @@ namespace Installers
     {
         public override void InstallBindings()
         {
-            Container.Bind<IInputSystemController>()
-                .To<InputSystemController>()
-                .AsSingle()
-                .NonLazy();
         }
     }
 }
