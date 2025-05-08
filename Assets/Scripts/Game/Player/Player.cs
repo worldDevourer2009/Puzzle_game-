@@ -17,7 +17,7 @@ namespace Game
         private float _speed;
 
         [Inject]
-        public void Constrcut(PlayerDefaultStatsConfig config, IInput input, IMoveable moveable, IJumpable jumpable)
+        public void Construct(PlayerDefaultStatsConfig config, IInput input, IMoveable moveable, IJumpable jumpable)
         {
             _moveable = moveable;
             _jumpable = jumpable;
