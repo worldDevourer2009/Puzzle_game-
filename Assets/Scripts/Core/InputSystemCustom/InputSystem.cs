@@ -24,15 +24,17 @@ namespace Core
     {
         private readonly IGameLoop _gameLoop;
         private readonly IInputSource _inputSource;
+        private readonly ILogger _logger;
         
         public event Action<Vector3> MoveAction;
         public event Action JumpAction;
         public event Action UseAction;
 
-        public InputSystem(IGameLoop gameLoop, IInputSource inputSource)
+        public InputSystem(IGameLoop gameLoop, IInputSource inputSource, ILogger logger)
         {
             _gameLoop = gameLoop;
             _inputSource = inputSource;
+            _logger = logger;
             
             if (_gameLoop != null)
             {
@@ -59,7 +61,7 @@ namespace Core
             if (moveDir == Vector3.zero)
                 return;
             
-            Debug.Log($"Is moving with direction {moveDir}");
+            _logger.Log($"Is moving with direction {moveDir}");
             MoveAction?.Invoke(moveDir);
         }
 
@@ -70,7 +72,7 @@ namespace Core
             if (!isJumping)
                 return;
             
-            Debug.Log("Is jumping");
+            _logger.Log("Is jumping");
             JumpAction?.Invoke();
         }
         
@@ -81,7 +83,7 @@ namespace Core
             if (!isUsing)
                 return;
             
-            Debug.Log("Is using");
+            _logger.Log("Is using");
             UseAction?.Invoke();
         }
     }

@@ -7,6 +7,16 @@ namespace Installers
     {
         public override void InstallBindings()
         {
+            Container.Bind<IJsonSerializer>()
+                .To<JsonSerializer>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<ISaveSystem>()
+                .To<SaveSystem>()
+                .AsSingle()
+                .NonLazy();
+            
             Container.Bind<InputConfig>()
                 .FromResource("Configs/InputConfig")
                 .AsSingle();
