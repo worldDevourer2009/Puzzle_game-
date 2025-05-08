@@ -43,11 +43,11 @@ namespace Core
             }
         }
         
-        public void Awake()
+        public void AwakeCustom()
         {
         }
 
-        public void Update()
+        public void UpdateCustom()
         {
             HandleMove();
             HandleJump();
@@ -61,7 +61,6 @@ namespace Core
             if (moveDir == Vector3.zero)
                 return;
             
-            _logger.Log($"Is moving with direction {moveDir}");
             MoveAction?.Invoke(moveDir);
         }
 
@@ -72,7 +71,6 @@ namespace Core
             if (!isJumping)
                 return;
             
-            _logger.Log("Is jumping");
             JumpAction?.Invoke();
         }
         
@@ -83,7 +81,6 @@ namespace Core
             if (!isUsing)
                 return;
             
-            _logger.Log("Is using");
             UseAction?.Invoke();
         }
     }

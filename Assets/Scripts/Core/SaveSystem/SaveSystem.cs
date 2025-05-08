@@ -24,6 +24,8 @@ namespace Core
     public struct PlayerStats
     {
         public float Health;
+        public float Speed;
+        public float JumpForce;
     }
 
     public class SaveSystem : ISaveSystem

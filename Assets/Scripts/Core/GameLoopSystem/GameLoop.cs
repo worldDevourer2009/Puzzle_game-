@@ -23,22 +23,22 @@ namespace Core
 
     public interface IAwakable
     {
-        void Awake();
+        void AwakeCustom();
     }
 
     public interface IUpdatable
     {
-        void Update();
+        void UpdateCustom();
     }
 
     public interface IFixedUpdatable
     {
-        void FixedUpdate();
+        void FixedUpdateCustom();
     }
 
     public interface ILateUpdatable
     {
-        void LateUpdate();
+        void LateUpdateCustom();
     }
 
     public class GameLoop : IGameLoop, ITickable, ILateTickable, IFixedTickable, IInitializable
@@ -137,7 +137,7 @@ namespace Core
                 if (awakable is not IAwakable awakenableObj)
                     continue;
 
-                awakenableObj.Awake();
+                awakenableObj.AwakeCustom();
             }
         }
 
@@ -151,7 +151,7 @@ namespace Core
                 if (updatable is not IUpdatable updatableObj)
                     continue;
 
-                updatableObj.Update();
+                updatableObj.UpdateCustom();
             }
         }
 
@@ -165,7 +165,7 @@ namespace Core
                 if (fixedUpdatable is not IFixedUpdatable fixedUpdatableObj)
                     continue;
 
-                fixedUpdatableObj.FixedUpdate();
+                fixedUpdatableObj.FixedUpdateCustom();
             }
         }
 
@@ -179,7 +179,7 @@ namespace Core
                 if (lateUpdatable is not ILateUpdatable lateUpdatableObj)
                     continue;
 
-                lateUpdatableObj.LateUpdate();
+                lateUpdatableObj.LateUpdateCustom();
             }
         }
 

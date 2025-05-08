@@ -17,10 +17,8 @@ namespace Installers
                 .AsSingle()
                 .NonLazy();
             
-            Container.Bind<InputConfig>()
-                .FromResource("Configs/InputConfig")
-                .AsSingle();
-            
+            BindConfigs();
+
             Container.Bind<ILogger>()
                 .To<Logger>()
                 .AsSingle()
@@ -39,6 +37,17 @@ namespace Installers
                 .To<KeyboardSource>()
                 .AsCached()
                 .NonLazy();
+        }
+
+        private void BindConfigs()
+        {
+            Container.Bind<InputConfig>()
+                .FromResource("Configs/InputConfig")
+                .AsSingle();
+
+            Container.Bind<PlayerDefaultStatsConfig>()
+                .FromResource("Configs/PlayerDefaultStatsConfig")
+                .AsSingle();
         }
     }
 }
