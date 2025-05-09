@@ -1,4 +1,6 @@
+using Core.EntryPoint;
 using Game;
+using UnityEngine.Rendering;
 using Zenject;
 
 namespace Installers
@@ -22,6 +24,10 @@ namespace Installers
             Container.Bind<ICamera>()
                 .To<CameraComponent>()
                 .AsCached();
+
+            Container.Bind<EntryPoint>()
+                .AsSingle()
+                .NonLazy();
 
             Container.Bind<Player>()
                 .FromComponentInHierarchy()

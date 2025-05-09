@@ -19,8 +19,28 @@ namespace Installers
             
             BindConfigs();
 
+            Container.Bind<IAsyncGroupLoader>()
+                .To<AsyncGroupLoader>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<IAddressableLoader>()
+                .To<AddressablesCustomLoader>()
+                .AsSingle()
+                .NonLazy();
+
             Container.Bind<ILogger>()
                 .To<Logger>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<IPoolSystem>()
+                .To<PoolSystem>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IFactorySystem>()
+                .To<FactorySystem>()
                 .AsSingle()
                 .NonLazy();
             
