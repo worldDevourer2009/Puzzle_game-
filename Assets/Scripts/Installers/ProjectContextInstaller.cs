@@ -1,3 +1,4 @@
+using Core;
 using Zenject;
 
 namespace Installers
@@ -6,7 +7,52 @@ namespace Installers
     {
         public override void InstallBindings()
         {
-            base.InstallBindings();
+            Container.Bind<IJsonSerializer>()
+                .To<JsonSerializer>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<ISaveSystem>()
+                .To<SaveSystem>()
+                .AsSingle()
+                .NonLazy();
+            
+            BindConfigs();
+
+            Container.Bind<ILogger>()
+                .To<Logger>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.BindInterfacesTo<GameLoop>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IInput>()
+                .To<InputSystem>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IInputSource>()
+                .To<KeyboardSource>()
+                .AsCached()
+                .NonLazy();
+            
+            Container.Bind<ILookSource>()
+                .To<LookSourceKeyboard>()
+                .AsCached()
+                .NonLazy();
+        }
+
+        private void BindConfigs()
+        {
+            Container.Bind<InputConfig>()
+                .FromResource("Configs/InputConfig")
+                .AsSingle();
+
+            Container.Bind<PlayerDefaultStatsConfig>()
+                .FromResource("Configs/PlayerDefaultStatsConfig")
+                .AsSingle();
         }
     }
 }

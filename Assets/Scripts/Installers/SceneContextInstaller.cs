@@ -1,4 +1,4 @@
-using Core;
+using Game;
 using Zenject;
 
 namespace Installers
@@ -7,10 +7,29 @@ namespace Installers
     {
         public override void InstallBindings()
         {
-            Container.Bind<IInputSystemController>()
-                .To<InputSystemController>()
-                .AsSingle()
-                .NonLazy();
+            Container.Bind<IMoveable>()
+                .To<MoveComponent>()
+                .AsCached();
+            
+            Container.Bind<IJumpable>()
+                .To<JumpComponent>()
+                .AsCached();
+            
+            Container.Bind<IRotatable>()
+                .To<RotationComponent>()
+                .AsCached();
+            
+            Container.Bind<ICamera>()
+                .To<CameraComponent>()
+                .AsCached();
+
+            Container.Bind<Player>()
+                .FromComponentInHierarchy()
+                .AsCached();
+            
+            Container.Bind<Cam>()
+                .FromComponentInHierarchy()
+                .AsSingle();
         }
     }
 }
