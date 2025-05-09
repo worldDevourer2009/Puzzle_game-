@@ -15,24 +15,28 @@ namespace Core
     
     public interface IInput
     {
-        event Action<Vector3> MoveAction;
-        event Action JumpAction;
-        event Action UseAction;
+        event Action<Vector3> OnMoveAction;
+        event Action<Vector3> OnLookAction;
+        event Action OnJumpAction;
+        event Action OnUseAction;
     }
 
     public class InputSystem : IInput, IUpdatable, IAwakable
     {
         private readonly IGameLoop _gameLoop;
         private readonly IInputSource _inputSource;
+        private readonly ILookSource _lookSource;
         private readonly ILogger _logger;
         
-        public event Action<Vector3> MoveAction;
-        public event Action JumpAction;
-        public event Action UseAction;
+        public event Action<Vector3> OnMoveAction;
+        public event Action OnJumpAction;
+        public event Action OnUseAction;
+        public event Action<Vector3> OnLookAction;
 
-        public InputSystem(IGameLoop gameLoop, IInputSource inputSource, ILogger logger)
+        public InputSystem(IGameLoop gameLoop, ILookSource lookSource, IInputSource inputSource, ILogger logger)
         {
             _gameLoop = gameLoop;
+            _lookSource = lookSource;
             _inputSource = inputSource;
             _logger = logger;
             
@@ -50,8 +54,19 @@ namespace Core
         public void UpdateCustom()
         {
             HandleMove();
+            HandleLook();
             HandleJump();
             HandleUse();
+        }
+
+        private void HandleLook()
+        {
+            var lookDir = _lookSource.GetLookDelta();
+
+            if (lookDir == Vector2.zero)
+                return;
+            
+            OnLookAction?.Invoke(lookDir);
         }
 
         private void HandleMove()
@@ -61,7 +76,7 @@ namespace Core
             if (moveDir == Vector3.zero)
                 return;
             
-            MoveAction?.Invoke(moveDir);
+            OnMoveAction?.Invoke(moveDir);
         }
 
         private void HandleJump()
@@ -71,7 +86,7 @@ namespace Core
             if (!isJumping)
                 return;
             
-            JumpAction?.Invoke();
+            OnJumpAction?.Invoke();
         }
         
         private void HandleUse()
@@ -81,7 +96,7 @@ namespace Core
             if (!isUsing)
                 return;
             
-            UseAction?.Invoke();
+            OnUseAction?.Invoke();
         }
     }
 }

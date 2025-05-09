@@ -19,3 +19,4 @@ MonoBehaviour:
     MoveRightKey: 100
     JumpKey: 32
     UseKey: 101
+  _sensitivity: 100

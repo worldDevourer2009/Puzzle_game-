@@ -37,6 +37,11 @@ namespace Installers
                 .To<KeyboardSource>()
                 .AsCached()
                 .NonLazy();
+            
+            Container.Bind<ILookSource>()
+                .To<LookSourceKeyboard>()
+                .AsCached()
+                .NonLazy();
         }
 
         private void BindConfigs()

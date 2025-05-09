@@ -46,7 +46,7 @@ namespace Core
             var direction = new Vector3(x, 0f, z);
             return direction.sqrMagnitude > 1 ? direction.normalized : direction;
         }
-        
+
         public bool IsJumpPressed()
         {
             if (Input.GetKeyDown(_inputConfig.GetKeyboardKey(InputAction.Jump)))

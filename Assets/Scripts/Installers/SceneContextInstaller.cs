@@ -14,10 +14,22 @@ namespace Installers
             Container.Bind<IJumpable>()
                 .To<JumpComponent>()
                 .AsCached();
+            
+            Container.Bind<IRotatable>()
+                .To<RotationComponent>()
+                .AsCached();
+            
+            Container.Bind<ICamera>()
+                .To<CameraComponent>()
+                .AsCached();
 
             Container.Bind<Player>()
                 .FromComponentInHierarchy()
                 .AsCached();
+            
+            Container.Bind<Cam>()
+                .FromComponentInHierarchy()
+                .AsSingle();
         }
     }
 }

@@ -8,10 +8,16 @@ namespace Core
     {
         private readonly ILogger _logger;
         [SerializeField] private KeyboardInput _keyboardInput;
+        [SerializeField] private float _sensitivity;
 
         public InputConfig(ILogger logger)
         {
             _logger = logger;
+        }
+
+        public float GetSensitivity()
+        {
+            return _sensitivity;
         }
 
         public KeyCode GetKeyboardKey(InputAction action)
