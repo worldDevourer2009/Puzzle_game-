@@ -48,7 +48,7 @@ namespace Tests
 
             saveSystem.Save(gd);
 
-            Assert.That(File.Exists(_testFilePath), $"File not found at path: {_testFilePath}");
+            Assert.That(File.Exists(_testFilePath), $"File not found at path {_testFilePath}");
 
             var contents = File.ReadAllText(_testFilePath);
             Assert.IsTrue(contents.Contains("100"), "File content does not contain expected health value");
