@@ -1,6 +1,5 @@
 using Core.EntryPoint;
 using Game;
-using UnityEngine.Rendering;
 using Zenject;
 
 namespace Installers
