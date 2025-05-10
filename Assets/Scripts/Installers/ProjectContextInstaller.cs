@@ -1,4 +1,5 @@
 using Core;
+using Game;
 using Zenject;
 
 namespace Installers
@@ -64,13 +65,18 @@ namespace Installers
                 .NonLazy();
             
             Container.Bind<ILookSource>()
-                .To<LookSourceKeyboard>()
+                .To<LookSourceMouse>()
                 .AsCached()
                 .NonLazy();
             
             Container.Bind<IInteractorCore>()
                 .To<InteractorCore>()
                 .AsSingle();
+
+            // Container.Bind<ILevelManager>()
+            //     .To<LevelManagerCore>()
+            //     .AsSingle()
+            //     .NonLazy();
         }
 
         private void BindConfigs()
@@ -85,6 +91,14 @@ namespace Installers
             
             Container.Bind<PlayerInteractionConfig>()
                 .FromResource("Configs/PlayerInteractionConfig")
+                .AsSingle();
+            
+            Container.Bind<LevelsConfig>()
+                .FromResource("Configs/LevelsConfig")
+                .AsSingle();
+            
+            Container.Bind<AddressablesIdsConfig>()
+                .FromResource("Configs/AddressablesIds")
                 .AsSingle();
         }
     }

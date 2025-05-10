@@ -4,26 +4,20 @@ using Zenject;
 
 namespace Game
 {
-    public class Cam : MonoBehaviour, IAwakable, IUpdatable
+    public sealed class Cam : MonoBehaviour, IAwakable, IUpdatable
     {
-        [Header("Interactions")]
-        [SerializeField] private float _interactonDistance = 5f;
-        [SerializeField] private LayerMask _interactionMask;
-        
         private ICamera _camera;
         private IGameLoop _gameLoop;
         private IInput _input;
-        private IRaycaster _raycaster;
 
         private Camera _mainCamera;
 
         [Inject]
-        public void Construct(IGameLoop gameLoop, ICamera cam, IInput input, IRaycaster raycaster)
+        public void Construct(IGameLoop gameLoop, ICamera cam, IInput input)
         {
             _camera = cam;
             _input = input;
             _gameLoop = gameLoop;
-            _raycaster = raycaster;
 
             if (_gameLoop != null)
             {

@@ -8,7 +8,7 @@ namespace Core
     {
         [SerializeField] public PlayerInteraction PlayerInteraction;
     }
-    
+
     [Serializable]
     public struct PlayerInteraction
     {

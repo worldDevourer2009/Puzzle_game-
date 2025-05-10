@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d3ef5ae81234a38abbee04e4b7bdbb0, type: 3}
-  m_Name: PlayerDefaultStatsConfig
+  m_Script: {fileID: 11500000, guid: c76e593d490942268b04d6f69c4fa7dd, type: 3}
+  m_Name: AddressablesIds
   m_EditorClassIdentifier: 
-  playerStats:
-    Health: 10
-    Speed: 7
-    JumpForce: 406
-    RunSpeed: 15
+  AddressableIds:
+  - Type: 0
+    Id: Player

@@ -42,7 +42,7 @@ namespace Core
 
         private async UniTask<GameObject> CreateObject(string id)
         {
-            var asyncOp = _addressableLoader.LoadResource<GameObject>(id);
+            var asyncOp = _addressableLoader.Instantiate(id);
             var result = await asyncOp;
             return result;
         }

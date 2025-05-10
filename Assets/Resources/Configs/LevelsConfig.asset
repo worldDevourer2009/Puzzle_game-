@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d3ef5ae81234a38abbee04e4b7bdbb0, type: 3}
-  m_Name: PlayerDefaultStatsConfig
+  m_Script: {fileID: 11500000, guid: 738eea32a3e04f9ba6ed9c3d2e79222d, type: 3}
+  m_Name: LevelsConfig
   m_EditorClassIdentifier: 
-  playerStats:
-    Health: 10
-    Speed: 7
-    JumpForce: 406
-    RunSpeed: 15
+  LevelData:
+  - LevelIndex: 1
+    LastTriggeredEventIndex: 0
+  - LevelIndex: 1
+    LastTriggeredEventIndex: 0

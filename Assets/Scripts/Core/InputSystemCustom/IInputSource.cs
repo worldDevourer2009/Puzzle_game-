@@ -24,31 +24,19 @@ namespace Core
 
         public Vector3 GetMoveDirection()
         {
-            var z = 0f;
-            var x = 0f;
+            var direction = Vector3.zero;
+            
+            direction += GetDirection(InputAction.MoveForward, Vector3.forward);
+            direction += GetDirection(InputAction.MoveBackward, Vector3.back);
+            direction += GetDirection(InputAction.MoveRight, Vector3.right);
+            direction += GetDirection(InputAction.MoveLeft, Vector3.left);
 
-            if (Input.GetKey(_inputConfig.GetKeyboardKey(InputAction.MoveBackward)))
-            {
-                z -= 1;
-            }
-            
-            if (Input.GetKey(_inputConfig.GetKeyboardKey(InputAction.MoveForward)))
-            {
-                z += 1;
-            }
-            
-            if (Input.GetKey(_inputConfig.GetKeyboardKey(InputAction.MoveRight)))
-            {
-                x += 1;
-            }
-            
-            if (Input.GetKey(_inputConfig.GetKeyboardKey(InputAction.MoveLeft)))
-            {
-                x -= 1;
-            }
-
-            var direction = new Vector3(x, 0f, z);
             return direction.sqrMagnitude > 1 ? direction.normalized : direction;
+        }
+        
+        private Vector3 GetDirection(InputAction action, Vector3 direction)
+        {
+            return Input.GetKey(_inputConfig.GetKeyboardKey(action)) ? direction : Vector3.zero;
         }
 
         public bool IsJumpPressed()

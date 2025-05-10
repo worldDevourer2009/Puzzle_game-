@@ -5,44 +5,42 @@ using Zenject;
 
 namespace Game
 {
-    public interface IEntity
-    {
-        GameObject EntityGA { get; }
-        event Action<Vector3> OnMove;
-        event Action OnJump;
-        event Action OnUse;
-        event Action<Vector3> OnRun;
-        event Action OnIdle;
-    }
-
-    public class Player : MonoBehaviour, IEntity
+    public sealed class Player : MonoBehaviour, IEntity
     {
         public GameObject EntityGA => this.gameObject;
+        public Transform RightHandTransform => _rightHandTransform;
+        public Transform LeftHandTransform => _leftHandTransform;
         public event Action<Vector3> OnMove;
         public event Action OnJump;
         public event Action OnUse;
         public event Action<Vector3> OnRun;
         public event Action OnIdle;
 
-        private Rigidbody _rigidbody;
-
+        [SerializeField] private Transform _rightHandTransform;
+        [SerializeField] private Transform _leftHandTransform;
+        
         private IInput _input;
         private IAnimation _animation;
+        private IPlayerCore _core;
+        private IPlayerInteractor _playerInteractor;
+        
         private Cam _cam;
         private PlayerDefaultStatsConfig _defaultStatsConfig;
-        private IPlayerCore _core;
+        private Rigidbody _rigidbody;
 
         private float _jumpForce;
         private float _speed;
+        private float _runSpeed;
 
         [Inject]
         public void Construct(PlayerDefaultStatsConfig config,
-            IInput input, Cam cam, IPlayerCore core, IAnimation animatioHandler)
+            IInput input, Cam cam, IPlayerCore core, IPlayerInteractor playerInteractor, IAnimation animatioHandler)
         {
             _defaultStatsConfig = config;
             _input = input;
             _cam = cam;
             _animation = animatioHandler;
+            _playerInteractor = playerInteractor;
             _core = core;
         }
 
@@ -52,11 +50,11 @@ namespace Game
             _speed = _defaultStatsConfig.playerStats.Speed;
             _jumpForce = _defaultStatsConfig.playerStats.JumpForce;
 
-            _core.Initialize(_rigidbody, _cam, _speed, _jumpForce);
+            _core.Initialize(this, _rigidbody, _cam, _speed, _defaultStatsConfig.playerStats.RunSpeed, _jumpForce);
 
-            _core.OnMove += (x, y) =>
+            _core.OnMove += (x, running) =>
             {
-                if (!y)
+                if (!running)
                 {
                     OnMove?.Invoke(x);
                 }

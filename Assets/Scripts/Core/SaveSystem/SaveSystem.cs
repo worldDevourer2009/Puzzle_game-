@@ -16,19 +16,12 @@ namespace Core
     public class GameData
     {
         public string GDName;
-        public float StatHealth;
+        public Vector3 PlayerPos;
         public PlayerStats PlayerStats;
+        public LevelData LevelData;
     }
 
-    [Serializable]
-    public struct PlayerStats
-    {
-        public float Health;
-        public float Speed;
-        public float JumpForce;
-    }
-
-    public class SaveSystem : ISaveSystem
+    public sealed class SaveSystem : ISaveSystem
     {
         private const string DefaultSaveName = "New Save";
 
@@ -49,7 +42,14 @@ namespace Core
 
         public void Save(GameData data, bool overrideSave = true)
         {
-            var path = GetPath(data.GDName);
+            var name = data.GDName;
+
+            if (string.IsNullOrEmpty(name))
+            {
+                name = DefaultSaveName;
+            }
+            
+            var path = GetPath(name);
 
             if (!overrideSave && File.Exists(path))
             {

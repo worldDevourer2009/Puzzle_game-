@@ -25,7 +25,7 @@ namespace Game
         private static readonly int MoveBackwardHash = Animator.StringToHash("MoveBackward");
         private static readonly int MoveLeftHash = Animator.StringToHash("MoveLeft");
         private static readonly int MoveRightHash = Animator.StringToHash("MoveRight");
-        
+
         private static readonly int RunForwardHash = Animator.StringToHash("RunForward");
         private static readonly int RunBackwardHash = Animator.StringToHash("RunBackward");
         private static readonly int RunLeftHash = Animator.StringToHash("RunLeft");
@@ -101,31 +101,7 @@ namespace Game
                 return;
             }
 
-            var x = _moveDir.x;
-            var z = _moveDir.z;
-
-            if (Mathf.Abs(z) > Mathf.Abs(x))
-            {
-                if (z > 0)
-                {
-                    TrySetTrigger(MoveForwardHash);
-                }
-                else
-                {
-                    TrySetTrigger(MoveBackwardHash);
-                }
-            }
-            else
-            {
-                if (x > 0)
-                {
-                    TrySetTrigger(MoveRightHash);
-                }
-                else
-                {
-                    TrySetTrigger(MoveLeftHash);
-                }
-            }
+            PlayMovementAnimation(_moveDir, MoveForwardHash, MoveBackwardHash, MoveLeftHash, MoveRightHash);
         }
 
         public void PlayRun()
@@ -135,30 +111,32 @@ namespace Game
                 PlayIdle();
                 return;
             }
+            
+            PlayMovementAnimation(_runDir, RunForwardHash, RunBackwardHash, RunLeftHash, RunRightHash);
+        }
 
-            var x = _runDir.x;
-            var z = _runDir.z;
-
-            if (Mathf.Abs(z) > Mathf.Abs(x))
+        private void PlayMovementAnimation(Vector3 direction, int forwardHash, int backwardHash, int leftHash, int rightHash)
+        {
+            if (Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
             {
-                if (z > 0)
+                if (direction.x > 0)
                 {
-                    TrySetTrigger(RunForwardHash);
+                    _animator.SetTrigger(rightHash);
                 }
                 else
                 {
-                    TrySetTrigger(RunBackwardHash);
+                    _animator.SetTrigger(leftHash);
                 }
             }
             else
             {
-                if (x > 0)
+                if (direction.z > 0)
                 {
-                    TrySetTrigger(RunRightHash);
+                    _animator.SetTrigger(forwardHash);
                 }
                 else
                 {
-                    TrySetTrigger(RunLeftHash);
+                    _animator.SetTrigger(backwardHash);
                 }
             }
         }

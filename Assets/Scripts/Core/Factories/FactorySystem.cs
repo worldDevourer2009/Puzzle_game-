@@ -10,9 +10,10 @@ namespace Core
         UniTask<GameObject> Create(string id);
         UniTask<GameObject> Create(string id, Vector3 position);
         UniTask<GameObject> Create(string id, Transform parent);
-        UniTask<GameObject> Create(string id, Transform parent, Vector3 position);
+        UniTask<GameObject> Create(string id, Vector3 position, Transform parent);
         UniTask<GameObject> CreateGPU(string id, InstanceData data, MeshFilter meshFilter, Material mat);
         void Release(string id, GameObject obj);
+        void Inject<T>(T objToInject);
     }
     
     public class FactorySystem : IFactorySystem
@@ -52,7 +53,7 @@ namespace Core
             return result;
         }
 
-        public async UniTask<GameObject> Create(string id, Transform parent, Vector3 position)
+        public async UniTask<GameObject> Create(string id, Vector3 position, Transform parent)
         {
             var asyncOp = _poolSystem.GetObject(id);
             var result = await asyncOp;
@@ -92,6 +93,11 @@ namespace Core
         public void Release(string id, GameObject obj)
         {
             _poolSystem.ReleaseObject(id, obj);
+        }
+
+        public void Inject<T>(T objToInject)
+        {
+            _diContainer.Inject(objToInject);
         }
     }
     

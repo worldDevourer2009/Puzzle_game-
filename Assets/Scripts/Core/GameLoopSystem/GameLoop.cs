@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Zenject;
 
@@ -14,6 +15,7 @@ namespace Core
 
     public interface IGameLoop
     {
+        event Action OnAfterInit;
         void AddToGameLoop(GameLoopType loopType, object objToAdd);
         void RemoveFromLoop(GameLoopType loopType, object obj);
         void Awake();
@@ -44,6 +46,8 @@ namespace Core
 
     public class GameLoop : IGameLoop, ITickable, ILateTickable, IFixedTickable, IInitializable
     {
+        public event Action OnAfterInit;
+        
         private readonly ILogger _logger;
 
         private readonly Dictionary<IAwakable, object> _awakeDictionary;
@@ -193,6 +197,8 @@ namespace Core
 
                 awakenableObj.AwakeCustom();
             }
+            
+            OnAfterInit?.Invoke();
         }
 
         public void Update()
