@@ -36,6 +36,12 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<Player>()
                 .FromComponentInHierarchy()
                 .AsCached();
+
+            Container
+                .Bind<IPlayerCore>()
+                .To<PlayerCore>()
+                .AsCached()
+                .NonLazy();
             
             Container.Bind(typeof(IPlayerInteractor), typeof(IDisposable))
                 .To<PlayerInteractor>()

@@ -11,12 +11,13 @@ namespace Core
         MoveRight,
         Jump,
         Use,
-        Click
+        Click,
+        Run
     }
     
     public interface IInput
     {
-        event Action<Vector3> OnMoveAction;
+        event Action<Vector3, bool> OnMoveAction;
         event Action<Vector3> OnLookAction;
         event Action<Vector3> OnClickAction;
         event Action OnNoneAction;
@@ -31,7 +32,7 @@ namespace Core
         private readonly ILookSource _lookSource;
         private readonly ILogger _logger;
         
-        public event Action<Vector3> OnMoveAction;
+        public event Action<Vector3, bool> OnMoveAction;
         public event Action<Vector3> OnClickAction;
         public event Action OnNoneAction;
         public event Action OnJumpAction;
@@ -92,14 +93,15 @@ namespace Core
         private void HandleMove()
         {
             var moveDir = _inputSource.GetMoveDirection();
-            
+            var isRunning = _inputSource.IsRunning();
+
             if (moveDir == Vector3.zero)
             {
                 OnNoneAction?.Invoke();
                 return;
             }
-            
-            OnMoveAction?.Invoke(moveDir);
+
+            OnMoveAction?.Invoke(moveDir, isRunning);
         }
 
         private void HandleJump()

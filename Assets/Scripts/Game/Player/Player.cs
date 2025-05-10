@@ -8,18 +8,20 @@ namespace Game
     public interface IEntity
     {
         GameObject EntityGA { get; }
-        event Action OnMove;
+        event Action<Vector3> OnMove;
         event Action OnJump;
         event Action OnUse;
+        event Action<Vector3> OnRun;
         event Action OnIdle;
     }
-    
+
     public class Player : MonoBehaviour, IEntity
     {
         public GameObject EntityGA => this.gameObject;
-        public event Action OnMove;
+        public event Action<Vector3> OnMove;
         public event Action OnJump;
         public event Action OnUse;
+        public event Action<Vector3> OnRun;
         public event Action OnIdle;
 
         private Rigidbody _rigidbody;
@@ -27,29 +29,46 @@ namespace Game
         private IInput _input;
         private IAnimation _animation;
         private Cam _cam;
-        private IMoveable _moveable;
-        private IJumpable _jumpable;
-        private IRotatable _rotatable;
         private PlayerDefaultStatsConfig _defaultStatsConfig;
+        private IPlayerCore _core;
 
         private float _jumpForce;
         private float _speed;
 
         [Inject]
         public void Construct(PlayerDefaultStatsConfig config,
-            IInput input, Cam cam,
-            IMoveable moveable, IJumpable jumpable, IRotatable rotatable, IAnimation animation)
+            IInput input, Cam cam, IPlayerCore core, IAnimation animatioHandler)
         {
             _defaultStatsConfig = config;
             _input = input;
             _cam = cam;
-            _animation = animation;
+            _animation = animatioHandler;
+            _core = core;
+        }
 
-            _moveable = moveable;
-            _jumpable = jumpable;
-            _rotatable = rotatable;
-
+        private void Awake()
+        {
             _rigidbody = GetComponent<Rigidbody>();
+            _speed = _defaultStatsConfig.playerStats.Speed;
+            _jumpForce = _defaultStatsConfig.playerStats.JumpForce;
+
+            _core.Initialize(_rigidbody, _cam, _speed, _jumpForce);
+
+            _core.OnMove += (x, y) =>
+            {
+                if (!y)
+                {
+                    OnMove?.Invoke(x);
+                }
+                else
+                {
+                    OnRun?.Invoke(x);
+                }
+            };
+            
+            _core.OnJump += () => OnJump?.Invoke();
+            _core.OnUse += () => OnUse?.Invoke();
+            _core.OnIdle += () => OnIdle?.Invoke();
         }
 
         public void Start()
@@ -60,37 +79,32 @@ namespace Game
             _input.OnUseAction += HandleUse;
             _input.OnNoneAction += HandleIdle;
 
-            _speed = _defaultStatsConfig.playerStats.Speed;
-            _jumpForce = _defaultStatsConfig.playerStats.JumpForce;
             _animation.InitAnimation(this);
+        }
+
+        private void HandleOnMove(Vector3 dir, bool isRunning)
+        {
+            _core.Move(dir, isRunning);
         }
 
         private void HandleIdle()
         {
-            OnIdle?.Invoke();
+            _core.Idle();
         }
 
         private void HandleUse()
         {
-            //throw new NotImplementedException();
+            _core.Use();
         }
 
         private void HandleLook(Vector3 dir)
         {
-            _rotatable.Rotate(gameObject, dir, RotationAxis.Y);
+            _core.Rotate(gameObject, dir);
         }
 
         private void HandleOnJump()
         {
-            OnJump?.Invoke();
-            _jumpable.Jump(_rigidbody, _jumpForce);
-        }
-
-        private void HandleOnMove(Vector3 dir)
-        {
-            OnMove?.Invoke();
-            var moveDir = _cam.GetCamForwardDirection(dir);
-            _moveable.Move(gameObject, _speed, moveDir);
+            _core.Jump();
         }
     }
 }

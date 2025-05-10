@@ -7,6 +7,7 @@ namespace Core
         Vector3 GetMoveDirection();
         bool IsJumpPressed();
         bool IsUsePressed();
+        bool IsRunning();
         bool IsClicked(out Vector3 pos);
     }
 
@@ -61,6 +62,14 @@ namespace Core
         public bool IsUsePressed()
         {
             if (Input.GetKeyDown(_inputConfig.GetKeyboardKey(InputAction.Use)))
+                return true;
+
+            return false;
+        }
+
+        public bool IsRunning()
+        {
+            if (Input.GetKey(_inputConfig.GetKeyboardKey(InputAction.Run)))
                 return true;
 
             return false;

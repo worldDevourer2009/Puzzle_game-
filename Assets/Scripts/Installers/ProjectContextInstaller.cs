@@ -67,6 +67,10 @@ namespace Installers
                 .To<LookSourceKeyboard>()
                 .AsCached()
                 .NonLazy();
+            
+            Container.Bind<IInteractorCore>()
+                .To<InteractorCore>()
+                .AsSingle();
         }
 
         private void BindConfigs()
