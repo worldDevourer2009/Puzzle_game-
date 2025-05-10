@@ -1,4 +1,5 @@
 using Core;
+using Game;
 using Zenject;
 
 namespace Installers
@@ -19,8 +20,33 @@ namespace Installers
             
             BindConfigs();
 
+            Container.Bind<IAsyncGroupLoader>()
+                .To<AsyncGroupLoader>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<IAddressableLoader>()
+                .To<AddressablesCustomLoader>()
+                .AsSingle()
+                .NonLazy();
+
+            Container
+                .Bind<IRaycaster>()
+                .To<RaycasterSystem>()
+                .AsSingle();
+
             Container.Bind<ILogger>()
                 .To<Logger>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<IPoolSystem>()
+                .To<PoolSystem>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IFactorySystem>()
+                .To<FactorySystem>()
                 .AsSingle()
                 .NonLazy();
             
@@ -39,9 +65,18 @@ namespace Installers
                 .NonLazy();
             
             Container.Bind<ILookSource>()
-                .To<LookSourceKeyboard>()
+                .To<LookSourceMouse>()
                 .AsCached()
                 .NonLazy();
+            
+            Container.Bind<IInteractorCore>()
+                .To<InteractorCore>()
+                .AsSingle();
+
+            // Container.Bind<ILevelManager>()
+            //     .To<LevelManagerCore>()
+            //     .AsSingle()
+            //     .NonLazy();
         }
 
         private void BindConfigs()
@@ -52,6 +87,18 @@ namespace Installers
 
             Container.Bind<PlayerDefaultStatsConfig>()
                 .FromResource("Configs/PlayerDefaultStatsConfig")
+                .AsSingle();
+            
+            Container.Bind<PlayerInteractionConfig>()
+                .FromResource("Configs/PlayerInteractionConfig")
+                .AsSingle();
+            
+            Container.Bind<LevelsConfig>()
+                .FromResource("Configs/LevelsConfig")
+                .AsSingle();
+            
+            Container.Bind<AddressablesIdsConfig>()
+                .FromResource("Configs/AddressablesIds")
                 .AsSingle();
         }
     }

@@ -36,6 +36,22 @@ namespace Core
                     return _keyboardInput.JumpKey;
                 case InputAction.Use:
                     return _keyboardInput.UseKey;
+                case InputAction.Run:
+                    return _keyboardInput.RunKey;
+                default:
+                    _logger.LogError($"Out of range exception in {nameof(GetKeyboardKey)}");
+                    break;
+            }
+
+            return default;
+        }
+        
+        public MouseButton GetMouseKey(InputAction action)
+        {
+            switch (action)
+            {
+                case InputAction.Click:
+                    return _keyboardInput.MouseLeft;
                 default:
                     _logger.LogError($"Out of range exception in {nameof(GetKeyboardKey)}");
                     break;
@@ -52,7 +68,17 @@ namespace Core
         public KeyCode MoveBackwardKey;
         public KeyCode MoveLeftKey;
         public KeyCode MoveRightKey;
+        public KeyCode RunKey;
         public KeyCode JumpKey;
         public KeyCode UseKey;
+        public MouseButton MouseLeft;
+        public MouseButton MouseRight;
+    }
+    
+    public enum MouseButton
+    {
+        Left = 0,
+        Right = 1,
+        Middle = 2
     }
 }

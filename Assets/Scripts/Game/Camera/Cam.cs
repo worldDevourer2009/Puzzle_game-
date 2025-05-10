@@ -4,21 +4,41 @@ using Zenject;
 
 namespace Game
 {
-    public class Cam : MonoBehaviour
+    public sealed class Cam : MonoBehaviour, IAwakable, IUpdatable
     {
         private ICamera _camera;
+        private IGameLoop _gameLoop;
         private IInput _input;
 
+        private Camera _mainCamera;
+
         [Inject]
-        public void Construct(ICamera cam, IInput input)
+        public void Construct(IGameLoop gameLoop, ICamera cam, IInput input)
         {
             _camera = cam;
             _input = input;
-        }
+            _gameLoop = gameLoop;
 
-        public void Start()
+            if (_gameLoop != null)
+            {
+                _gameLoop.AddToGameLoop(GameLoopType.Awake, this);
+                _gameLoop.AddToGameLoop(GameLoopType.Update, this);
+            }
+        }
+        
+        public void AwakeCustom()
         {
             _input.OnLookAction += HandleCameraMovement;
+            _mainCamera = Camera.main;
+        }
+
+        public void UpdateCustom()
+        {
+            if (_mainCamera == null)
+            {
+                Debug.Log("Main cam is null");
+                return;
+            }
         }
 
         private void HandleCameraMovement(Vector3 dir)

@@ -15,4 +15,5 @@ MonoBehaviour:
   playerStats:
     Health: 10
     Speed: 7
-    JumpForce: 5
+    JumpForce: 406
+    RunSpeed: 15

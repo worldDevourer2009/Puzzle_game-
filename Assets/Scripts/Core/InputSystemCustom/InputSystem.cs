@@ -10,13 +10,17 @@ namespace Core
         MoveLeft,
         MoveRight,
         Jump,
-        Use
+        Use,
+        Click,
+        Run
     }
     
     public interface IInput
     {
-        event Action<Vector3> OnMoveAction;
+        event Action<Vector3, bool> OnMoveAction;
         event Action<Vector3> OnLookAction;
+        event Action<Vector3> OnClickAction;
+        event Action OnNoneAction;
         event Action OnJumpAction;
         event Action OnUseAction;
     }
@@ -28,7 +32,9 @@ namespace Core
         private readonly ILookSource _lookSource;
         private readonly ILogger _logger;
         
-        public event Action<Vector3> OnMoveAction;
+        public event Action<Vector3, bool> OnMoveAction;
+        public event Action<Vector3> OnClickAction;
+        public event Action OnNoneAction;
         public event Action OnJumpAction;
         public event Action OnUseAction;
         public event Action<Vector3> OnLookAction;
@@ -57,6 +63,7 @@ namespace Core
             HandleLook();
             HandleJump();
             HandleUse();
+            HandleClick();
         }
 
         private void HandleLook()
@@ -64,19 +71,37 @@ namespace Core
             var lookDir = _lookSource.GetLookDelta();
 
             if (lookDir == Vector2.zero)
+            {
                 return;
+            }
             
             OnLookAction?.Invoke(lookDir);
+        }
+
+        private void HandleClick()
+        {
+            var isClicked = _inputSource.IsClicked(out var pos);
+
+            if (!isClicked)
+            {
+                return;
+            }
+            
+            OnClickAction?.Invoke(pos);
         }
 
         private void HandleMove()
         {
             var moveDir = _inputSource.GetMoveDirection();
-            
+            var isRunning = _inputSource.IsRunning();
+
             if (moveDir == Vector3.zero)
+            {
+                OnNoneAction?.Invoke();
                 return;
-            
-            OnMoveAction?.Invoke(moveDir);
+            }
+
+            OnMoveAction?.Invoke(moveDir, isRunning);
         }
 
         private void HandleJump()
@@ -84,7 +109,9 @@ namespace Core
             var isJumping = _inputSource.IsJumpPressed();
 
             if (!isJumping)
+            {
                 return;
+            }
             
             OnJumpAction?.Invoke();
         }
@@ -94,7 +121,9 @@ namespace Core
             var isUsing = _inputSource.IsUsePressed();
 
             if (!isUsing)
+            {
                 return;
+            }
             
             OnUseAction?.Invoke();
         }

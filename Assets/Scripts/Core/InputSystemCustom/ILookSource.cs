@@ -7,12 +7,12 @@ namespace Core
         Vector2 GetLookDelta();
     }
 
-    public sealed class LookSourceKeyboard : ILookSource
+    public sealed class LookSourceMouse : ILookSource
     {
         private readonly ILogger _logger;
         private readonly InputConfig _inputConfig;
 
-        public LookSourceKeyboard(ILogger logger, InputConfig inputConfig)
+        public LookSourceMouse(ILogger logger, InputConfig inputConfig)
         {
             _logger = logger;
             _inputConfig = inputConfig;

@@ -17,6 +17,9 @@ MonoBehaviour:
     MoveBackwardKey: 115
     MoveLeftKey: 97
     MoveRightKey: 100
+    RunKey: 304
     JumpKey: 32
     UseKey: 101
+    MouseLeft: 0
+    MouseRight: 0
   _sensitivity: 100
