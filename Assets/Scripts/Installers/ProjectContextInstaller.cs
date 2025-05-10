@@ -29,6 +29,11 @@ namespace Installers
                 .AsSingle()
                 .NonLazy();
 
+            Container
+                .Bind<IRaycaster>()
+                .To<RaycasterSystem>()
+                .AsSingle();
+
             Container.Bind<ILogger>()
                 .To<Logger>()
                 .AsSingle()
@@ -72,6 +77,10 @@ namespace Installers
 
             Container.Bind<PlayerDefaultStatsConfig>()
                 .FromResource("Configs/PlayerDefaultStatsConfig")
+                .AsSingle();
+            
+            Container.Bind<PlayerInteractionConfig>()
+                .FromResource("Configs/PlayerInteractionConfig")
                 .AsSingle();
         }
     }

@@ -2,6 +2,7 @@ namespace Game
 {
     public interface IInteractable
     {
-        void Interact(IInteractable interactable);
+        void Interact();
+        void StopInteraction();
     }
 }

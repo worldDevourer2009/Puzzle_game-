@@ -10,13 +10,16 @@ namespace Core
         MoveLeft,
         MoveRight,
         Jump,
-        Use
+        Use,
+        Click
     }
     
     public interface IInput
     {
         event Action<Vector3> OnMoveAction;
         event Action<Vector3> OnLookAction;
+        event Action<Vector3> OnClickAction;
+        event Action OnNoneAction;
         event Action OnJumpAction;
         event Action OnUseAction;
     }
@@ -29,6 +32,8 @@ namespace Core
         private readonly ILogger _logger;
         
         public event Action<Vector3> OnMoveAction;
+        public event Action<Vector3> OnClickAction;
+        public event Action OnNoneAction;
         public event Action OnJumpAction;
         public event Action OnUseAction;
         public event Action<Vector3> OnLookAction;
@@ -57,6 +62,7 @@ namespace Core
             HandleLook();
             HandleJump();
             HandleUse();
+            HandleClick();
         }
 
         private void HandleLook()
@@ -64,9 +70,23 @@ namespace Core
             var lookDir = _lookSource.GetLookDelta();
 
             if (lookDir == Vector2.zero)
+            {
                 return;
+            }
             
             OnLookAction?.Invoke(lookDir);
+        }
+
+        private void HandleClick()
+        {
+            var isClicked = _inputSource.IsClicked(out var pos);
+
+            if (!isClicked)
+            {
+                return;
+            }
+            
+            OnClickAction?.Invoke(pos);
         }
 
         private void HandleMove()
@@ -74,7 +94,10 @@ namespace Core
             var moveDir = _inputSource.GetMoveDirection();
             
             if (moveDir == Vector3.zero)
+            {
+                OnNoneAction?.Invoke();
                 return;
+            }
             
             OnMoveAction?.Invoke(moveDir);
         }
@@ -84,7 +107,9 @@ namespace Core
             var isJumping = _inputSource.IsJumpPressed();
 
             if (!isJumping)
+            {
                 return;
+            }
             
             OnJumpAction?.Invoke();
         }
@@ -94,7 +119,9 @@ namespace Core
             var isUsing = _inputSource.IsUsePressed();
 
             if (!isUsing)
+            {
                 return;
+            }
             
             OnUseAction?.Invoke();
         }

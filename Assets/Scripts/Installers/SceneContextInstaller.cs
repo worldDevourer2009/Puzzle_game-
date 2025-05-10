@@ -1,3 +1,4 @@
+using System;
 using Core.EntryPoint;
 using Game;
 using Zenject;
@@ -10,6 +11,10 @@ namespace Installers
         {
             Container.Bind<IMoveable>()
                 .To<MoveComponent>()
+                .AsCached();
+            
+            Container.Bind<IAnimation>()
+                .To<AnimationController>()
                 .AsCached();
             
             Container.Bind<IJumpable>()
@@ -28,13 +33,22 @@ namespace Installers
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<Player>()
+            Container.BindInterfacesAndSelfTo<Player>()
                 .FromComponentInHierarchy()
                 .AsCached();
+            
+            Container.Bind(typeof(IPlayerInteractor), typeof(IDisposable))
+                .To<PlayerInteractor>()
+                .AsCached()
+                .NonLazy();
             
             Container.Bind<Cam>()
                 .FromComponentInHierarchy()
                 .AsSingle();
+
+            Container.Bind<Cube>()
+                .FromComponentsInHierarchy()
+                .AsCached();
         }
     }
 }
