@@ -9,5 +9,7 @@ namespace Core
         public float Speed;
         public float JumpForce;
         public float RunSpeed;
+        public float CrouchSpeed;
+        public RaycastParams GroundRaycastParams;
     }
 }

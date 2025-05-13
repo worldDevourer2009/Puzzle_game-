@@ -17,3 +17,11 @@ MonoBehaviour:
     Speed: 7
     JumpForce: 406
     RunSpeed: 15
+    CrouchSpeed: 5
+    GroundRaycastParams:
+      Origin: {x: 0, y: 0, z: 0}
+      Direction: {x: 0, y: 0, z: 0}
+      MaxDistance: 0.5
+      LayerMask:
+        serializedVersion: 2
+        m_Bits: 64

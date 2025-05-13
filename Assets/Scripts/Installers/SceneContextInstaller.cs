@@ -22,6 +22,10 @@ namespace Installers
                 .To<JumpComponent>()
                 .AsCached();
             
+            Container.Bind<IGroundable>()
+                .To<GroundableComponent>()
+                .AsCached();
+            
             Container.Bind<IRotatable>()
                 .To<RotationComponent>()
                 .AsCached();
@@ -39,7 +43,7 @@ namespace Installers
                 .AsCached();
 
             Container
-                .Bind<IPlayerCore>()
+                .Bind(typeof(IPlayerCore), typeof(IDisposable))
                 .To<PlayerCore>()
                 .AsCached()
                 .NonLazy();

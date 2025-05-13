@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Core
@@ -10,12 +11,13 @@ namespace Core
             where TCallback : struct, IRaycastCallback;
     }
 
+    [Serializable]
     public struct RaycastParams
     {
         public Vector3 Origin;
         public Vector3 Direction;
         public float MaxDistance;
-        public int LayerMask;
+        public LayerMask LayerMask;
     }
 
     public class RaycasterSystem : IRaycaster
@@ -24,7 +26,7 @@ namespace Core
 
         public RaycasterSystem()
         {
-            _hitBuffer = new RaycastHit[128];
+            _hitBuffer = new RaycastHit[256];
         }
 
         public void Raycast<TFilter, TCallback>(ref RaycastParams prms, ref TFilter filter, ref TCallback callback) 

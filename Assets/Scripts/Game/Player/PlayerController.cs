@@ -15,8 +15,8 @@ namespace Game
         private readonly IGameLoop _gameLoop;
         private readonly IPlayerFacade _playerFacade;
         private readonly IPlayerInputHandler _playerInputHandler;
-        private readonly Cam _cam;
         private readonly PlayerDefaultStatsConfig _defaultStatsConfig;
+        private readonly Cam _cam;
 
         private Action<Vector3, bool> _moveHandler;
         private Action<Vector3> _lookHandler;

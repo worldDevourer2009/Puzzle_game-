@@ -10,7 +10,8 @@ namespace Game
         public GameObject EntityGA => gameObject;
         public Transform RightHandTransform => _rightHandTransform;
         public Transform LeftHandTransform => _leftHandTransform;
-        
+        public Transform CenterBottomTransform => _centerBottomTransform;
+
         public event Action<Vector3, bool> OnMove;
         public event Action OnJump;
         public event Action OnUse;
@@ -18,6 +19,7 @@ namespace Game
         
         [SerializeField] private Transform _rightHandTransform;
         [SerializeField] private Transform _leftHandTransform;
+        [SerializeField] private Transform _centerBottomTransform;
         [SerializeField] private Rigidbody _rigidbody;
         
         private IPlayerCore _core;
@@ -47,7 +49,7 @@ namespace Game
 
         public void Initialize(Cam cam, PlayerStats stats)
         {
-            _core.Initialize(this, _rigidbody, cam, stats.Speed, stats.RunSpeed, stats.JumpForce);
+            _core.Initialize(this, _rigidbody, cam, stats.Speed, stats.RunSpeed, stats.JumpForce, stats.GroundRaycastParams);
             _animation.InitAnimation(this);
         }
 

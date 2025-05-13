@@ -1,3 +1,4 @@
+using System;
 using Game;
 using UnityEngine;
 
@@ -16,6 +17,25 @@ namespace Core
         {
             if (hit.collider.TryGetComponent<IInteractable>(out var interactable))
                 Interactable = interactable;
+        }
+    }
+
+    public struct GroundCallback : IRaycastCallback
+    {
+        public Action OnGroundHit;
+        private int targetLayer => LayerMask.NameToLayer(Const.GroundLayerName);
+        
+        public void OnHit(in RaycastHit hit)
+        {
+            if (hit.collider.gameObject.layer == targetLayer)
+            { 
+                Debug.Log("Setting to true");
+                OnGroundHit?.Invoke();
+            }
+            else
+            {
+                Debug.Log("Setting to false");
+            }
         }
     }
 

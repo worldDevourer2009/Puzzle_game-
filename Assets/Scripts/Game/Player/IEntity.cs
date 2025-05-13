@@ -10,6 +10,7 @@ namespace Game
         
         Transform RightHandTransform { get; }
         Transform LeftHandTransform { get; }
+        Transform CenterBottomTransform { get; }
         
         event Action<Vector3, bool> OnMove;
         event Action OnJump;
