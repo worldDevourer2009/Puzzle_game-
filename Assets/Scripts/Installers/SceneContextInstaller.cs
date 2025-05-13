@@ -1,4 +1,5 @@
 using System;
+using Core;
 using Core.EntryPoint;
 using Game;
 using Zenject;
@@ -13,12 +14,16 @@ namespace Installers
                 .To<MoveComponent>()
                 .AsCached();
             
-            Container.Bind<IAnimation>()
+            Container.Bind(typeof(IAnimation), typeof(IDisposable))
                 .To<AnimationController>()
                 .AsCached();
             
             Container.Bind<IJumpable>()
                 .To<JumpComponent>()
+                .AsCached();
+            
+            Container.Bind<IGroundable>()
+                .To<GroundableComponent>()
                 .AsCached();
             
             Container.Bind<IRotatable>()
@@ -33,18 +38,28 @@ namespace Installers
                 .AsSingle()
                 .NonLazy();
 
-            Container.BindInterfacesAndSelfTo<Player>()
+            Container.BindInterfacesAndSelfTo<PlayerFacade>()
                 .FromComponentInHierarchy()
                 .AsCached();
 
             Container
-                .Bind<IPlayerCore>()
+                .Bind(typeof(IPlayerCore), typeof(IDisposable))
                 .To<PlayerCore>()
                 .AsCached()
                 .NonLazy();
             
             Container.Bind(typeof(IPlayerInteractor), typeof(IDisposable))
                 .To<PlayerInteractor>()
+                .AsCached()
+                .NonLazy();
+            
+            Container.Bind(typeof(IPlayerInputHandler), typeof(IAwakable))
+                .To<PlayerInputHandler>()
+                .AsCached()
+                .NonLazy();
+            
+            Container.Bind(typeof(IPlayerController), typeof(IDisposable))
+                .To<PlayerController>()
                 .AsCached()
                 .NonLazy();
             

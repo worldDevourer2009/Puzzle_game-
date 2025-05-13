@@ -1,4 +1,5 @@
 using System;
+using Core;
 using UnityEngine;
 
 namespace Game
@@ -9,11 +10,21 @@ namespace Game
         
         Transform RightHandTransform { get; }
         Transform LeftHandTransform { get; }
+        Transform CenterBottomTransform { get; }
         
-        event Action<Vector3> OnMove;
+        event Action<Vector3, bool> OnMove;
         event Action OnJump;
         event Action OnUse;
-        event Action<Vector3> OnRun;
         event Action OnIdle;
+    }
+
+    public interface IPlayerFacade : IEntity
+    {
+        void Initialize(Cam cam, PlayerStats stats);
+        void Move(Vector3 direction, bool run = false);
+        void Jump();
+        void Use();
+        void Idle();
+        void Look(Vector3 lookDirection);
     }
 }

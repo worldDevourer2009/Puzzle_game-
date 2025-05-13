@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using ILogger = Core.ILogger;
 
@@ -12,9 +13,11 @@ namespace Game
         void PlayRun();
     }
 
-    public class AnimationController : IAnimation
+    public class AnimationController : IAnimation, IDisposable
     {
         private readonly ILogger _logger;
+        private readonly IPlayerCore _playerCore;
+        
         private Animator _animator;
         private IEntity _entity;
         private int _layerIndex;
@@ -34,15 +37,16 @@ namespace Game
         private static readonly int IdleHash = Animator.StringToHash("Idle");
         private static readonly int JumpHash = Animator.StringToHash("Jump");
 
-        public AnimationController(ILogger logger)
+        public AnimationController(ILogger logger, IPlayerCore playerCore)
         {
             _logger = logger;
+            _playerCore = playerCore;
         }
 
         public void InitAnimation(IEntity entity)
         {
             _entity = entity;
-
+            
             if (_entity == null)
             {
                 _logger.LogWarning("Entity is null");
@@ -57,10 +61,9 @@ namespace Game
                 return;
             }
 
-            _entity.OnMove += HandleMove;
-            _entity.OnRun += HandleRun;
-            _entity.OnJump += PlayJump;
-            _entity.OnIdle += PlayIdle;
+            _playerCore.OnMove += HandleMove;
+            _playerCore.OnJump += PlayJump;
+            _playerCore.OnIdle += PlayIdle;
 
             PlayIdle();
         }
@@ -71,10 +74,14 @@ namespace Game
             PlayRun();
         }
 
-        private void HandleMove(Vector3 dir)
+        private void HandleMove(Vector3 dir, bool isRunning)
         {
             _moveDir = dir;
-            PlayMove();
+            
+            if (!isRunning) 
+                PlayMove();
+            else
+                HandleRun(_moveDir);
         }
 
         public void PlayIdle()
@@ -159,6 +166,13 @@ namespace Game
                 return;
 
             _animator.SetTrigger(hash);
+        }
+
+        public void Dispose()
+        {
+            _playerCore.OnMove -= HandleMove;
+            _playerCore.OnJump -= PlayJump;
+            _playerCore.OnIdle -= PlayIdle;
         }
     }
 }

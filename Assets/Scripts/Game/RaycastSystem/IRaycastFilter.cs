@@ -20,4 +20,14 @@ namespace Core
             return hit.collider.TryGetComponent<IInteractable>(out var interactable);
         }
     }
+
+    public struct GroundFilter : IRaycastFilter
+    {
+        private int targetLayer => LayerMask.NameToLayer(Const.GroundLayerName);
+
+        public bool ShouldHit(in RaycastHit hit)
+        {
+            return hit.collider.gameObject.layer == targetLayer;
+        }
+    }
 }
