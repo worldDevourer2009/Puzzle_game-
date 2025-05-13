@@ -430,9 +430,9 @@ GameObject:
   - component: {fileID: 7116503921161639069}
   - component: {fileID: 3867156212642375344}
   - component: {fileID: 7817568378901615467}
-  - component: {fileID: 1565301945556053554}
   - component: {fileID: 9209238265967548272}
   - component: {fileID: 6594582636479903115}
+  - component: {fileID: 2634048183746688251}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -592,20 +592,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
---- !u!114 &1565301945556053554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2977839239494829821}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e679282ef2ef451c88a3cc291dc5b432, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _rightHandTransform: {fileID: 9094001357562771557}
-  _leftHandTransform: {fileID: 7608098289428305042}
 --- !u!95 &9209238265967548272
 Animator:
   serializedVersion: 7
@@ -651,6 +637,21 @@ CapsuleCollider:
   m_Height: 1.9608842
   m_Direction: 1
   m_Center: {x: -0.00000011920929, y: 0.8587317, z: 0.071202}
+--- !u!114 &2634048183746688251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2977839239494829821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a94be76d98b401484f59a9f2fb77ed1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rightHandTransform: {fileID: 9094001357562771557}
+  _leftHandTransform: {fileID: 7608098289428305042}
+  _rigidbody: {fileID: 7817568378901615467}
 --- !u!1 &3114020201903295418
 GameObject:
   m_ObjectHideFlags: 0

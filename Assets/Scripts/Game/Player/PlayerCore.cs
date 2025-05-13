@@ -12,7 +12,7 @@ namespace Game
 
         void Initialize(IEntity entity, Rigidbody rb, Cam cam, float speed, float runSpeed, float jumpForce);
         void Move(Vector3 direction, bool isRunning = false);
-        void Rotate(GameObject entity, Vector3 direction);
+        void Rotate(Vector3 direction);
         void Jump();
         void Use();
         void Idle();
@@ -26,19 +26,23 @@ namespace Game
         public event Action OnUse;
         public event Action OnIdle;
 
+        private readonly Core.ILogger _logger;
         private readonly IMoveable _moveable;
         private readonly IJumpable _jumpable;
         private readonly IRotatable _rotatable;
 
         private IEntity _entity;
+        private GameObject _gameObject;
         private Rigidbody _rb;
         private Cam _cam;
+        
         private float _speed;
         private float _runSpeed;
         private float _jumpForce;
 
-        public PlayerCore(IMoveable moveable, IJumpable jumpable, IRotatable rotatable)
+        public PlayerCore(Core.ILogger logger, IMoveable moveable, IJumpable jumpable, IRotatable rotatable)
         {
+            _logger = logger;
             _moveable = moveable;
             _jumpable = jumpable;
             _rotatable = rotatable;
@@ -47,8 +51,34 @@ namespace Game
         public void Initialize(IEntity entity, Rigidbody rb, Cam cam, float speed, float runSpeed, float jumpForce)
         {
             _entity = entity;
-            _rb = rb;
-            _cam = cam;
+
+            if (_entity == null)
+            {
+                _logger.LogError("Entity is null");
+            }
+            else
+            {
+                _gameObject = _entity.EntityGA;
+            }
+
+            if (rb == null)
+            {
+                _logger.LogError("Rb is null");
+            }
+            else
+            {
+                _rb = rb;
+            }
+            
+            if (cam == null)
+            {
+                _logger.LogError("Cam is null");
+            }
+            else
+            {
+                _cam = cam;
+            }
+            
             _speed = speed;
             _runSpeed = runSpeed;
             _jumpForce = jumpForce;
@@ -82,14 +112,14 @@ namespace Game
             OnUse?.Invoke();
         }
         
-        public void Rotate(GameObject entity, Vector3 direction)
+        public void Rotate(Vector3 direction)
         {
-            if (entity == null)
+            if (_gameObject == null)
             {
                 return;
             }
             
-            _rotatable.Rotate(entity, direction, RotationAxis.Y);
+            _rotatable.Rotate(_gameObject, direction, RotationAxis.Y);
         }
 
         public void Idle()
