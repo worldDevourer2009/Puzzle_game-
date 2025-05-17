@@ -23,6 +23,7 @@ namespace Core
         CustomCameraType GetActiveCameraType();
         Camera GetMainCamera();
         Camera GetPlayerCamera();
+        void UnloadCameras();
         Camera GetCameraByType(CustomCameraType type);
     }
 
@@ -115,7 +116,8 @@ namespace Core
                     return;
                 }
 
-                var cam = camHashSet.AsValueEnumerable().FirstOrDefault(x => x != null);
+                var aliveCams = camHashSet.AsValueEnumerable().Where(c => c != null && c.Camera != null);
+                var cam = aliveCams.FirstOrDefault();
 
                 if (cam != null && cam.Camera != null)
                 {
@@ -147,20 +149,26 @@ namespace Core
         {
             foreach (var camerasHashSets in _cameras.Values)
             {
-                if (camerasHashSets == null || camerasHashSets.Count <= 0)
-                {
+                if (camerasHashSets == null || camerasHashSets.Count == 0)
                     continue;
-                }
+                
+                var toRemove = new List<ICamera>();
 
-                foreach (var camera in camerasHashSets)
+                foreach (var cameraComp in camerasHashSets)
                 {
-                    if (camera.Camera == null)
+                    if (cameraComp == null || cameraComp.Camera == null)
                     {
+                        toRemove.Add(cameraComp);
                         continue;
                     }
 
-                    camera.Camera.enabled = false;
-                    camera.Camera.tag = DisabledCamera;
+                    cameraComp.Camera.enabled = false;
+                    cameraComp.Camera.tag = DisabledCamera;
+                }
+                
+                foreach (var dead in toRemove)
+                {
+                    camerasHashSets.Remove(dead);
                 }
             }
         }
@@ -188,6 +196,12 @@ namespace Core
         public Camera GetPlayerCamera()
         {
             return _activeCameras.GetValueOrDefault(CustomCameraType.PlayerCamera);
+        }
+
+        public void UnloadCameras()
+        {
+            _cameras.Clear();
+            _activeCameras.Clear();
         }
 
         public Camera GetCameraByType(CustomCameraType type)

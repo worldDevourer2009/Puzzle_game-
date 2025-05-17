@@ -11,7 +11,7 @@ namespace Game
         void UnsubInput();
     }
 
-    public sealed class PlayerController : IPlayerController, IAwakable, IDisposable
+    public sealed class PlayerController : IPlayerController, IDisposable
     {
         private readonly IGameLoop _gameLoop;
         private readonly ILevelManager _levelManager;
@@ -37,14 +37,11 @@ namespace Game
             _levelManager = levelManager;
             _defaultStatsConfig = defaultStatsConfig;
 
-            if (_gameLoop != null)
+            if (_levelManager == null)
             {
-                _gameLoop.AddToGameLoop(GameLoopType.Awake, this);
+                return;
             }
-        }
-
-        public void AwakeCustom()
-        {
+            
             _levelManager.OnPlayerCreated += () => InitPlayerFacade()
                 .Forget();
         }
@@ -91,7 +88,6 @@ namespace Game
 
         public void Dispose()
         {
-            _gameLoop.RemoveFromLoop(GameLoopType.Awake, this);
             UnsubInput();
         }
     }

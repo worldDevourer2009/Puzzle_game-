@@ -8,7 +8,19 @@ namespace Game
     public sealed class UiCam : MonoBehaviour, ICamera
     {
         public CustomCameraType CameraType => CustomCameraType.UiCamera;
-        public Camera Camera => _camera == null ? this.gameObject.GetComponent<Camera>() : _camera;
+        public Camera Camera
+        {
+            get
+            {
+                if (_camera == null || this == null)
+                {
+                    return null;
+                }
+                
+                return _camera;
+            }
+        }
+        
         private Camera _camera;
 
         [Inject]

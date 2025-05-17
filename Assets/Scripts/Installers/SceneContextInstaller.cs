@@ -1,5 +1,4 @@
 using System;
-using Core;
 using Game;
 using Zenject;
 
@@ -40,8 +39,7 @@ namespace Installers
             Container
                 .Bind(typeof(IPlayerCore), typeof(IDisposable))
                 .To<PlayerCore>()
-                .AsSingle()
-                .NonLazy();
+                .AsSingle();
             
             Container.Bind(typeof(IPlayerInteractor), typeof(IDisposable))
                 .To<PlayerInteractor>()

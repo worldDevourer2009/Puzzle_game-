@@ -47,6 +47,8 @@ namespace Game
             _core.OnJump += _jumpHandler;
             _core.OnUse += _useHandler;
             _core.OnIdle += _idleHandler;
+            
+            Debug.LogWarning("Injecting player facade");
         }
 
         public void Initialize(PlayerStats stats)

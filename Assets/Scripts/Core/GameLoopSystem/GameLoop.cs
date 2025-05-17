@@ -22,6 +22,7 @@ namespace Core
         void Update();
         void FixedUpdate();
         void LateUpdate();
+        void EnableUpdate(bool enable);
     }
 
     public interface IAwakable
@@ -49,11 +50,13 @@ namespace Core
         public event Action OnAfterInit;
         
         private readonly ILogger _logger;
-
+        
         private readonly Dictionary<IAwakable, object> _awakeDictionary;
         private readonly Dictionary<IUpdatable, object> _updateDictionary;
         private readonly Dictionary<IFixedUpdatable, object> _fixedUpdateDictionary;
         private readonly Dictionary<ILateUpdatable, object> _lateUpdateDictionary;
+        
+        private bool _enabled;
 
         public GameLoop(ILogger logger)
         {
@@ -62,6 +65,7 @@ namespace Core
             _updateDictionary = new Dictionary<IUpdatable, object>();
             _fixedUpdateDictionary = new Dictionary<IFixedUpdatable, object>();
             _lateUpdateDictionary = new Dictionary<ILateUpdatable, object>();
+            _enabled = true;
         }
 
         public void AddToGameLoop(GameLoopType loopType, object objToAdd)
@@ -203,6 +207,11 @@ namespace Core
 
         public void Update()
         {
+            if (!_enabled)
+            {
+                return;
+            }
+            
             foreach (var updatable in _updateDictionary.Values)
             {
                 if (updatable == null)
@@ -217,6 +226,11 @@ namespace Core
 
         public void FixedUpdate()
         {
+            if (!_enabled)
+            {
+                return;
+            }
+            
             foreach (var fixedUpdatable in _fixedUpdateDictionary.Values)
             {
                 if (fixedUpdatable == null)
@@ -231,6 +245,11 @@ namespace Core
 
         public void LateUpdate()
         {
+            if (!_enabled)
+            {
+                return;
+            }
+            
             foreach (var lateUpdatable in _lateUpdateDictionary.Values)
             {
                 if (lateUpdatable == null)
@@ -243,6 +262,9 @@ namespace Core
             }
         }
 
+        public void EnableUpdate(bool enable) => 
+            _enabled = enable;
+        
         public void Tick() =>
             Update();
 

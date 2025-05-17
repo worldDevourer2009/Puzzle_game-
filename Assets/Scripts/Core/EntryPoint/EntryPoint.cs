@@ -6,16 +6,18 @@ namespace Core
     {
         private readonly IAsyncGroupLoader _asyncGroupLoader;
         private readonly ILevelManager _levelManager;
+        private readonly IGameManager _gameManager;
         private readonly ILogger _logger;
         private readonly IGameLoop _gameLoop;
 
         private const string MainGroup = "MainGroup";
         private string parrallel;
 
-        public EntryPoint(IAsyncGroupLoader asyncGroupLoader, ILevelManager levelManager, ILogger logger, IGameLoop gameLoop)
+        public EntryPoint(IAsyncGroupLoader asyncGroupLoader, ILevelManager levelManager, IGameManager gameManager, ILogger logger, IGameLoop gameLoop)
         {
             _asyncGroupLoader = asyncGroupLoader;
             _levelManager = levelManager;
+            _gameManager = gameManager;
             _logger = logger;
             _gameLoop = gameLoop;
 
@@ -39,7 +41,7 @@ namespace Core
         private void CreatePlayableGroup()
         {
             _asyncGroupLoader.CreateGroup(AsyncGroupType.Sequential, MainGroup, true);
-            _asyncGroupLoader.AddToGroup(MainGroup, () => _levelManager.LoadLevelByIndex(1));
+            _asyncGroupLoader.AddToGroup(MainGroup, () => _gameManager.LaunchGame());
         }
     }
 }

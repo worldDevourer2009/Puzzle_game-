@@ -67,7 +67,7 @@ namespace Core
             
             return obj;
         }
-
+        
         public void ReleaseObject(string id, GameObject obj)
         {
             if (!_poolDictionary.TryGetValue(id, out var queue))

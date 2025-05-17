@@ -33,7 +33,7 @@ namespace Core
                 return ProjectContext.Instance.Container;
             }
             
-            _logger.LogWarning("ContextResolver: Could not resolve DiContainer, falling back to ProjectContext");
+            _logger.LogWarning("Can't resolve DiContainer, back to ProjectContext");
             return ProjectContext.Instance.Container;
         }
 
@@ -44,7 +44,7 @@ namespace Core
                 return ProjectContext.Instance.Container;
             }
             
-            _logger.LogWarning("ContextResolver: Could not resolve DiContainer, falling back to ProjectContext");
+            _logger.LogWarning("Can't resolve DiContainer, back to ProjectContext");
             return ProjectContext.Instance.Container;
         }
     }

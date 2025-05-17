@@ -19,7 +19,7 @@ namespace Core
         UniTask TriggerLevelAction();
         UniTask ResetLevel();
         UniTask LoadNextLevel();
-        UniTask LoadLevelByIndex(int index);
+        UniTask LoadLevelByName(string name);
     }
 
     public sealed class LevelManagerCore : ILevelManager
@@ -30,7 +30,7 @@ namespace Core
 
         private readonly ICameraManager _cameraManager;
         private readonly IFactorySystem _factorySystem;
-        private readonly IAddressableLoader _addressablesLoader;
+        private readonly ISceneLoader _sceneLoader;
         private readonly ILogger _logger;
         
         private readonly AddressablesIdsConfig _addressablesIdsConfig;
@@ -42,14 +42,14 @@ namespace Core
         public LevelManagerCore(IFactorySystem factorySystem,
             ICameraManager cameraManager,
             ILogger logger,
-            IAddressableLoader addressablesLoader,
+            ISceneLoader sceneLoader,
             AddressablesIdsConfig addressablesIdsConfig,
             LevelsConfig levelsConfig)
         {
             _factorySystem = factorySystem;
             _cameraManager = cameraManager;
             _logger = logger;
-            _addressablesLoader = addressablesLoader;
+            _sceneLoader = sceneLoader;
             _addressablesIdsConfig = addressablesIdsConfig;
             _levelsConfig = levelsConfig;
 
@@ -153,12 +153,12 @@ namespace Core
 
         public async UniTask LoadNextLevel()
         {
-            //throw new NotImplementedException();
+            await LoadLevelByName("1");
         }
 
-        public async UniTask LoadLevelByIndex(int index)
+        public async UniTask LoadLevelByName(string name)
         {
-            await _addressablesLoader.LoadScene("MainScene", LoadSceneMode.Single);
+            await _sceneLoader.LoadSceneById(name, LoadSceneMode.Single);
             
             var levelManager = Object.FindFirstObjectByType<LevelManager>();
             
@@ -175,7 +175,7 @@ namespace Core
             
             await InitPlayer(pos);
             
-            OnLevelLoaded?.Invoke(index);
+            OnLevelLoaded?.Invoke(1);
         }
     }
 }

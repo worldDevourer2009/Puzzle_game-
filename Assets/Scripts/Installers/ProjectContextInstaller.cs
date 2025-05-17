@@ -1,5 +1,4 @@
 using Core;
-using Game;
 using Zenject;
 
 namespace Installers
@@ -8,6 +7,11 @@ namespace Installers
     {
         public override void InstallBindings()
         {
+            Container.Bind<IGameManager>()
+                .To<GameManager>()
+                .AsSingle()
+                .NonLazy();
+            
             Container.Bind<IContextResolver>()
                 .To<ContextResolver>()
                 .AsSingle()
@@ -96,6 +100,16 @@ namespace Installers
                 .To<LevelManagerCore>()
                 .AsSingle()
                 .NonLazy();
+            
+            Container.Bind<ICommandInvoker>()
+                .To<CommandInvoker>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<ISceneLoader>()
+                .To<SceneLoader>()
+                .AsSingle()
+                .NonLazy();
         }
 
         private void BindConfigs()
@@ -118,6 +132,10 @@ namespace Installers
             
             Container.Bind<AddressablesIdsConfig>()
                 .FromResource("Configs/AddressablesIds")
+                .AsSingle();
+            
+            Container.Bind<ScenesConfig>()
+                .FromResource("Configs/ScenesConfig")
                 .AsSingle();
         }
     }
