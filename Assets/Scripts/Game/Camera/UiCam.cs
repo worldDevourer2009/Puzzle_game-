@@ -5,14 +5,14 @@ using Zenject;
 namespace Game
 {
     [RequireComponent(typeof(Camera))]
-    public sealed class PlayerCam : MonoBehaviour, ICamera
+    public sealed class UiCam : MonoBehaviour, ICamera
     {
-        public CustomCameraType CameraType => CustomCameraType.PlayerCamera;
+        public CustomCameraType CameraType => CustomCameraType.UiCamera;
         public Camera Camera => _camera == null ? this.gameObject.GetComponent<Camera>() : _camera;
         private Camera _camera;
 
         [Inject]
-        private void Construct()
+        public void Construct()
         {
             _camera = GetComponent<Camera>();
         }

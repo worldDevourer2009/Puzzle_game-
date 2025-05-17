@@ -20,7 +20,7 @@ namespace Core
 
         public DiContainer ResolveFor(GameObject obj)
         {
-            var sceneContexts = Object.FindObjectsOfType<SceneContext>();
+            var sceneContexts = Object.FindObjectsByType<SceneContext>(FindObjectsSortMode.None);
             
             foreach (var context in sceneContexts)
             {

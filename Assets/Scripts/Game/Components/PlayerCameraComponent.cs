@@ -9,36 +9,38 @@ namespace Game
     {
         private readonly InputConfig _inputConfig;
         private readonly ICameraManager _cameraManager;
-        private readonly ILevelManager _levelManager;
+        private readonly IPlayerInputHandler _playerInputHandler;
         private readonly ILogger _logger;
-        private readonly float _cameraSensitivity;
+        
+        private float _cameraSensitivity;
         private float _xRotation;
         private Camera _camera;
 
-        public PlayerCameraControllerComponent(InputConfig inputConfig, 
-            ICameraManager cameraManager, ILevelManager levelManager, ILogger logger)
+        public PlayerCameraControllerComponent(InputConfig inputConfig,
+            ICameraManager cameraManager, IPlayerInputHandler playerInputHandler, ILogger logger)
         {
             _xRotation = 0f;
             _inputConfig = inputConfig;
             _cameraManager = cameraManager;
-            _levelManager = levelManager;
+            _playerInputHandler = playerInputHandler;
             _logger = logger;
 
-            if (_inputConfig != null)
-            {
-                _cameraSensitivity = _inputConfig.GetSensitivity();
-            }
+            _playerInputHandler.OnLookAction += MoveCameraHandler;
+        }
 
-            _levelManager.OnPlayerCreated += () => InitCamera();
+        private void MoveCameraHandler(Vector3 dir)
+        {
+            MoveCamera(dir);
         }
 
         public UniTask InitCamera()
         {
-            var cam =  _cameraManager.GetMainCamera();
-
+            var cam = _cameraManager.GetPlayerCamera();
+            
             if (cam != null)
             {
                 _camera = cam;
+                _cameraSensitivity = _inputConfig.GetSensitivity();
             }
             
             return UniTask.CompletedTask;
@@ -49,11 +51,10 @@ namespace Game
             if (_camera == null)
             {
                 _logger.LogWarning("Camera is null, can't move it");
+                InitCamera();
                 return;
             }
-            
-            Debug.Log("Moving camera");
-            
+
             var verticalInput = Mathf.Lerp(0, direction.y, _cameraSensitivity * Time.deltaTime);
             _xRotation -= verticalInput;
             _xRotation = Mathf.Clamp(_xRotation, -clamp, clamp);

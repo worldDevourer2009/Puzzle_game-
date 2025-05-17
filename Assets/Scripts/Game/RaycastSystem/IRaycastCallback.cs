@@ -16,7 +16,9 @@ namespace Core
         public void OnHit(in RaycastHit hit)
         {
             if (hit.collider.TryGetComponent<IInteractable>(out var interactable))
+            {
                 Interactable = interactable;
+            }
         }
     }
 
@@ -29,12 +31,7 @@ namespace Core
         {
             if (hit.collider.gameObject.layer == targetLayer)
             { 
-                Debug.Log("Setting to true");
                 OnGroundHit?.Invoke();
-            }
-            else
-            {
-                Debug.Log("Setting to false");
             }
         }
     }

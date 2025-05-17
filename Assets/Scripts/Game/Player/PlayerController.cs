@@ -19,7 +19,6 @@ namespace Game
         private readonly IPlayerInputHandler _playerInputHandler;
         private readonly PlayerDefaultStatsConfig _defaultStatsConfig;
         
-        private PlayerCam _playerCam;
         private IPlayerFacade _playerFacade;
         
         private Action<Vector3, bool> _moveHandler;
@@ -46,7 +45,8 @@ namespace Game
 
         public void AwakeCustom()
         {
-            _levelManager.OnPlayerCreated += () => InitPlayerFacade().Forget();
+            _levelManager.OnPlayerCreated += () => InitPlayerFacade()
+                .Forget();
         }
 
         private UniTask InitPlayerFacade()
@@ -57,19 +57,9 @@ namespace Game
             {
                 _playerFacade = facade;
             }
-
-            var cam = _cameraManager.GetMainCamera();
-
-            if (cam.gameObject.TryGetComponent<PlayerCam>(out var playerCam))
-            {
-                _playerCam = playerCam;
-            }
-            else
-            {
-                return UniTask.CompletedTask;
-            }
             
-            _playerFacade.Initialize(_playerCam, _defaultStatsConfig.playerStats);
+            _playerFacade.Initialize(_defaultStatsConfig.playerStats);
+            
             InitInputSubs();
             
             return UniTask.CompletedTask;

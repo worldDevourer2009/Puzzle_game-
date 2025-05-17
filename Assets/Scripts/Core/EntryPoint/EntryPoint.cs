@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
 
-namespace Core.EntryPoint
+namespace Core
 {
     public class EntryPoint : IAwakable
     {
@@ -39,7 +39,7 @@ namespace Core.EntryPoint
         private void CreatePlayableGroup()
         {
             _asyncGroupLoader.CreateGroup(AsyncGroupType.Sequential, MainGroup, true);
-            _asyncGroupLoader.AddToGroup(MainGroup, () => _levelManager.InitPlayer());
+            _asyncGroupLoader.AddToGroup(MainGroup, () => _levelManager.LoadLevelByIndex(1));
         }
     }
 }

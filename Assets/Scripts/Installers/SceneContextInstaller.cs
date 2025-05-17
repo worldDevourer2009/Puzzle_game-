@@ -1,6 +1,5 @@
 using System;
 using Core;
-using Core.EntryPoint;
 using Game;
 using Zenject;
 
@@ -32,14 +31,10 @@ namespace Installers
                 .To<RotationComponent>()
                 .AsCached()
                 .NonLazy();
-            
+
             Container.Bind<ICameraController>()
                 .To<PlayerCameraControllerComponent>()
                 .AsCached()
-                .NonLazy();
-
-            Container.Bind<EntryPoint>()
-                .AsSingle()
                 .NonLazy();
             
             Container
@@ -51,22 +46,17 @@ namespace Installers
             Container.Bind(typeof(IPlayerInteractor), typeof(IDisposable))
                 .To<PlayerInteractor>()
                 .AsSingle()
-                .NonLazy();;
-            
-            Container.Bind(typeof(IPlayerInputHandler), typeof(IAwakable))
-                .To<PlayerInputHandler>()
-                .AsSingle()
                 .NonLazy();
 
             Container.Bind(typeof(IPlayerController), typeof(IDisposable))
                 .To<PlayerController>()
                 .AsSingle()
-                .NonLazy();;
+                .NonLazy();
 
             Container.Bind<Cube>()
                 .FromComponentsInHierarchy()
                 .AsCached()
-                .NonLazy();;
+                .NonLazy();
         }
     }
 }

@@ -14,11 +14,13 @@ namespace Core
     public sealed class KeyboardSource : IInputSource
     {
         private readonly InputConfig _inputConfig;
+        private readonly ICameraManager _cameraManager;
         private readonly IRaycaster _raycaster;
 
-        public KeyboardSource(InputConfig inputConfig, IRaycaster raycaster)
+        public KeyboardSource(InputConfig inputConfig, ICameraManager cameraManager, IRaycaster raycaster)
         {
             _inputConfig = inputConfig;
+            _cameraManager = cameraManager;
             _raycaster = raycaster;
         }
 
@@ -70,9 +72,9 @@ namespace Core
 
             if (Input.GetMouseButtonDown((int)button))
             {
-                if (Camera.main != null)
+                if (_cameraManager.GetMainCamera() != null)
                 {
-                    var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                    var ray = _cameraManager.GetMainCamera().ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
                     
                     var raycastParams = new RaycastParams
                     {

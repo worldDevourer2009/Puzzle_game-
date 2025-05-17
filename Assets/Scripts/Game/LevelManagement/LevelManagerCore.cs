@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Game;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace Core
 {
     public interface ILevelManager
     {
         event Action OnPlayerCreated;
+        event Action<int> OnLevelLoaded;
         IPlayerFacade PlayerEntity { get; }
 
-        UniTask InitPlayer();
+        UniTask InitPlayer(Vector3 position);
         UniTask SetEntity(ObjectType id, Vector3 pos = default, Transform parent = null);
         UniTask TriggerLevelAction();
         UniTask ResetLevel();
@@ -22,12 +25,16 @@ namespace Core
     public sealed class LevelManagerCore : ILevelManager
     {
         public event Action OnPlayerCreated;
+        public event Action<int> OnLevelLoaded;
         public IPlayerFacade PlayerEntity => _playerFacade;
 
         private readonly ICameraManager _cameraManager;
         private readonly IFactorySystem _factorySystem;
+        private readonly IAddressableLoader _addressablesLoader;
         private readonly ILogger _logger;
+        
         private readonly AddressablesIdsConfig _addressablesIdsConfig;
+        private readonly LevelsConfig _levelsConfig;
 
         private readonly Dictionary<string, List<IEntity>> _entities;
         private IPlayerFacade _playerFacade;
@@ -35,19 +42,23 @@ namespace Core
         public LevelManagerCore(IFactorySystem factorySystem,
             ICameraManager cameraManager,
             ILogger logger,
-            AddressablesIdsConfig addressablesIdsConfig)
+            IAddressableLoader addressablesLoader,
+            AddressablesIdsConfig addressablesIdsConfig,
+            LevelsConfig levelsConfig)
         {
             _factorySystem = factorySystem;
             _cameraManager = cameraManager;
             _logger = logger;
+            _addressablesLoader = addressablesLoader;
             _addressablesIdsConfig = addressablesIdsConfig;
+            _levelsConfig = levelsConfig;
 
             _entities = new Dictionary<string, List<IEntity>>();
         }
 
-        public async UniTask InitPlayer()
+        public async UniTask InitPlayer(Vector3 position)
         {
-            await SetEntity(ObjectType.Player, new Vector3(10f, 10f));
+            await SetEntity(ObjectType.Player, position);
 
             if (_playerFacade == null)
             {
@@ -57,6 +68,12 @@ namespace Core
 
             var playerEyesTransform = _playerFacade.EyesTransform;
 
+            if (playerEyesTransform == null)
+            {
+                _logger.LogWarning("Can't find player's eyes transform");
+            }
+            
+            await _cameraManager.CreateCamera(CustomCameraType.UiCamera, playerEyesTransform);
             await _cameraManager.SetActiveCamera(CustomCameraType.PlayerCamera, playerEyesTransform);
 
             OnPlayerCreated?.Invoke();
@@ -141,7 +158,24 @@ namespace Core
 
         public async UniTask LoadLevelByIndex(int index)
         {
-            //throw new NotImplementedException();
+            await _addressablesLoader.LoadScene("MainScene", LoadSceneMode.Single);
+            
+            var levelManager = Object.FindFirstObjectByType<LevelManager>();
+            
+            Vector3 pos;
+            
+            if (levelManager != null)
+            {
+                pos = levelManager.PlayerDefaultSpawnPoint.position;
+            }
+            else
+            {
+                pos = Vector3.zero;
+            }
+            
+            await InitPlayer(pos);
+            
+            OnLevelLoaded?.Invoke(index);
         }
     }
 }

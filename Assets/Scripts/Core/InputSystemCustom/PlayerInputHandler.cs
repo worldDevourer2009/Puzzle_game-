@@ -1,8 +1,7 @@
 using System;
-using Core;
 using UnityEngine;
 
-namespace Game
+namespace Core
 {
     public interface IPlayerInputHandler
     {

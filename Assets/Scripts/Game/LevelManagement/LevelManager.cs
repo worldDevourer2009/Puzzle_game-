@@ -4,7 +4,9 @@ namespace Game
 {
     public sealed class LevelManager : MonoBehaviour
     {
-        [SerializeField] private Transform a;
+        public Transform PlayerDefaultSpawnPoint => _playerDefaultSpawnPoint;
+        
+        [SerializeField] private Transform _playerDefaultSpawnPoint;
         [SerializeField] private Transform b;
         [SerializeField] private Transform c;
     }

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Cysharp.Threading.Tasks;
 using Game;
 using UnityEngine;
+using ZLinq;
 
 namespace Core
 {
@@ -11,7 +11,8 @@ namespace Core
     {
         PlayerCamera,
         UiCamera,
-        NotInGameCamera
+        NotInGameCamera,
+        Default
     }
 
     public interface ICameraManager
@@ -19,7 +20,10 @@ namespace Core
         UniTask<ICamera> CreateCamera(CustomCameraType type, Transform parent = null);
         UniTask SetActiveCamera(CustomCameraType type, Transform parent = null);
         Camera GetActiveCamera();
+        CustomCameraType GetActiveCameraType();
         Camera GetMainCamera();
+        Camera GetPlayerCamera();
+        Camera GetCameraByType(CustomCameraType type);
     }
 
     public class CameraManager : ICameraManager
@@ -30,12 +34,14 @@ namespace Core
         private readonly IFactorySystem _factorySystem;
         private readonly ILogger _logger;
         private readonly Dictionary<CustomCameraType, HashSet<ICamera>> _cameras;
+        private readonly Dictionary<CustomCameraType, Camera> _activeCameras;
 
         public CameraManager(IFactorySystem factorySystem, ILogger logger)
         {
             _factorySystem = factorySystem;
             _logger = logger;
             _cameras = new Dictionary<CustomCameraType, HashSet<ICamera>>();
+            _activeCameras = new Dictionary<CustomCameraType, Camera>();
         }
 
         public async UniTask<ICamera> CreateCamera(CustomCameraType type, Transform parent = null)
@@ -109,12 +115,14 @@ namespace Core
                     return;
                 }
 
-                var cam = camHashSet.FirstOrDefault(x => x != null);
+                var cam = camHashSet.AsValueEnumerable().FirstOrDefault(x => x != null);
 
                 if (cam != null && cam.Camera != null)
                 {
                     cam.Camera.enabled = true;
                     cam.Camera.tag = MainCameraTag;
+                    
+                    _activeCameras[customCameraType] = cam.Camera;
                 }
             }
 
@@ -159,12 +167,32 @@ namespace Core
 
         public Camera GetActiveCamera()
         {
-            return Camera.allCameras.FirstOrDefault(c => c.enabled);
+            return _activeCameras.Values.AsValueEnumerable().FirstOrDefault(c => c.enabled);
+        }
+
+        public CustomCameraType GetActiveCameraType()
+        {
+            foreach (var pair in _activeCameras.AsValueEnumerable().Where(pair => pair.Value != null && pair.Value.enabled))
+            {
+                return pair.Key;
+            }
+
+            return CustomCameraType.Default;
         }
 
         public Camera GetMainCamera()
         {
-            return Camera.allCameras.FirstOrDefault(c => c.CompareTag(MainCameraTag));
+            return _activeCameras.Values.AsValueEnumerable().FirstOrDefault(c => c.CompareTag(MainCameraTag));
+        }
+
+        public Camera GetPlayerCamera()
+        {
+            return _activeCameras.GetValueOrDefault(CustomCameraType.PlayerCamera);
+        }
+
+        public Camera GetCameraByType(CustomCameraType type)
+        {
+            return _activeCameras.GetValueOrDefault(type);
         }
     }
 }

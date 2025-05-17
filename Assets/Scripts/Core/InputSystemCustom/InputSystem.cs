@@ -28,6 +28,7 @@ namespace Core
     public class InputSystem : IInput, IUpdatable, IAwakable
     {
         private readonly IGameLoop _gameLoop;
+        private readonly ICameraManager _cameraManager;
         private readonly IInputSource _inputSource;
         private readonly ILookSource _lookSource;
         private readonly ILogger _logger;
@@ -39,12 +40,13 @@ namespace Core
         public event Action OnUseAction;
         public event Action<Vector3> OnLookAction;
 
-        public InputSystem(IGameLoop gameLoop, ILookSource lookSource, IInputSource inputSource, ILogger logger)
+        public InputSystem(IGameLoop gameLoop, ILookSource lookSource, IInputSource inputSource, ILogger logger, ICameraManager cameraManager)
         {
             _gameLoop = gameLoop;
             _lookSource = lookSource;
             _inputSource = inputSource;
             _logger = logger;
+            _cameraManager = cameraManager;
             
             if (_gameLoop != null)
             {
@@ -64,6 +66,20 @@ namespace Core
             HandleJump();
             HandleUse();
             HandleClick();
+            HandleTest();
+        }
+
+        private async void HandleTest()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                await _cameraManager.SetActiveCamera(CustomCameraType.PlayerCamera);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                await _cameraManager.SetActiveCamera(CustomCameraType.UiCamera);
+            }
         }
 
         private void HandleLook()

@@ -49,9 +49,9 @@ namespace Game
             _core.OnIdle += _idleHandler;
         }
 
-        public void Initialize(PlayerCam playerCam, PlayerStats stats)
+        public void Initialize(PlayerStats stats)
         {
-            _core.Initialize(this, _rigidbody, playerCam, stats.Speed, stats.RunSpeed, stats.JumpForce, stats.GroundRaycastParams);
+            _core.Initialize(this, _rigidbody, stats.Speed, stats.RunSpeed, stats.JumpForce, stats.GroundRaycastParams);
             _animation.InitAnimation(this);
         }
 

@@ -1,4 +1,5 @@
 using Core;
+using Game;
 using Zenject;
 
 namespace Installers
@@ -39,6 +40,10 @@ namespace Installers
                 .To<RaycasterSystem>()
                 .AsSingle();
             
+            Container.Bind<EntryPoint>()
+                .AsSingle()
+                .NonLazy();
+            
             Container
                 .Bind<ICameraManager>()
                 .To<CameraManager>()
@@ -65,6 +70,11 @@ namespace Installers
 
             Container.Bind<IInput>()
                 .To<InputSystem>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind(typeof(IPlayerInputHandler), typeof(IAwakable))
+                .To<PlayerInputHandler>()
                 .AsSingle()
                 .NonLazy();
 
