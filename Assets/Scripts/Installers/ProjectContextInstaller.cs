@@ -7,6 +7,11 @@ namespace Installers
     {
         public override void InstallBindings()
         {
+            Container.Bind<IContextResolver>()
+                .To<ContextResolver>()
+                .AsSingle()
+                .NonLazy();
+            
             Container.Bind<IJsonSerializer>()
                 .To<JsonSerializer>()
                 .AsSingle()
@@ -32,6 +37,11 @@ namespace Installers
             Container
                 .Bind<IRaycaster>()
                 .To<RaycasterSystem>()
+                .AsSingle();
+            
+            Container
+                .Bind<ICameraManager>()
+                .To<CameraManager>()
                 .AsSingle();
 
             Container.Bind<ILogger>()
@@ -72,10 +82,10 @@ namespace Installers
                 .To<InteractorCore>()
                 .AsSingle();
 
-            // Container.Bind<ILevelManager>()
-            //     .To<LevelManagerCore>()
-            //     .AsSingle()
-            //     .NonLazy();
+            Container.Bind<ILevelManager>()
+                .To<LevelManagerCore>()
+                .AsSingle()
+                .NonLazy();
         }
 
         private void BindConfigs()

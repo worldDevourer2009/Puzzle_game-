@@ -12,7 +12,7 @@ namespace Game
         event Action OnIdle;
         event Action OnFall;
 
-        void Initialize(IEntity entity, Rigidbody rb, Cam cam, float speed, float runSpeed, float jumpForce, RaycastParams groundDistance);
+        void Initialize(IEntity entity, Rigidbody rb, PlayerCam playerCam, float speed, float runSpeed, float jumpForce, RaycastParams groundDistance);
         void Move(Vector3 direction, bool isRunning = false);
         void Rotate(Vector3 direction);
         void Jump();
@@ -39,7 +39,7 @@ namespace Game
         private IEntity _entity;
         private GameObject _gameObject;
         private Rigidbody _rb;
-        private Cam _cam;
+        private PlayerCam _playerCam;
         
         private float _speed;
         private float _runSpeed;
@@ -60,7 +60,7 @@ namespace Game
             _groundable = groundable;
         }
 
-        public void Initialize(IEntity entity, Rigidbody rb, Cam cam, float speed, float runSpeed, float jumpForce, 
+        public void Initialize(IEntity entity, Rigidbody rb, PlayerCam playerCam, float speed, float runSpeed, float jumpForce, 
             RaycastParams groundDistance)
         {
             _entity = entity;
@@ -83,13 +83,14 @@ namespace Game
                 _rb = rb;
             }
             
-            if (cam == null)
+            if (playerCam == null)
             {
                 _logger.LogError("Cam is null");
             }
             else
             {
-                _cam = cam;
+                _playerCam = playerCam;
+                
             }
             
             _speed = speed;
@@ -106,7 +107,7 @@ namespace Game
             }
             
             _isGrounded = _groundable.IsGrounded(_entity, _groundParams);
-            var moveDir = _cam.GetCamForwardDirection(direction);
+            var moveDir = _playerCam.GetCamForwardDirection(direction);
             _moveable.Move(_rb.gameObject, !isRunning || !_isGrounded ? _speed : _runSpeed, moveDir);
             OnMove?.Invoke(direction, isRunning);
         }

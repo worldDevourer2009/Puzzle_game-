@@ -7,6 +7,7 @@ namespace Game
 {
     public sealed class PlayerFacade : MonoBehaviour, IPlayerFacade
     {
+        public Transform EyesTransform => _eyesTransform;
         public GameObject EntityGA => gameObject;
         public Transform RightHandTransform => _rightHandTransform;
         public Transform LeftHandTransform => _leftHandTransform;
@@ -20,6 +21,7 @@ namespace Game
         [SerializeField] private Transform _rightHandTransform;
         [SerializeField] private Transform _leftHandTransform;
         [SerializeField] private Transform _centerBottomTransform;
+        [SerializeField] private Transform _eyesTransform;
         [SerializeField] private Rigidbody _rigidbody;
         
         private IPlayerCore _core;
@@ -47,9 +49,9 @@ namespace Game
             _core.OnIdle += _idleHandler;
         }
 
-        public void Initialize(Cam cam, PlayerStats stats)
+        public void Initialize(PlayerCam playerCam, PlayerStats stats)
         {
-            _core.Initialize(this, _rigidbody, cam, stats.Speed, stats.RunSpeed, stats.JumpForce, stats.GroundRaycastParams);
+            _core.Initialize(this, _rigidbody, playerCam, stats.Speed, stats.RunSpeed, stats.JumpForce, stats.GroundRaycastParams);
             _animation.InitAnimation(this);
         }
 

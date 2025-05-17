@@ -20,56 +20,53 @@ namespace Installers
             
             Container.Bind<IJumpable>()
                 .To<JumpComponent>()
-                .AsCached();
+                .AsCached()
+                .NonLazy();
             
             Container.Bind<IGroundable>()
                 .To<GroundableComponent>()
-                .AsCached();
+                .AsCached()
+                .NonLazy();
             
             Container.Bind<IRotatable>()
                 .To<RotationComponent>()
-                .AsCached();
+                .AsCached()
+                .NonLazy();
             
-            Container.Bind<ICamera>()
-                .To<CameraComponent>()
-                .AsCached();
+            Container.Bind<ICameraController>()
+                .To<PlayerCameraControllerComponent>()
+                .AsCached()
+                .NonLazy();
 
             Container.Bind<EntryPoint>()
                 .AsSingle()
                 .NonLazy();
-
-            Container.BindInterfacesAndSelfTo<PlayerFacade>()
-                .FromComponentInHierarchy()
-                .AsCached();
-
+            
             Container
                 .Bind(typeof(IPlayerCore), typeof(IDisposable))
                 .To<PlayerCore>()
-                .AsCached()
+                .AsSingle()
                 .NonLazy();
             
             Container.Bind(typeof(IPlayerInteractor), typeof(IDisposable))
                 .To<PlayerInteractor>()
-                .AsCached()
-                .NonLazy();
+                .AsSingle()
+                .NonLazy();;
             
             Container.Bind(typeof(IPlayerInputHandler), typeof(IAwakable))
                 .To<PlayerInputHandler>()
-                .AsCached()
+                .AsSingle()
                 .NonLazy();
-            
+
             Container.Bind(typeof(IPlayerController), typeof(IDisposable))
                 .To<PlayerController>()
-                .AsCached()
-                .NonLazy();
-            
-            Container.Bind<Cam>()
-                .FromComponentInHierarchy()
-                .AsSingle();
+                .AsSingle()
+                .NonLazy();;
 
             Container.Bind<Cube>()
                 .FromComponentsInHierarchy()
-                .AsCached();
+                .AsCached()
+                .NonLazy();;
         }
     }
 }

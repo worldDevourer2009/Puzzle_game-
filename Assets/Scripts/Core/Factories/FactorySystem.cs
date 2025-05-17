@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Unity.Collections;
 using UnityEngine;
-using Zenject;
 
 namespace Core
 {
@@ -19,9 +18,9 @@ namespace Core
     public class FactorySystem : IFactorySystem
     {
         private readonly IPoolSystem _poolSystem;
-        private readonly DiContainer _diContainer;
+        private readonly IContextResolver _diContainer;
 
-        public FactorySystem(IPoolSystem poolSystem, DiContainer diContainer)
+        public FactorySystem(IPoolSystem poolSystem, IContextResolver diContainer)
         {
             _poolSystem = poolSystem;
             _diContainer = diContainer;
@@ -31,7 +30,8 @@ namespace Core
         {
             var asyncOp = _poolSystem.GetObject(id);
             var result = await asyncOp;
-            _diContainer.Inject(result);
+            var context = _diContainer.ResolveFor(result);
+            context.InjectGameObject(result);
             return result;
         }
 
@@ -40,7 +40,8 @@ namespace Core
             var asyncOp = _poolSystem.GetObject(id);
             var result = await asyncOp;
             result.transform.position = position;
-            _diContainer.Inject(result);
+            var context = _diContainer.ResolveFor(result);
+            context.InjectGameObject(result);
             return result;
         }
 
@@ -49,7 +50,8 @@ namespace Core
             var asyncOp = _poolSystem.GetObject(id);
             var result = await asyncOp;
             result.transform.SetParent(parent);
-            _diContainer.Inject(result);
+            var context = _diContainer.ResolveFor(result);
+            context.InjectGameObject(result);
             return result;
         }
 
@@ -59,7 +61,8 @@ namespace Core
             var result = await asyncOp;
             result.transform.SetParent(parent);
             result.transform.position = position;
-            _diContainer.Inject(result);
+            var context = _diContainer.ResolveFor(result);
+            context.InjectGameObject(result);
             return result;
         }
 
@@ -97,7 +100,8 @@ namespace Core
 
         public void Inject<T>(T objToInject)
         {
-            _diContainer.Inject(objToInject);
+            var context = _diContainer.ResolveFor(objToInject);
+            context.Inject(objToInject);
         }
     }
     

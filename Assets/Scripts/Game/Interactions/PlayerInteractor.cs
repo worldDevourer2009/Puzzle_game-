@@ -1,5 +1,6 @@
 using System;
 using Core;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using ILogger = Core.ILogger;
 
@@ -21,7 +22,9 @@ namespace Game
         private readonly IInput _input;
         private readonly IGameLoop _gameLoop;
         private readonly IRaycaster _raycaster;
+        private readonly ILevelManager _levelManager;
         private readonly PlayerInteractionConfig _playerInteractionConfig;
+        private readonly ICameraManager _cameraManager;
         private readonly ILogger _logger;
         private readonly IInteractorCore _interactorCore;
 
@@ -33,7 +36,7 @@ namespace Game
         private InteractableCallback _callback;
 
         public PlayerInteractor(IInteractorCore interactorCore, IInput input, IGameLoop gameLoop,
-            IRaycaster raycaster, PlayerInteractionConfig playerInteractionConfig, ILogger logger)
+            IRaycaster raycaster, PlayerInteractionConfig playerInteractionConfig, ILogger logger, ILevelManager levelManager)
         {
             _interactorCore = interactorCore;
             _input = input;
@@ -41,6 +44,7 @@ namespace Game
             _raycaster = raycaster;
             _playerInteractionConfig = playerInteractionConfig;
             _logger = logger;
+            _levelManager = levelManager;
 
             _filter = new InteractableFilter();
             _callback = new InteractableCallback();
@@ -57,10 +61,15 @@ namespace Game
             _input.OnClickAction += HandleInput;
             _interactorCore.OnPoint += HandlePoint;
             _interactorCore.OnInteract += HandleInteract;
+            _levelManager.OnPlayerCreated += InitPlayerCamera;
             
-            _mainCamera = Camera.main;
             _interactionMask = _playerInteractionConfig.PlayerInteraction.LayerMask;
             _interactonDistance = _playerInteractionConfig.PlayerInteraction.InteractionDistance;
+        }
+
+        private void InitPlayerCamera()
+        {
+            _mainCamera = Camera.main;
         }
 
         private void HandleInteract(IInteractable candidate)
@@ -85,6 +94,11 @@ namespace Game
 
         private void CheckInteraction()
         {
+            if (_mainCamera == null || !_mainCamera.enabled)
+            {
+                return;
+            }
+            
             var ray = _mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
             
             var raycastParams = new RaycastParams
@@ -114,6 +128,7 @@ namespace Game
             _input.OnClickAction -= HandleInput;
             _interactorCore.OnPoint -= HandlePoint;
             _interactorCore.OnInteract -= HandleInteract;
+            _levelManager.OnPlayerCreated -= InitPlayerCamera;
             
             _gameLoop?.RemoveFromLoop(GameLoopType.Awake, this);
             _gameLoop?.RemoveFromLoop(GameLoopType.Update, this);

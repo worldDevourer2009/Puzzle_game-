@@ -10,6 +10,7 @@ namespace Core
     {
         UniTask<T> LoadResource<T>(string id);
         UniTask<GameObject> Instantiate(string id);
+        UniTask<T> Instantiate<T>(string id) where T : Component;
         UniTask<SceneInstance> LoadScene(string id, LoadSceneMode loadSceneMode = LoadSceneMode.Additive);
         void UnloadResource<T>(T asset);
         UniTask UnloadScene(SceneInstance scene);
@@ -46,6 +47,28 @@ namespace Core
             {
                 var result = await asyncOp.ToUniTask();
                 return result;
+            }
+            catch
+            {
+                _logger.LogWarning($"Can't load asset at path {id}");
+                return default;
+            }
+        }
+
+        public async UniTask<T> Instantiate<T>(string id) where T : Component
+        {
+            var asyncOp = Addressables.InstantiateAsync(id);
+            try
+            {
+                var result = await asyncOp.ToUniTask();
+                if (result.TryGetComponent(out T comp))
+                {
+                    return comp;
+                }
+                else
+                {
+                    return default;
+                }
             }
             catch
             {

@@ -44,7 +44,7 @@ namespace Core
         void LateUpdateCustom();
     }
 
-    public class GameLoop : IGameLoop, ITickable, ILateTickable, IFixedTickable, IInitializable
+    public class GameLoop : IGameLoop, ITickable, ILateTickable, IFixedTickable, IInitializable, IDisposable
     {
         public event Action OnAfterInit;
         
@@ -254,5 +254,16 @@ namespace Core
 
         public void Initialize() =>
             Awake();
+
+        public void Dispose()
+        {
+            foreach (var awakable in _awakeDictionary.Values)
+            {
+                if (awakable is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
+        }
     }
 }

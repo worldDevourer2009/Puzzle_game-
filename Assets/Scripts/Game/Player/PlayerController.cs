@@ -1,5 +1,6 @@
 using System;
 using Core;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Game
@@ -13,24 +14,28 @@ namespace Game
     public sealed class PlayerController : IPlayerController, IAwakable, IDisposable
     {
         private readonly IGameLoop _gameLoop;
-        private readonly IPlayerFacade _playerFacade;
+        private readonly ILevelManager _levelManager;
+        private readonly ICameraManager _cameraManager;
         private readonly IPlayerInputHandler _playerInputHandler;
         private readonly PlayerDefaultStatsConfig _defaultStatsConfig;
-        private readonly Cam _cam;
-
+        
+        private PlayerCam _playerCam;
+        private IPlayerFacade _playerFacade;
+        
         private Action<Vector3, bool> _moveHandler;
         private Action<Vector3> _lookHandler;
         private Action _useHandler;
         private Action _jumpHandler;
         private Action _idleHandler;
 
-        public PlayerController(IGameLoop gameLoop, IPlayerFacade playerFacade, IPlayerInputHandler playerInputHandler,
-            Cam cam, PlayerDefaultStatsConfig defaultStatsConfig)
+        public PlayerController(IGameLoop gameLoop, ILevelManager levelManager, 
+            ICameraManager cameraManager, IPlayerInputHandler playerInputHandler, 
+            PlayerDefaultStatsConfig defaultStatsConfig)
         {
             _gameLoop = gameLoop;
-            _playerFacade = playerFacade;
             _playerInputHandler = playerInputHandler;
-            _cam = cam;
+            _cameraManager = cameraManager;
+            _levelManager = levelManager;
             _defaultStatsConfig = defaultStatsConfig;
 
             if (_gameLoop != null)
@@ -41,8 +46,33 @@ namespace Game
 
         public void AwakeCustom()
         {
-            _playerFacade.Initialize(_cam, _defaultStatsConfig.playerStats);
+            _levelManager.OnPlayerCreated += () => InitPlayerFacade().Forget();
+        }
+
+        private UniTask InitPlayerFacade()
+        {
+            var facade = _levelManager.PlayerEntity;
+            
+            if (facade != null)
+            {
+                _playerFacade = facade;
+            }
+
+            var cam = _cameraManager.GetMainCamera();
+
+            if (cam.gameObject.TryGetComponent<PlayerCam>(out var playerCam))
+            {
+                _playerCam = playerCam;
+            }
+            else
+            {
+                return UniTask.CompletedTask;
+            }
+            
+            _playerFacade.Initialize(_playerCam, _defaultStatsConfig.playerStats);
             InitInputSubs();
+            
+            return UniTask.CompletedTask;
         }
 
         public void InitInputSubs()
