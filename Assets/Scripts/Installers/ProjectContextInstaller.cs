@@ -101,13 +101,43 @@ namespace Installers
                 .AsSingle()
                 .NonLazy();
             
-            Container.Bind<ICommandInvoker>()
-                .To<CommandInvoker>()
+            Container.Bind<ISceneLoader>()
+                .To<SceneLoader>()
+                .AsSingle()
+                .NonLazy();
+
+            BindStates();
+        }
+
+        private void BindStates()
+        {
+            Container.Bind<IState>()
+                .To<MainMenuState>()
+                .AsTransient()
+                .NonLazy();
+            
+            Container.Bind<IState>()
+                .To<NewGameState>()
+                .AsTransient()
+                .NonLazy();
+            
+            Container.Bind<IState>()
+                .To<PauseState>()
+                .AsTransient()
+                .NonLazy();
+            
+            Container.Bind<IState>()
+                .To<ResumeState>()
+                .AsTransient()
+                .NonLazy();
+
+            Container.Bind<IGameStateFactory>()
+                .To<GameStateFactory>()
                 .AsSingle()
                 .NonLazy();
             
-            Container.Bind<ISceneLoader>()
-                .To<SceneLoader>()
+            Container.Bind<IGameStateManager>()
+                .To<GameStateManager>()
                 .AsSingle()
                 .NonLazy();
         }

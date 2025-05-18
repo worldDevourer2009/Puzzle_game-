@@ -46,12 +46,11 @@ namespace Game
             return UniTask.CompletedTask;
         }
 
-        public void MoveCamera(Vector3 direction, float clamp = 90)
+        public async void MoveCamera(Vector3 direction, float clamp = 90)
         {
             if (_camera == null)
             {
-                _logger.LogWarning("Camera is null, can't move it");
-                InitCamera();
+                await InitCamera();
                 return;
             }
 

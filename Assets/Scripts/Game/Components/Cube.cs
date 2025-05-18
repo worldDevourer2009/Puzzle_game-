@@ -24,9 +24,9 @@ namespace Game
                 Debug.Log("Player is null");
                 return;
             }
-
+            
             var rightHand = player.RightHandTransform;
-
+            
             if (rightHand == null)
             {
                 Debug.Log("Right hand is null");

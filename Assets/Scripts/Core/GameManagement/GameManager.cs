@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using ZLinq;
 using Cysharp.Threading.Tasks;
 using ModestTree;
@@ -24,12 +25,13 @@ namespace Core
         private readonly ICameraManager _cameraManager;
         private readonly LevelsConfig _levelsConfig;
         private readonly IGameLoop _gameLoop;
+        private readonly ILogger _logger;
 
         private string _lastLoadedLevel;
 
         public GameManager(ILevelCommandsFactory levelCommandsFactory, 
             ISceneCommandsFactory sceneCommandsFactory, ScenesConfig scenesConfig, 
-            ICameraManager cameraManager, LevelsConfig levelsConfig, IGameLoop gameLoop)
+            ICameraManager cameraManager, LevelsConfig levelsConfig, IGameLoop gameLoop, ILogger logger)
         {
             _levelCommandsFactory = levelCommandsFactory;
             _sceneCommandsFactory = sceneCommandsFactory;
@@ -37,11 +39,12 @@ namespace Core
             _cameraManager = cameraManager;
             _levelsConfig = levelsConfig;
             _gameLoop = gameLoop;
+            _logger = logger;
         }
 
         public async UniTask LaunchGame()
         {
-            var firstScene = _scenesConfig.Scenes.AsValueEnumerable().FirstOrDefault(x => !string.IsNullOrEmpty(x));
+            var firstScene = _scenesConfig.Scenes.AsValueEnumerable().FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
 
             if (firstScene == null || firstScene.IsEmpty())
             {
@@ -62,13 +65,7 @@ namespace Core
         public async UniTask StartNewGame()
         {
             var firstLevelName = _levelsConfig.LevelData.AsValueEnumerable().FirstOrDefault();
-            var command = await _levelCommandsFactory.CreateCommand(firstLevelName.LevelName);
-            
-            if (command != null)
-            {
-                await command.ExecuteAsync();
-                _lastLoadedLevel = firstLevelName.LevelName;
-            }
+            await LoadLevelHelper(firstLevelName);
         }
 
         public async UniTask LoadLevel()
@@ -81,12 +78,27 @@ namespace Core
                 return;
             }
             
-            var command = await _levelCommandsFactory.CreateCommand(levelName.LevelName);
+            await LoadLevelHelper(levelName);
+        }
+
+        private async UniTask LoadLevelHelper(LevelData levelName)
+        {
+            if (string.IsNullOrWhiteSpace(levelName.LevelName))
+            {
+                _logger.LogWarning("Can't get level name");
+                return;
+            }
             
+            var command = await _levelCommandsFactory.CreateCommand(levelName.LevelName);
+
             if (command != null)
             {
                 await command.ExecuteAsync();
                 _lastLoadedLevel = levelName.LevelName;
+            }
+            else
+            {
+                _logger.LogWarning($"Can't create command for level with name {levelName.LevelName}");
             }
         }
 

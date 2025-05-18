@@ -1,5 +1,6 @@
 using System;
 using Game;
+using Ui;
 using Zenject;
 
 namespace Installers
@@ -10,10 +11,6 @@ namespace Installers
         {
             Container.Bind<IMoveable>()
                 .To<MoveComponent>()
-                .AsCached();
-            
-            Container.Bind(typeof(IAnimation), typeof(IDisposable))
-                .To<AnimationController>()
                 .AsCached();
             
             Container.Bind<IJumpable>()
@@ -31,10 +28,35 @@ namespace Installers
                 .AsCached()
                 .NonLazy();
 
-            Container.Bind<ICameraController>()
-                .To<PlayerCameraControllerComponent>()
+            Container.Bind<Cube>()
+                .FromComponentsInHierarchy()
                 .AsCached()
                 .NonLazy();
+
+            BindPlayers();
+            BindMVP();
+        }
+
+        private void BindMVP()
+        {
+            Container.Bind<PauseResumeModel>()
+                .AsSingle();
+
+            Container.Bind<IPauseResumeView>()
+                .FromComponentsInHierarchy()
+                .AsCached()
+                .NonLazy();
+
+            Container.Bind<PauseResumeController>()
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindPlayers()
+        {
+            Container.Bind<ICameraController>()
+                .To<PlayerCameraControllerComponent>()
+                .AsCached();
             
             Container
                 .Bind(typeof(IPlayerCore), typeof(IDisposable))
@@ -43,18 +65,15 @@ namespace Installers
             
             Container.Bind(typeof(IPlayerInteractor), typeof(IDisposable))
                 .To<PlayerInteractor>()
-                .AsSingle()
-                .NonLazy();
+                .AsSingle();
 
             Container.Bind(typeof(IPlayerController), typeof(IDisposable))
                 .To<PlayerController>()
-                .AsSingle()
-                .NonLazy();
-
-            Container.Bind<Cube>()
-                .FromComponentsInHierarchy()
-                .AsCached()
-                .NonLazy();
+                .AsSingle();
+            
+            Container.Bind(typeof(IAnimation), typeof(IDisposable))
+                .To<AnimationController>()
+                .AsCached();
         }
     }
 }

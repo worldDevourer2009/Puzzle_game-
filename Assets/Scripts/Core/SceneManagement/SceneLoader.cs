@@ -26,8 +26,7 @@ namespace Core
 
         public async UniTask LoadSceneById(string id, LoadSceneMode loadSceneMode = LoadSceneMode.Additive)
         {
-            var scene = await _addressableLoader.LoadScene(id, loadSceneMode);
-            _sceneInstances.TryAdd(id, scene);
+            await _addressableLoader.LoadScene(id, loadSceneMode);
         }
 
         public async UniTask UnloadSceneById(string id)

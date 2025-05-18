@@ -120,15 +120,7 @@ namespace Game
                 return;
             }
 
-            var baseSpeed = isRunning && _isGrounded
-                ? _runSpeed
-                : _speed;
-
-            var finalSpeed = _isGrounded
-                ? baseSpeed
-                : baseSpeed / 3f;
-            
-            _moveable.Move(_rb.gameObject, finalSpeed, moveDir);
+            _moveable.Move(_rb.gameObject, !isRunning || !_isGrounded ? _speed : _runSpeed, moveDir);
             OnMove?.Invoke(direction, isRunning);
         }
 
@@ -148,7 +140,7 @@ namespace Game
                 {
                     return true;
                 }
-
+                
                 _playerCam = cam;
                 moveDir = _playerCam.GetCamForwardDirection(direction);
             }

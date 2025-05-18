@@ -27,16 +27,23 @@ namespace Game
         private IPlayerCore _core;
         private IAnimation _animation;
 
+        //to make injections lazy
+        private ICameraController _cameraController;
+        private IPlayerInteractor _playerInteractor;
+
         private Action<Vector3, bool> _moveHandler;
         private Action _useHandler;
         private Action _jumpHandler;
         private Action _idleHandler;
 
         [Inject]
-        public void Construct(IPlayerCore core, IAnimation animation)
+        public void Construct(IPlayerCore core, IAnimation animation, 
+            ICameraController cameraController, IPlayerInteractor playerInteractor)
         {
             _core = core;
             _animation = animation;
+            _cameraController = cameraController;
+            _playerInteractor = playerInteractor;
             
             _moveHandler = (dir, run) => OnMove?.Invoke(dir, run);
             _useHandler = () => OnUse?.Invoke();
@@ -47,8 +54,6 @@ namespace Game
             _core.OnJump += _jumpHandler;
             _core.OnUse += _useHandler;
             _core.OnIdle += _idleHandler;
-            
-            Debug.LogWarning("Injecting player facade");
         }
 
         public void Initialize(PlayerStats stats)

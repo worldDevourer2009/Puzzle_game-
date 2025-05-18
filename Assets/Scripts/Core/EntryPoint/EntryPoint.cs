@@ -5,22 +5,20 @@ namespace Core
     public class EntryPoint : IAwakable
     {
         private readonly IAsyncGroupLoader _asyncGroupLoader;
-        private readonly ILevelManager _levelManager;
-        private readonly IGameManager _gameManager;
+        private readonly IGameStateManager _gameStateManager;
         private readonly ILogger _logger;
         private readonly IGameLoop _gameLoop;
 
         private const string MainGroup = "MainGroup";
         private string parrallel;
 
-        public EntryPoint(IAsyncGroupLoader asyncGroupLoader, ILevelManager levelManager, IGameManager gameManager, ILogger logger, IGameLoop gameLoop)
+        public EntryPoint(IAsyncGroupLoader asyncGroupLoader, IGameStateManager gameStateManager, ILogger logger, IGameLoop gameLoop)
         {
             _asyncGroupLoader = asyncGroupLoader;
-            _levelManager = levelManager;
-            _gameManager = gameManager;
+            _gameStateManager = gameStateManager;
             _logger = logger;
             _gameLoop = gameLoop;
-
+            
             if (_gameLoop != null)
             {
                 _gameLoop.AddToGameLoop(GameLoopType.Awake, this);
@@ -41,7 +39,8 @@ namespace Core
         private void CreatePlayableGroup()
         {
             _asyncGroupLoader.CreateGroup(AsyncGroupType.Sequential, MainGroup, true);
-            _asyncGroupLoader.AddToGroup(MainGroup, () => _gameManager.LaunchGame());
+            _asyncGroupLoader.AddToGroup(MainGroup, () => _gameStateManager.InitStates());
+            _asyncGroupLoader.AddToGroup(MainGroup, () => _gameStateManager.SetState(GameState.MainMenu));
         }
     }
 }

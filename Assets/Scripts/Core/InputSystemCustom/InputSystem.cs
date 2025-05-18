@@ -12,7 +12,8 @@ namespace Core
         Jump,
         Use,
         Click,
-        Run
+        Run,
+        Pause
     }
     
     public interface IInput
@@ -23,6 +24,8 @@ namespace Core
         event Action OnNoneAction;
         event Action OnJumpAction;
         event Action OnUseAction;
+        event Action OnPauseClicked;
+        void EnableInput(bool enable);
     }
 
     public class InputSystem : IInput, IUpdatable, IAwakable
@@ -38,6 +41,15 @@ namespace Core
         public event Action OnNoneAction;
         public event Action OnJumpAction;
         public event Action OnUseAction;
+        public event Action OnPauseClicked;
+
+        private bool _enabledInput;
+        
+        public void EnableInput(bool enable)
+        {
+            _enabledInput = enable;
+        }
+
         public event Action<Vector3> OnLookAction;
 
         public InputSystem(IGameLoop gameLoop, ILookSource lookSource, IInputSource inputSource, ILogger logger, ICameraManager cameraManager)
@@ -57,16 +69,35 @@ namespace Core
         
         public void AwakeCustom()
         {
+            _enabledInput = true;
         }
 
         public void UpdateCustom()
         {
+            if (!_enabledInput)
+            {
+                return;
+            }
+            
             HandleMove();
             HandleLook();
             HandleJump();
             HandleUse();
             HandleClick();
             HandleTest();
+            HandlePause();
+        }
+
+        private void HandlePause()
+        {
+            var isPauseClicked = _inputSource.IsPausePressed();
+
+            if (!isPauseClicked)
+            {
+                return;
+            }
+            
+            OnPauseClicked?.Invoke();
         }
 
         private async void HandleTest()
