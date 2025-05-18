@@ -30,7 +30,7 @@ namespace Core
             {
                 if (!_states.TryAdd(state.Name, state))
                 {
-                    _logger.LogError($"Duplicate state registration detected: {state.Name}");
+                    _logger.LogError($"Duplicate state {state.Name}");
                 }
             }
         }
