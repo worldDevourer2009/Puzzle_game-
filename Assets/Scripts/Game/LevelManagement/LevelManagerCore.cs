@@ -158,7 +158,7 @@ namespace Core
 
         public async UniTask LoadLevelByName(string name)
         {
-            await _sceneLoader.LoadSceneById(name, LoadSceneMode.Single);
+            await _sceneLoader.LoadSceneById(name);
             
             var levelManager = Object.FindFirstObjectByType<LevelManager>();
             

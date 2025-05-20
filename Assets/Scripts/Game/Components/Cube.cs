@@ -1,3 +1,4 @@
+using Core;
 using UnityEngine;
 using Zenject;
 
@@ -6,18 +7,19 @@ namespace Game
     public class Cube : InteractableComponent
     {
         [SerializeField] private int _index;
-        private IPlayerCore _playerCore;
+        private ILevelManager _levelManager;
+        private IPlayerFacade _playerFacade;
         
         [Inject]
-        public void Construct(IPlayerCore playerCore)
+        public void Construct(ILevelManager levelManager)
         {
-            _playerCore = playerCore;
+            _levelManager = levelManager;
         }
-        
+
         public override void Interact()
         {
             Debug.Log($"Interacting with index {_index}");
-            var player = _playerCore.GetPlayer();
+            var player = _levelManager.PlayerEntity;
 
             if (player == null)
             {

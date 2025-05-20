@@ -3,7 +3,6 @@ using Core;
 using R3;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
-using UnityEngine;
 
 namespace Ui
 {
@@ -15,6 +14,8 @@ namespace Ui
         
         private readonly ReactiveProperty<GameState> _currentState;
         private readonly CompositeDisposable _compositeDisposable;
+
+        private bool _isPaused;
 
         public PauseResumeModel(IGameStateManager gameStateManager, IInput input)
         {
@@ -33,9 +34,7 @@ namespace Ui
 
         private void HandleClick()
         {
-            var currentState = _gameStateManager.CurrentState;
-            
-            if (currentState == GameState.Pause)
+            if (_isPaused)
             {
                 OnGameStateChanged(GameState.Resume).Forget();
             }
@@ -51,9 +50,11 @@ namespace Ui
             {
                 case GameState.Pause:
                     await Pause();
+                    _isPaused = true;
                     break;
                 case GameState.Resume:
                     await Resume();
+                    _isPaused = false;
                     break;
             }
         }
@@ -64,6 +65,11 @@ namespace Ui
             _currentState.Value = GameState.Pause;
         }
 
+        public async UniTask GoToMainMenu()
+        {
+            await _gameStateManager.FireTrigger(GameTrigger.QuitToMenu);
+        }
+
         public async UniTask Resume()
         {
             await _gameStateManager.FireTrigger(GameTrigger.Resume);
@@ -72,6 +78,7 @@ namespace Ui
 
         public void Dispose()
         {
+            _input.OnPauseClicked -= HandleClick;
             _compositeDisposable.Dispose();
         }
     }

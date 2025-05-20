@@ -1,3 +1,4 @@
+using System;
 using Core;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -5,7 +6,7 @@ using ILogger = Core.ILogger;
 
 namespace Game
 {
-    public sealed class PlayerCameraControllerComponent : ICameraController
+    public sealed class PlayerCameraControllerComponent : ICameraController, IDisposable
     {
         private readonly InputConfig _inputConfig;
         private readonly ICameraManager _cameraManager;
@@ -30,7 +31,7 @@ namespace Game
 
         private void MoveCameraHandler(Vector3 dir)
         {
-            MoveCamera(dir);
+            MoveCamera(dir).Forget();
         }
 
         public UniTask InitCamera()
@@ -46,18 +47,27 @@ namespace Game
             return UniTask.CompletedTask;
         }
 
-        public async void MoveCamera(Vector3 direction, float clamp = 90)
+        public async UniTaskVoid MoveCamera(Vector3 direction, float clamp = 90)
         {
             if (_camera == null)
             {
                 await InitCamera();
-                return;
+                
+                if (_camera == null)
+                {
+                    return;
+                }
             }
 
-            var verticalInput = Mathf.Lerp(0, direction.y, _cameraSensitivity * Time.deltaTime);
+            var verticalInput = direction.y * _cameraSensitivity * Time.deltaTime;
             _xRotation -= verticalInput;
             _xRotation = Mathf.Clamp(_xRotation, -clamp, clamp);
             _camera.transform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
+        }
+
+        public void Dispose()
+        {
+            _playerInputHandler.OnLookAction -= MoveCameraHandler;
         }
     }
 }

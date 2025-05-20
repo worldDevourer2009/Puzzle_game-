@@ -1,24 +1,24 @@
 using System;
 using Core;
 using R3;
-using UnityEngine;
 using CompositeDisposable = R3.CompositeDisposable;
 
 namespace Ui
 {
-    public class PauseResumeController : IDisposable
+    public class PauseResumePresenter : IDisposable
     {
         private readonly CompositeDisposable _compositeDisposable;
         private readonly PauseResumeModel _pauseResumeModel;
         private readonly IPauseResumeView _pauseResumeView;
 
-        public PauseResumeController(PauseResumeModel pauseResumeModel, IPauseResumeView pauseResumeView)
+        public PauseResumePresenter(PauseResumeModel pauseResumeModel, IPauseResumeView pauseResumeView)
         {
             _pauseResumeModel = pauseResumeModel;
             _pauseResumeView = pauseResumeView;
             _compositeDisposable = new CompositeDisposable();
-            
-            _pauseResumeView.OnResumeClicked += HandleViewClick;
+
+            _pauseResumeView.OnDestroyed += Dispose;
+            _pauseResumeView.OnPauseMenuClicked += HandleViewClick;
             
             _pauseResumeModel.CurrentState
                 .Subscribe(HandleViewDisplay)
@@ -41,15 +41,28 @@ namespace Ui
             }
         }
 
-        private async void HandleViewClick()
+        private async void HandleViewClick(PauseMenuButtonAction action)
         {
-            await _pauseResumeModel.Resume();
+            switch (action)
+            {
+                case PauseMenuButtonAction.Resume:
+                    await _pauseResumeModel.Resume();
+                    break;
+                case PauseMenuButtonAction.MainMenu:
+                    await _pauseResumeModel.GoToMainMenu();
+                    break;
+                case PauseMenuButtonAction.Settings:
+                case PauseMenuButtonAction.None:
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(action), action, null);
+            }
         }
 
         public void Dispose()
         {
             _compositeDisposable.Dispose();
-            _pauseResumeView.OnResumeClicked -= HandleViewClick;
+            _pauseResumeView.OnPauseMenuClicked -= HandleViewClick;
+            _pauseResumeView.OnDestroyed -= Dispose;
         }
     }
 }

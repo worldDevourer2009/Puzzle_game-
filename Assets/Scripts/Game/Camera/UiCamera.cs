@@ -5,7 +5,7 @@ using Zenject;
 namespace Game
 {
     [RequireComponent(typeof(Camera))]
-    public sealed class UiCam : MonoBehaviour, ICamera
+    public sealed class UiCamera : MonoBehaviour, ICamera
     {
         public CustomCameraType CameraType => CustomCameraType.UiCamera;
         public Camera Camera

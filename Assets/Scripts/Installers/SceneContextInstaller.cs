@@ -1,4 +1,5 @@
 using System;
+using Core;
 using Game;
 using Ui;
 using Zenject;
@@ -30,8 +31,7 @@ namespace Installers
 
             Container.Bind<Cube>()
                 .FromComponentsInHierarchy()
-                .AsCached()
-                .NonLazy();
+                .AsCached();
 
             BindPlayers();
             BindMVP();
@@ -39,24 +39,28 @@ namespace Installers
 
         private void BindMVP()
         {
-            Container.Bind<PauseResumeModel>()
+            Container.BindInterfacesAndSelfTo<PauseResumeModel>()
                 .AsSingle();
 
             Container.Bind<IPauseResumeView>()
-                .FromComponentsInHierarchy()
-                .AsCached()
-                .NonLazy();
+                .FromComponentInHierarchy()
+                .AsSingle();
 
-            Container.Bind<PauseResumeController>()
+            Container.BindInterfacesAndSelfTo<PauseResumePresenter>()
                 .AsSingle()
                 .NonLazy();
         }
 
         private void BindPlayers()
         {
+            Container.Bind(typeof(IPlayerInputHandler), typeof(IInitializable), typeof(IDisposable))
+                .To<PlayerInputHandler>()
+                .AsSingle()
+                .NonLazy();
+            
             Container.Bind<ICameraController>()
                 .To<PlayerCameraControllerComponent>()
-                .AsCached();
+                .AsSingle();
             
             Container
                 .Bind(typeof(IPlayerCore), typeof(IDisposable))

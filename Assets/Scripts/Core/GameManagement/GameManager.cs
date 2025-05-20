@@ -7,6 +7,7 @@ namespace Core
 {
     public interface IGameManager
     {
+        UniTask LoadMainMenu();
         UniTask LaunchGame();
         UniTask StartNewGame();
         UniTask LoadLevel();
@@ -42,21 +43,51 @@ namespace Core
             _logger = logger;
         }
 
+        public async UniTask LoadMainMenu()
+        {
+            var firstScene = _scenesConfig.Scenes.AsValueEnumerable().FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+
+            if (firstScene == null || firstScene.IsEmpty())
+            {
+                _logger.LogWarning("Can't find first scene");
+                return;
+            }
+            
+            var command = await _sceneCommandsFactory.CreateCommand(firstScene, LoadMode.Additive);
+
+            if (command != null)
+            {
+                _cameraManager.UnloadCameras();
+                await command.ExecuteAsync();
+            }
+            else
+            {
+                _logger.LogWarning("Can't load scene");
+            }
+            
+            await _cameraManager.CreateCamera(CustomCameraType.UiCamera);
+        }
+
         public async UniTask LaunchGame()
         {
             var firstScene = _scenesConfig.Scenes.AsValueEnumerable().FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
 
             if (firstScene == null || firstScene.IsEmpty())
             {
+                _logger.LogWarning("Can't find first scene");
                 return;
             }
             
-            var command = await _sceneCommandsFactory.CreateCommand(firstScene, LoadMode.Single);
+            var command = await _sceneCommandsFactory.CreateCommand(firstScene, LoadMode.Additive);
 
             if (command != null)
             {
                 _cameraManager.UnloadCameras();
                 await command.ExecuteAsync();
+            }
+            else
+            {
+                _logger.LogWarning("Can't load scene");
             }
             
             await _cameraManager.CreateCamera(CustomCameraType.UiCamera);

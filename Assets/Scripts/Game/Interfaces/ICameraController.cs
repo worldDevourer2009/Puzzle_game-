@@ -6,6 +6,6 @@ namespace Game
     public interface ICameraController
     {
         UniTask InitCamera();
-        void MoveCamera(Vector3 direction, float clamp = 90);
+        UniTaskVoid MoveCamera(Vector3 direction, float clamp = 90);
     }
 }

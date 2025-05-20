@@ -12,6 +12,7 @@ namespace Core
         PlayerCamera,
         UiCamera,
         NotInGameCamera,
+        LoadCamera,
         Default
     }
 
@@ -51,6 +52,11 @@ namespace Core
 
             try
             {
+                if (_cameras.TryGetValue(type, out var activeCam))
+                {
+                    return activeCam.AsValueEnumerable().FirstOrDefault();
+                }
+                
                 var cam = await _factorySystem.Create(parsedType);
 
                 if (!cam.TryGetComponent(out ICamera cameraComp))
@@ -92,11 +98,16 @@ namespace Core
 
                 if (cam.Camera == null)
                 {
-                    _logger.LogWarning("Camera does not contain ICamera Component");
+                    _logger.LogWarning("Camera does not contain ICamera");
                     return;
                 }
 
                 SetCamera(type);
+
+                if (parent != null)
+                {
+                    cam.Camera.transform.SetParent(parent);
+                }
             }
             else
             {
@@ -106,13 +117,22 @@ namespace Core
 
         private void SetCamera(CustomCameraType customCameraType)
         {
+            foreach (var cams in _activeCameras
+                         .AsValueEnumerable()
+                         .ToList()
+                         .AsValueEnumerable()
+                         .Where(cams => cams.Value == null))
+            {
+                _activeCameras.Remove(cams.Key);
+            }
+            
             DisableAllCameras();
 
             if (_cameras.TryGetValue(customCameraType, out var camHashSet))
             {
                 if (camHashSet == null)
                 {
-                    _logger.LogWarning($"Camera(s) of type {customCameraType} doesn't exist");
+                    _logger.LogWarning($"Camera of type {customCameraType} doesn't exist");
                     return;
                 }
 
@@ -175,7 +195,7 @@ namespace Core
 
         public Camera GetActiveCamera()
         {
-            return _activeCameras.Values.AsValueEnumerable().FirstOrDefault(c => c.enabled);
+            return _activeCameras.Values.AsValueEnumerable().FirstOrDefault(c => c != null && c.enabled);
         }
 
         public CustomCameraType GetActiveCameraType()
@@ -190,7 +210,31 @@ namespace Core
 
         public Camera GetMainCamera()
         {
-            return _activeCameras.Values.AsValueEnumerable().FirstOrDefault(c => c.CompareTag(MainCameraTag));
+            var cam = _activeCameras.Values.AsValueEnumerable().FirstOrDefault(c => c != null && c.CompareTag(MainCameraTag));
+            
+            if (cam != null)
+            {
+                return cam;
+            }
+            
+            cam = Camera.main;
+            
+            if (cam == null)
+            {
+                var go = GameObject.FindGameObjectWithTag(MainCameraTag);
+                
+                if (go != null)
+                {
+                    cam = go.GetComponent<Camera>();
+                }
+            }
+            
+            if (cam != null)
+            {
+                _activeCameras[CustomCameraType.Default] = cam;
+            }
+
+            return cam;
         }
 
         public Camera GetPlayerCamera()

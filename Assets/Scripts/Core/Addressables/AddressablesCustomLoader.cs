@@ -91,7 +91,7 @@ namespace Core
             }
 
             var sceneInstance = handle.Result;
-
+            
             OnProgress?.Invoke(1f);
             return sceneInstance;
         }

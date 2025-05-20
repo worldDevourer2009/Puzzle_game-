@@ -16,12 +16,11 @@ namespace Core
             _cameraManager = cameraManager;
         }
 
-        public UniTask OnEnter()
+        public async UniTask OnEnter()
         {
+            await _cameraManager.SetActiveCamera(CustomCameraType.UiCamera);
             _gameLoop.EnableUpdate(false);
-            _cameraManager.SetActiveCamera(CustomCameraType.UiCamera);
             _input.EnableInput(false);
-            return UniTask.CompletedTask;
         }
 
         public UniTask OnUpdate()

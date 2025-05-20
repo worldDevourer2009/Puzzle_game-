@@ -120,11 +120,11 @@ namespace Game
 
         public void Dispose()
         {
+            _gameLoop?.RemoveFromLoop(GameLoopType.Update, this);
+            
             _input.OnUseAction -= HandleInput;
             _interactorCore.OnPoint -= HandlePoint;
             _interactorCore.OnInteract -= HandleInteract;
-            
-            _gameLoop?.RemoveFromLoop(GameLoopType.Update, this);
         }
     }
 }

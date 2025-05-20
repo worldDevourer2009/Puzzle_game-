@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Unity.Collections;
 using UnityEngine;
+using Zenject;
 
 namespace Core
 {
@@ -28,41 +29,33 @@ namespace Core
 
         public async UniTask<GameObject> Create(string id)
         {
-            var asyncOp = _poolSystem.GetObject(id);
-            var result = await asyncOp;
-            var context = _diContainer.ResolveFor(result);
-            context.InjectGameObject(result);
+            var (result, container) = await InternalCreate(id);
+            container.InjectGameObject(result);
             return result;
         }
 
         public async UniTask<GameObject> Create(string id, Vector3 position)
         {
-            var asyncOp = _poolSystem.GetObject(id);
-            var result = await asyncOp;
+            var (result, container) = await InternalCreate(id);
             result.transform.position = position;
-            var context = _diContainer.ResolveFor(result);
-            context.InjectGameObject(result);
+            container.InjectGameObject(result);
             return result;
         }
 
         public async UniTask<GameObject> Create(string id, Transform parent)
         {
-            var asyncOp = _poolSystem.GetObject(id);
-            var result = await asyncOp;
+            var (result, container) = await InternalCreate(id);
             result.transform.SetParent(parent);
-            var context = _diContainer.ResolveFor(result);
-            context.InjectGameObject(result);
+            container.InjectGameObject(result);
             return result;
         }
 
         public async UniTask<GameObject> Create(string id, Vector3 position, Transform parent)
         {
-            var asyncOp = _poolSystem.GetObject(id);
-            var result = await asyncOp;
+            var (result, container) = await InternalCreate(id);
             result.transform.SetParent(parent);
             result.transform.position = position;
-            var context = _diContainer.ResolveFor(result);
-            context.InjectGameObject(result);
+            container.InjectGameObject(result);
             return result;
         }
 
@@ -102,6 +95,14 @@ namespace Core
         {
             var context = _diContainer.ResolveFor(objToInject);
             context.Inject(objToInject);
+        }
+
+        private async UniTask<(GameObject result, DiContainer context)> InternalCreate(string id)
+        {
+            var asyncOp = _poolSystem.GetObject(id);
+            var result = await asyncOp;
+            var context = _diContainer.ResolveFor(result);
+            return (result, context);
         }
     }
     

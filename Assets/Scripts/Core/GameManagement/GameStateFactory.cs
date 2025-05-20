@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using ZLinq;
 
 namespace Core
@@ -26,7 +25,7 @@ namespace Core
                 return;
             }
             
-            foreach (var state in states.AsValueEnumerable().ToList())
+            foreach (var state in states)
             {
                 if (!_states.TryAdd(state.Name, state))
                 {

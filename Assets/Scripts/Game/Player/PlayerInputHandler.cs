@@ -1,7 +1,9 @@
 using System;
+using Core;
+using Zenject;
 using UnityEngine;
 
-namespace Core
+namespace Game
 {
     public interface IPlayerInputHandler
     {
@@ -12,7 +14,7 @@ namespace Core
         event Action OnNoneAction;
     }
 
-    public sealed class PlayerInputHandler : IPlayerInputHandler, IAwakable, IDisposable
+    public sealed class PlayerInputHandler : IPlayerInputHandler, IInitializable, IDisposable
     {
         public event Action<Vector3, bool> OnMoveAction;
         public event Action<Vector3> OnLookAction;
@@ -21,20 +23,18 @@ namespace Core
         public event Action OnNoneAction;
 
         private readonly IInput _input;
-        private readonly IGameLoop _gameLoop;
 
-        public PlayerInputHandler(IInput input, IGameLoop gameLoop)
+        public PlayerInputHandler(IInput input)
         {
             _input = input;
-            _gameLoop = gameLoop;
-
-            if (_gameLoop != null)
-            {
-                _gameLoop.AddToGameLoop(GameLoopType.Awake, this);
-            }
+        }
+        
+        public void Initialize()
+        {
+            SubToInput();
         }
 
-        public void AwakeCustom()
+        private void SubToInput()
         {
             _input.OnMoveAction += HandleOnMove;
             _input.OnJumpAction += HandleOnJump;
@@ -70,7 +70,7 @@ namespace Core
 
         public void Dispose()
         {
-            _gameLoop.RemoveFromLoop(GameLoopType.Awake, this);
+            Debug.Log("Calling dispose");
             _input.OnMoveAction -= HandleOnMove;
             _input.OnJumpAction -= HandleOnJump;
             _input.OnLookAction -= HandleLook;

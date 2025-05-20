@@ -1,3 +1,4 @@
+using Ui;
 using Zenject;
 
 namespace Installers
@@ -6,7 +7,16 @@ namespace Installers
     {
         public override void InstallBindings()
         {
-            base.InstallBindings();
+            Container.Bind<LoadingModel>()
+                .AsSingle();
+
+            Container.Bind<ILoadingView>()
+                .FromComponentInHierarchy()
+                .AsSingle();
+
+            Container.Bind<LoadingPresenter>()
+                .AsSingle()
+                .NonLazy();
         }
     }
 }

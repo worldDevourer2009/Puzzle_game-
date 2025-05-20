@@ -76,11 +76,6 @@ namespace Installers
                 .To<InputSystem>()
                 .AsSingle()
                 .NonLazy();
-            
-            Container.Bind(typeof(IPlayerInputHandler), typeof(IAwakable))
-                .To<PlayerInputHandler>()
-                .AsSingle()
-                .NonLazy();
 
             Container.Bind<IInputSource>()
                 .To<KeyboardSource>()

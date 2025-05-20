@@ -20,6 +20,7 @@ namespace Core
 
         public void TryInteract()
         {
+            Debug.Log("Trying to interact");
             if (_candidate != null)
             {
                 _candidate.Interact();
