@@ -39,6 +39,7 @@ namespace Game
         private readonly IJumpable _jumpable;
         private readonly IRotatable _rotatable;
         private readonly IGroundable _groundable;
+        private readonly IRaycaster _raycaster;
 
         private IEntity _entity;
         private GameObject _gameObject;
@@ -51,12 +52,17 @@ namespace Game
         private float _jumpForce;
         private RaycastParams _groundParams;
 
+        private MoveCallBack _moveCallBack;
+        private AlwaysTrueFilter _alwaysTrueFilter;
+        private RaycastParams _moveParams;
+
         public PlayerCore(Core.ILogger logger,
             IMoveable moveable,
             IJumpable jumpable,
             IRotatable rotatable,
             IGroundable groundable,
-            ICameraManager cameraManager)
+            ICameraManager cameraManager,
+            IRaycaster raycaster)
         {
             _logger = logger;
             _moveable = moveable;
@@ -64,6 +70,7 @@ namespace Game
             _rotatable = rotatable;
             _groundable = groundable;
             _cameraManager = cameraManager;
+            _raycaster = raycaster;
         }
 
         public void Initialize(IEntity entity, Rigidbody rb, float speed, float runSpeed, float jumpForce,
@@ -87,6 +94,7 @@ namespace Game
             else
             {
                 _rb = rb;
+                _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             }
 
             var playerCam = _cameraManager.GetPlayerCamera();
@@ -119,9 +127,36 @@ namespace Game
             {
                 return;
             }
+            
+            if (!CanMove(moveDir))
+            {
+                return;
+            }
 
-            _moveable.Move(_rb.gameObject, !isRunning || !_isGrounded ? _speed : _runSpeed, moveDir);
+            _moveable.Move(_rb, !isRunning || !_isGrounded ? _speed : _runSpeed, moveDir);
             OnMove?.Invoke(direction, isRunning);
+        }
+
+        private bool CanMove(Vector3 direction)
+        {
+            _moveParams = new RaycastParams()
+            {
+                MaxDistance = 0.9f,
+                Origin = _rb.position,
+                Direction = direction,
+                LayerMask = LayerMask.GetMask("Walls")
+            };
+
+            _moveCallBack = new MoveCallBack()
+            {
+                CanMove = true
+            };
+            
+            _alwaysTrueFilter = new AlwaysTrueFilter();
+            
+            _raycaster.Raycast(ref _moveParams, ref _alwaysTrueFilter, ref _moveCallBack);
+            
+            return _moveCallBack.CanMove;
         }
 
         private bool CheckMoveDir(Vector3 direction, out Vector3 moveDir)

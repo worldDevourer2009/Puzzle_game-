@@ -70,7 +70,6 @@ namespace Game
 
         public void Dispose()
         {
-            Debug.Log("Calling dispose");
             _input.OnMoveAction -= HandleOnMove;
             _input.OnJumpAction -= HandleOnJump;
             _input.OnLookAction -= HandleLook;

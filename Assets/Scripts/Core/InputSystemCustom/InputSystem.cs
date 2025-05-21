@@ -28,7 +28,7 @@ namespace Core
         void EnableInput(bool enable);
     }
 
-    public class InputSystem : IInput, IUpdatable, IAwakable
+    public class InputSystem : IInput, IUpdatable, IFixedUpdatable, IAwakable
     {
         private readonly IGameLoop _gameLoop;
         private readonly ICameraManager _cameraManager;
@@ -63,6 +63,7 @@ namespace Core
             if (_gameLoop != null)
             {
                 _gameLoop.AddToGameLoop(GameLoopType.Update, this);
+                _gameLoop.AddToGameLoop(GameLoopType.FixedUpdate, this);
                 _gameLoop.AddToGameLoop(GameLoopType.Awake, this);
             }
         }
@@ -79,13 +80,22 @@ namespace Core
                 return;
             }
             
-            HandleMove();
             HandleLook();
             HandleJump();
             HandleUse();
             HandleClick();
             HandleTest();
             HandlePause();
+        }
+
+        public void FixedUpdateCustom()
+        {
+            if (!_enabledInput)
+            {
+                return;
+            }
+            
+            HandleMove();
         }
 
         private void HandlePause()

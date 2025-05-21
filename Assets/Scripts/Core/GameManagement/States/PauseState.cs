@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace Core
 {
@@ -7,18 +8,22 @@ namespace Core
         public GameState Name => GameState.Pause;
         private readonly IGameLoop _gameLoop;
         private readonly IInput _input;
+        private readonly ILevelManager _levelManager;
         private readonly ICameraManager _cameraManager;
 
-        public PauseState(IGameLoop gameLoop, IInput input, ICameraManager cameraManager)
+        public PauseState(IGameLoop gameLoop, ILevelManager levelManager, IInput input, ICameraManager cameraManager)
         {
             _gameLoop = gameLoop;
+            _levelManager = levelManager;
             _input = input;
             _cameraManager = cameraManager;
         }
 
         public async UniTask OnEnter()
         {
-            await _cameraManager.SetActiveCamera(CustomCameraType.UiCamera);
+            Debug.Log("Setting active camera");
+            var player = _levelManager.PlayerEntity;
+            await _cameraManager.SetActiveCamera(CustomCameraType.UiCamera, player.EyesTransform);
             _gameLoop.EnableUpdate(false);
             _input.EnableInput(false);
         }

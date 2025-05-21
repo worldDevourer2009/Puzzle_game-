@@ -1,9 +1,9 @@
+using System;
 using R3;
-using UnityEngine;
 
 namespace Ui
 {
-    public class LoadingPresenter
+    public class LoadingPresenter : IDisposable
     {
         private readonly CompositeDisposable _compositeDisposable;
         private readonly LoadingModel _loadingModel;
@@ -30,6 +30,11 @@ namespace Ui
             {
                 _loadingView.HideLoadingScreen();
             }
+        }
+
+        public void Dispose()
+        {
+            _compositeDisposable.Dispose();
         }
     }
 }

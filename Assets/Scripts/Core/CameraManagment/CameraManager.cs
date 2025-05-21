@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Game;
 using UnityEngine;
 using ZLinq;
+using Object = UnityEngine.Object;
 
 namespace Core
 {
@@ -25,6 +26,7 @@ namespace Core
         Camera GetMainCamera();
         Camera GetPlayerCamera();
         void UnloadCameras();
+        void DestroyAllCameras();
         Camera GetCameraByType(CustomCameraType type);
     }
 
@@ -37,6 +39,7 @@ namespace Core
         private readonly ILogger _logger;
         private readonly Dictionary<CustomCameraType, HashSet<ICamera>> _cameras;
         private readonly Dictionary<CustomCameraType, Camera> _activeCameras;
+        private int _maxIteration = 3;
 
         public CameraManager(IFactorySystem factorySystem, ILogger logger)
         {
@@ -54,13 +57,16 @@ namespace Core
             {
                 if (_cameras.TryGetValue(type, out var activeCam))
                 {
-                    return activeCam.AsValueEnumerable().FirstOrDefault();
+                    var activeCamera = activeCam.AsValueEnumerable().FirstOrDefault();
+                    SetCameraParent(parent, activeCamera);
+                    return activeCamera;
                 }
                 
                 var cam = await _factorySystem.Create(parsedType);
 
                 if (!cam.TryGetComponent(out ICamera cameraComp))
                 {
+                    _logger.Log($"Returning camera which is null because can't create");
                     return null;
                 }
 
@@ -75,44 +81,54 @@ namespace Core
                     newHashSet.Add(cameraComp);
                 }
 
-                if (parent != null)
-                {
-                    cameraComp.Camera.gameObject.transform.SetParent(parent, worldPositionStays: false);
-                    cameraComp.Camera.gameObject.transform.position = parent.position;
-                }
+                SetCameraParent(parent, cameraComp);
 
                 return cameraComp;
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Failed to spawn camera with exception {exception.Message}");
+                _logger.LogError(
+                    $"Failed to spawn camera with exception {exception.Message}, {exception.Source}, {exception.InnerException}");
                 return null;
+            }
+        }
+
+        private static void SetCameraParent(Transform parent, ICamera cameraComp)
+        {
+            if (parent != null)
+            {
+                cameraComp.Camera.gameObject.transform.SetParent(parent, worldPositionStays: false);
+                cameraComp.Camera.gameObject.transform.position = parent.position;
             }
         }
 
         public async UniTask SetActiveCamera(CustomCameraType type, Transform parent = null)
         {
-            if (!_cameras.TryGetValue(type, out var typedCameras))
+            ICamera cameraComp = null;
+            if (_cameras.TryGetValue(type, out var cams))
             {
-                var cam = await CreateCamera(type, parent);
+                cameraComp = cams.AsValueEnumerable().FirstOrDefault(c => c != null && c.Camera != null);
+            }
 
-                if (cam.Camera == null)
+            if (cameraComp == null)
+            {
+                cameraComp = await CreateCamera(type, parent);
+                if (cameraComp == null || cameraComp.Camera == null)
                 {
-                    _logger.LogWarning("Camera does not contain ICamera");
+                    _logger.LogWarning($"Can;t find or create camera of type : {type}");
                     return;
-                }
-
-                SetCamera(type);
-
-                if (parent != null)
-                {
-                    cam.Camera.transform.SetParent(parent);
                 }
             }
             else
             {
-                SetCamera(type);
+                if (parent != null)
+                {
+                    cameraComp.Camera.transform.SetParent(parent, worldPositionStays: false);
+                    cameraComp.Camera.transform.position = parent.position;
+                }
             }
+
+            SetCamera(type);
         }
 
         private void SetCamera(CustomCameraType customCameraType)
@@ -123,9 +139,10 @@ namespace Core
                          .AsValueEnumerable()
                          .Where(cams => cams.Value == null))
             {
+                _logger.Log($"Removing camera with key {cams.Key}");
                 _activeCameras.Remove(cams.Key);
             }
-            
+
             DisableAllCameras();
 
             if (_cameras.TryGetValue(customCameraType, out var camHashSet))
@@ -143,7 +160,7 @@ namespace Core
                 {
                     cam.Camera.enabled = true;
                     cam.Camera.tag = MainCameraTag;
-                    
+
                     _activeCameras[customCameraType] = cam.Camera;
                 }
             }
@@ -171,7 +188,7 @@ namespace Core
             {
                 if (camerasHashSets == null || camerasHashSets.Count == 0)
                     continue;
-                
+
                 var toRemove = new List<ICamera>();
 
                 foreach (var cameraComp in camerasHashSets)
@@ -185,7 +202,7 @@ namespace Core
                     cameraComp.Camera.enabled = false;
                     cameraComp.Camera.tag = DisabledCamera;
                 }
-                
+
                 foreach (var dead in toRemove)
                 {
                     camerasHashSets.Remove(dead);
@@ -200,7 +217,8 @@ namespace Core
 
         public CustomCameraType GetActiveCameraType()
         {
-            foreach (var pair in _activeCameras.AsValueEnumerable().Where(pair => pair.Value != null && pair.Value.enabled))
+            foreach (var pair in _activeCameras.AsValueEnumerable()
+                         .Where(pair => pair.Value != null && pair.Value.enabled))
             {
                 return pair.Key;
             }
@@ -210,31 +228,51 @@ namespace Core
 
         public Camera GetMainCamera()
         {
-            var cam = _activeCameras.Values.AsValueEnumerable().FirstOrDefault(c => c != null && c.CompareTag(MainCameraTag));
-            
+            var cam = _activeCameras.Values.AsValueEnumerable()
+                .FirstOrDefault(c => c != null && c.CompareTag(MainCameraTag));
+
             if (cam != null)
             {
                 return cam;
             }
-            
+
             cam = Camera.main;
-            
+
             if (cam == null)
             {
                 var go = GameObject.FindGameObjectWithTag(MainCameraTag);
-                
+
                 if (go != null)
                 {
                     cam = go.GetComponent<Camera>();
                 }
             }
-            
+
             if (cam != null)
             {
                 _activeCameras[CustomCameraType.Default] = cam;
             }
 
             return cam;
+        }
+        
+        public void DestroyAllCameras()
+        {
+            foreach (var cameraSet in _cameras.Values)
+            {
+                foreach (var cameraComp in cameraSet)
+                {
+                    if (cameraComp?.Camera != null)
+                    {
+                        Object.Destroy(cameraComp.Camera.gameObject);
+                    }
+                }
+            }
+
+            _cameras.Clear();
+            _activeCameras.Clear();
+
+            _logger.Log("All cameras destroyed and dictionaries cleared.");
         }
 
         public Camera GetPlayerCamera()

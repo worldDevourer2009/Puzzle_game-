@@ -44,19 +44,29 @@ namespace Core
                 _logger.LogWarning("Scene id is null");
                 return;
             }
+
+            if (IsSceneLoaded(id))
+            {
+                return;
+            }
             
             OnLoad?.Invoke();
 
+            _cameraManager.DestroyAllCameras();
             var loadingScene = await _addressableLoader.LoadScene(LoadingSceneId, LoadSceneMode.Single);
             await _cameraManager.SetActiveCamera(CustomCameraType.LoadCamera);
             SceneManager.SetActiveScene(loadingScene.Scene);
-            
             var targetScene = await _addressableLoader.LoadScene(id, loadSceneMode);
             SceneManager.SetActiveScene(targetScene.Scene);
-            
+            _sceneInstances[id] = targetScene;
             OnLoaded?.Invoke();
             
             await _addressableLoader.UnloadScene(loadingScene);
+        }
+
+        private bool IsSceneLoaded(string id)
+        {
+            return _sceneInstances.TryGetValue(id, out var scene);
         }
 
         public async UniTask UnloadSceneById(string id)
@@ -66,6 +76,7 @@ namespace Core
                 OnUnload?.Invoke();
                 await _addressableLoader.UnloadScene(scene);
                 OnUnloaded?.Invoke();
+                _sceneInstances.Remove(id);
             }
             else
             {

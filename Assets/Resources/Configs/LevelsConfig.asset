@@ -18,5 +18,7 @@ MonoBehaviour:
   LevelData:
   - LevelName: MainScene
     LastTriggeredEventName: 
+  - LevelName: Test
+    LastTriggeredEventName: 
   - LevelName: 
     LastTriggeredEventName: 

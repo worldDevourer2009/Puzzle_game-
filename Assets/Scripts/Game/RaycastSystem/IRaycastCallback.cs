@@ -36,6 +36,17 @@ namespace Core
         }
     }
 
+    public struct MoveCallBack : IRaycastCallback
+    {
+        public bool CanMove;
+        
+        public void OnHit(in RaycastHit hit)
+        {
+            Debug.Log($"Colliding with {hit.collider.name} move set to false");
+            CanMove = false;
+        }
+    }
+
     public struct PosCallback : IRaycastCallback
     {
         public Vector3 Pos;

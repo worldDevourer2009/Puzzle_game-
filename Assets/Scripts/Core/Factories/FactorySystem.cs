@@ -44,6 +44,7 @@ namespace Core
 
         public async UniTask<GameObject> Create(string id, Transform parent)
         {
+            Debug.Log($"Creating object with id {id}");
             var (result, container) = await InternalCreate(id);
             result.transform.SetParent(parent);
             container.InjectGameObject(result);

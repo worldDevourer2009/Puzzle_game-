@@ -18,17 +18,17 @@ namespace Game
         private readonly ICameraManager _cameraManager;
         private readonly IPlayerInputHandler _playerInputHandler;
         private readonly PlayerDefaultStatsConfig _defaultStatsConfig;
-        
+
         private IPlayerFacade _playerFacade;
-        
+
         private Action<Vector3, bool> _moveHandler;
         private Action<Vector3> _lookHandler;
         private Action _useHandler;
         private Action _jumpHandler;
         private Action _idleHandler;
 
-        public PlayerController(IGameLoop gameLoop, ILevelManager levelManager, 
-            ICameraManager cameraManager, IPlayerInputHandler playerInputHandler, 
+        public PlayerController(IGameLoop gameLoop, ILevelManager levelManager,
+            ICameraManager cameraManager, IPlayerInputHandler playerInputHandler,
             PlayerDefaultStatsConfig defaultStatsConfig)
         {
             _gameLoop = gameLoop;
@@ -41,7 +41,7 @@ namespace Game
             {
                 return;
             }
-            
+
             _levelManager.OnPlayerCreated += () => InitPlayerFacade()
                 .Forget();
         }
@@ -49,16 +49,16 @@ namespace Game
         private UniTask InitPlayerFacade()
         {
             var facade = _levelManager.PlayerEntity;
-            
+
             if (facade != null)
             {
                 _playerFacade = facade;
             }
-            
+
             _playerFacade.Initialize(_defaultStatsConfig.playerStats);
-            
+
             InitInputSubs();
-            
+
             return UniTask.CompletedTask;
         }
 
@@ -69,7 +69,7 @@ namespace Game
             _useHandler = () => _playerFacade.Use();
             _idleHandler = () => _playerFacade.Idle();
             _jumpHandler = () => _playerFacade.Jump();
-            
+
             _playerInputHandler.OnMoveAction += _moveHandler;
             _playerInputHandler.OnJumpAction += _jumpHandler;
             _playerInputHandler.OnNoneAction += _idleHandler;

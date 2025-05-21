@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Game;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using ZLinq;
 using Object = UnityEngine.Object;
 
 namespace Core
@@ -19,6 +20,7 @@ namespace Core
         UniTask TriggerLevelAction();
         UniTask ResetLevel();
         UniTask LoadNextLevel();
+        UniTask LoadCurrentLevel();
         UniTask LoadLevelByName(string name);
     }
 
@@ -73,7 +75,6 @@ namespace Core
                 _logger.LogWarning("Can't find player's eyes transform");
             }
             
-            await _cameraManager.CreateCamera(CustomCameraType.UiCamera, playerEyesTransform);
             await _cameraManager.SetActiveCamera(CustomCameraType.PlayerCamera, playerEyesTransform);
 
             OnPlayerCreated?.Invoke();
@@ -156,14 +157,38 @@ namespace Core
             await LoadLevelByName("1");
         }
 
+        public async UniTask LoadCurrentLevel()
+        {
+            var currentLevel = _levelsConfig.LastLevelData.LevelName;
+            if (string.IsNullOrEmpty(currentLevel))
+            {
+                var firstLevel = _levelsConfig.LevelData.AsValueEnumerable()
+                    .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.LevelName)).LevelName;
+
+                if (!string.IsNullOrWhiteSpace(firstLevel))
+                {
+                    await _sceneLoader.LoadSceneById(firstLevel);
+                    await InitLevelManager();
+                }
+            }
+            else
+            {
+                await LoadLevelByName(currentLevel);
+            }
+        }
+
         public async UniTask LoadLevelByName(string name)
         {
             await _sceneLoader.LoadSceneById(name);
-            
+            await InitLevelManager();
+        }
+
+        private async UniTask InitLevelManager()
+        {
             var levelManager = Object.FindFirstObjectByType<LevelManager>();
-            
+                    
             Vector3 pos;
-            
+                    
             if (levelManager != null)
             {
                 pos = levelManager.PlayerDefaultSpawnPoint.position;
