@@ -8,6 +8,8 @@ namespace Game
     public sealed class PlayerFacade : MonoBehaviour, IPlayerFacade
     {
         public Transform EyesTransform => _eyesTransform;
+        public Transform BottomFoot => _bottomFoot;
+        public Transform TopFoot => _topFoot;
         public GameObject EntityGA => gameObject;
         public Transform RightHandTransform => _rightHandTransform;
         public Transform LeftHandTransform => _leftHandTransform;
@@ -18,11 +20,14 @@ namespace Game
         public event Action OnUse;
         public event Action OnIdle;
         
+        [Header("Transforms")]
         [SerializeField] private Transform _rightHandTransform;
         [SerializeField] private Transform _leftHandTransform;
         [SerializeField] private Transform _centerBottomTransform;
         [SerializeField] private Transform _eyesTransform;
         [SerializeField] private Rigidbody _rigidbody;
+        [SerializeField] private Transform _bottomFoot;
+        [SerializeField] private Transform _topFoot;
         
         private IPlayerCore _core;
         private IAnimation _animation;

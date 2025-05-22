@@ -21,6 +21,8 @@ namespace Game
     public interface IPlayerFacade : IEntity
     {
         Transform EyesTransform { get; }
+        Transform BottomFoot { get; }
+        Transform TopFoot { get; }
         void Initialize(PlayerStats stats);
         void Move(Vector3 direction, bool run = false);
         void Jump();

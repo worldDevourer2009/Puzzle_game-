@@ -39,7 +39,6 @@ namespace Core
         private readonly ILogger _logger;
         private readonly Dictionary<CustomCameraType, HashSet<ICamera>> _cameras;
         private readonly Dictionary<CustomCameraType, Camera> _activeCameras;
-        private int _maxIteration = 3;
 
         public CameraManager(IFactorySystem factorySystem, ILogger logger)
         {
@@ -61,12 +60,11 @@ namespace Core
                     SetCameraParent(parent, activeCamera);
                     return activeCamera;
                 }
-                
+
                 var cam = await _factorySystem.Create(parsedType);
 
                 if (!cam.TryGetComponent(out ICamera cameraComp))
                 {
-                    _logger.Log($"Returning camera which is null because can't create");
                     return null;
                 }
 
@@ -115,7 +113,6 @@ namespace Core
                 cameraComp = await CreateCamera(type, parent);
                 if (cameraComp == null || cameraComp.Camera == null)
                 {
-                    _logger.LogWarning($"Can;t find or create camera of type : {type}");
                     return;
                 }
             }
@@ -139,7 +136,6 @@ namespace Core
                          .AsValueEnumerable()
                          .Where(cams => cams.Value == null))
             {
-                _logger.Log($"Removing camera with key {cams.Key}");
                 _activeCameras.Remove(cams.Key);
             }
 
@@ -149,7 +145,6 @@ namespace Core
             {
                 if (camHashSet == null)
                 {
-                    _logger.LogWarning($"Camera of type {customCameraType} doesn't exist");
                     return;
                 }
 
@@ -184,12 +179,12 @@ namespace Core
 
         private void DisableAllCameras()
         {
+            var toRemove = new List<ICamera>();
+            
             foreach (var camerasHashSets in _cameras.Values)
             {
                 if (camerasHashSets == null || camerasHashSets.Count == 0)
                     continue;
-
-                var toRemove = new List<ICamera>();
 
                 foreach (var cameraComp in camerasHashSets)
                 {
@@ -255,7 +250,7 @@ namespace Core
 
             return cam;
         }
-        
+
         public void DestroyAllCameras()
         {
             foreach (var cameraSet in _cameras.Values)
@@ -271,8 +266,6 @@ namespace Core
 
             _cameras.Clear();
             _activeCameras.Clear();
-
-            _logger.Log("All cameras destroyed and dictionaries cleared.");
         }
 
         public Camera GetPlayerCamera()

@@ -13,9 +13,7 @@ namespace Game
 
     public sealed class PlayerController : IPlayerController, IDisposable
     {
-        private readonly IGameLoop _gameLoop;
         private readonly ILevelManager _levelManager;
-        private readonly ICameraManager _cameraManager;
         private readonly IPlayerInputHandler _playerInputHandler;
         private readonly PlayerDefaultStatsConfig _defaultStatsConfig;
 
@@ -27,13 +25,10 @@ namespace Game
         private Action _jumpHandler;
         private Action _idleHandler;
 
-        public PlayerController(IGameLoop gameLoop, ILevelManager levelManager,
-            ICameraManager cameraManager, IPlayerInputHandler playerInputHandler,
+        public PlayerController(ILevelManager levelManager, IPlayerInputHandler playerInputHandler,
             PlayerDefaultStatsConfig defaultStatsConfig)
         {
-            _gameLoop = gameLoop;
             _playerInputHandler = playerInputHandler;
-            _cameraManager = cameraManager;
             _levelManager = levelManager;
             _defaultStatsConfig = defaultStatsConfig;
 

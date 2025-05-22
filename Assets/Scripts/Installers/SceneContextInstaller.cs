@@ -14,20 +14,21 @@ namespace Installers
                 .To<MoveComponent>()
                 .AsCached();
             
+            Container.Bind<IStepable>()
+                .To<StepComponent>()
+                .AsCached();
+            
             Container.Bind<IJumpable>()
                 .To<JumpComponent>()
-                .AsCached()
-                .NonLazy();
+                .AsCached();
             
             Container.Bind<IGroundable>()
                 .To<GroundableComponent>()
-                .AsCached()
-                .NonLazy();
+                .AsCached();
             
             Container.Bind<IRotatable>()
                 .To<RotationComponent>()
-                .AsCached()
-                .NonLazy();
+                .AsCached();
 
             Container.Bind<Cube>()
                 .FromComponentsInHierarchy()
@@ -76,7 +77,7 @@ namespace Installers
                 .AsSingle();
             
             Container.Bind(typeof(IAnimation), typeof(IDisposable))
-                .To<AnimationController>()
+                .To<PlayerAnimationController>()
                 .AsCached();
         }
     }

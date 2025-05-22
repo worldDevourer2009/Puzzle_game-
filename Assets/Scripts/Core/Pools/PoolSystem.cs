@@ -44,7 +44,6 @@ namespace Core
 
         private async UniTask<GameObject> CreateObject(string id)
         {
-            Debug.Log($"Creating object with id {id}");
             var asyncOp = _addressableLoader.Instantiate(id);
             var result = await asyncOp;
             return result;

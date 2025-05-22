@@ -29,7 +29,7 @@ namespace Installers
                 .AsSingle();
 
             Container.Bind(typeof(IAnimation), typeof(IDisposable))
-                .To<AnimationController>()
+                .To<PlayerAnimationController>()
                 .AsCached();
         }
     }

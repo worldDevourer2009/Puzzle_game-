@@ -13,7 +13,7 @@ namespace Game
         void PlayRun();
     }
 
-    public class AnimationController : IAnimation, IDisposable
+    public class PlayerAnimationController : IAnimation, IDisposable
     {
         private readonly ILogger _logger;
         private readonly IPlayerCore _playerCore;
@@ -37,7 +37,7 @@ namespace Game
         private static readonly int IdleHash = Animator.StringToHash("Idle");
         private static readonly int JumpHash = Animator.StringToHash("Jump");
 
-        public AnimationController(ILogger logger, IPlayerCore playerCore)
+        public PlayerAnimationController(ILogger logger, IPlayerCore playerCore)
         {
             _logger = logger;
             _playerCore = playerCore;

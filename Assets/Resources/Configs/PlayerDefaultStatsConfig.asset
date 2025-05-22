@@ -15,7 +15,7 @@ MonoBehaviour:
   playerStats:
     Health: 10
     Speed: 15
-    JumpForce: 203
+    JumpForce: 407
     RunSpeed: 21
     CrouchSpeed: 5
     GroundRaycastParams:

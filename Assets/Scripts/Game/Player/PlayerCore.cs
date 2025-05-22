@@ -13,7 +13,7 @@ namespace Game
         event Action OnIdle;
         event Action OnFall;
 
-        void Initialize(IEntity entity, Rigidbody rb, float speed, float runSpeed, float jumpForce,
+        void Initialize(PlayerFacade entity, Rigidbody rb, float speed, float runSpeed, float jumpForce,
             RaycastParams groundDistance);
 
         void Move(Vector3 direction, bool isRunning = false);
@@ -33,15 +33,16 @@ namespace Game
         public event Action OnFall;
 
         private readonly Core.ILogger _logger;
-
         private readonly ICameraManager _cameraManager;
+        private readonly IRaycaster _raycaster;
+        
         private readonly IMoveable _moveable;
         private readonly IJumpable _jumpable;
         private readonly IRotatable _rotatable;
         private readonly IGroundable _groundable;
-        private readonly IRaycaster _raycaster;
+        private readonly IStepable _stepable;
 
-        private IEntity _entity;
+        private PlayerFacade _entity;
         private GameObject _gameObject;
         private Rigidbody _rb;
         private Camera _playerCam;
@@ -61,6 +62,7 @@ namespace Game
             IJumpable jumpable,
             IRotatable rotatable,
             IGroundable groundable,
+            IStepable stepable,
             ICameraManager cameraManager,
             IRaycaster raycaster)
         {
@@ -69,11 +71,12 @@ namespace Game
             _jumpable = jumpable;
             _rotatable = rotatable;
             _groundable = groundable;
+            _stepable = stepable;
             _cameraManager = cameraManager;
             _raycaster = raycaster;
         }
 
-        public void Initialize(IEntity entity, Rigidbody rb, float speed, float runSpeed, float jumpForce,
+        public void Initialize(PlayerFacade entity, Rigidbody rb, float speed, float runSpeed, float jumpForce,
             RaycastParams groundDistance)
         {
             _entity = entity;
@@ -94,7 +97,6 @@ namespace Game
             else
             {
                 _rb = rb;
-                _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             }
 
             var playerCam = _cameraManager.GetPlayerCamera();
@@ -133,8 +135,15 @@ namespace Game
                 return;
             }
 
+            Step(moveDir);
             _moveable.Move(_rb, !isRunning || !_isGrounded ? _speed : _runSpeed, moveDir);
+            FixZRotation();
             OnMove?.Invoke(direction, isRunning);
+        }
+
+        private void Step(Vector3 moveDir)
+        {
+            _stepable.Step(_rb, moveDir, _entity.BottomFoot, _entity.TopFoot, 0.3f);
         }
 
         private bool CanMove(Vector3 direction)
@@ -212,8 +221,19 @@ namespace Game
             {
                 return;
             }
-
+            
             _rotatable.Rotate(_gameObject, direction, RotationAxis.Y);
+        }
+
+        private void FixZRotation()
+        {
+            if (_gameObject != null)
+            {
+                var euler = _gameObject.transform.eulerAngles;
+                euler.x = 0f;
+                euler.z = 0f;
+                _gameObject.transform.rotation = Quaternion.Euler(euler);
+            }
         }
 
         public void Idle()

@@ -8,8 +8,10 @@ namespace Ui
 {
     public class LoadingModel : IDisposable
     {
-        private readonly CompositeDisposable _compositeDisposable;
+        //TODO Убрать модель
         public readonly ReactiveProperty<bool> OnLoading;
+        
+        private readonly CompositeDisposable _compositeDisposable;
         private readonly ISceneLoader _sceneLoader;
         
         private readonly Action _onLoad;

@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 
 namespace Core
 {
@@ -21,7 +20,6 @@ namespace Core
 
         public async UniTask OnEnter()
         {
-            Debug.Log("Setting active camera");
             var player = _levelManager.PlayerEntity;
             await _cameraManager.SetActiveCamera(CustomCameraType.UiCamera, player.EyesTransform);
             _gameLoop.EnableUpdate(false);
