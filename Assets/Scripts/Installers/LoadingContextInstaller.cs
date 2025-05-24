@@ -7,9 +7,6 @@ namespace Installers
     {
         public override void InstallBindings()
         {
-            Container.Bind<LoadingModel>()
-                .AsSingle();
-
             Container.Bind<ILoadingView>()
                 .FromComponentInHierarchy()
                 .AsSingle();

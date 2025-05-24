@@ -1,4 +1,5 @@
 using System;
+using Core;
 using R3;
 
 namespace Ui
@@ -6,34 +7,33 @@ namespace Ui
     public class LoadingPresenter : IDisposable
     {
         private readonly CompositeDisposable _compositeDisposable;
-        private readonly LoadingModel _loadingModel;
+        private readonly ISceneLoader _sceneLoader;
         private readonly ILoadingView _loadingView;
 
-        public LoadingPresenter(LoadingModel loadingModel, ILoadingView loadingView)
+        public LoadingPresenter(ISceneLoader sceneLoader, ILoadingView loadingView)
         {
-            _loadingModel = loadingModel;
+            _sceneLoader = sceneLoader;
             _loadingView = loadingView;
             _compositeDisposable = new CompositeDisposable();
-            
-            _loadingModel.OnLoading
-                .Subscribe(HandleDisplay)
-                .AddTo(_compositeDisposable);
+
+            _sceneLoader.OnLoad += DisplayView;
+            _sceneLoader.OnLoaded += HideView;
         }
 
-        private void HandleDisplay(bool loading)
+        private void DisplayView()
         {
-            if (loading)
-            {
-                _loadingView.DisplayLoadingScreen();
-            }
-            else
-            {
-                _loadingView.HideLoadingScreen();
-            }
+            _loadingView.DisplayLoadingScreen();
+        }
+
+        private void HideView()
+        {
+            _loadingView.HideLoadingScreen();
         }
 
         public void Dispose()
         {
+            _sceneLoader.OnLoad -= DisplayView;
+            _sceneLoader.OnLoaded -= HideView;
             _compositeDisposable.Dispose();
         }
     }
