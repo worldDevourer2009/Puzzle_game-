@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using ZLinq;
 using Cysharp.Threading.Tasks;
 using ModestTree;
@@ -20,9 +19,9 @@ namespace Core
     
     public class GameManager : IGameManager
     {
-        private readonly ILevelCommandsFactory _levelCommandsFactory;
-        private readonly ISceneCommandsFactory _sceneCommandsFactory;
         private readonly ScenesConfig _scenesConfig;
+        private readonly ISceneLoader _sceneLoader;
+        private readonly ILevelManager _levelManager;
         private readonly ICameraManager _cameraManager;
         private readonly LevelsConfig _levelsConfig;
         private readonly IGameLoop _gameLoop;
@@ -30,12 +29,11 @@ namespace Core
 
         private string _lastLoadedLevel;
 
-        public GameManager(ILevelCommandsFactory levelCommandsFactory, 
-            ISceneCommandsFactory sceneCommandsFactory, ScenesConfig scenesConfig, 
+        public GameManager(ISceneLoader sceneLoader, ILevelManager levelManager, ScenesConfig scenesConfig, 
             ICameraManager cameraManager, LevelsConfig levelsConfig, IGameLoop gameLoop, ILogger logger)
         {
-            _levelCommandsFactory = levelCommandsFactory;
-            _sceneCommandsFactory = sceneCommandsFactory;
+            _sceneLoader = sceneLoader;
+            _levelManager = levelManager;
             _scenesConfig = scenesConfig;
             _cameraManager = cameraManager;
             _levelsConfig = levelsConfig;
@@ -53,17 +51,9 @@ namespace Core
                 return;
             }
             
-            var command = await _sceneCommandsFactory.CreateCommand(firstScene, LoadMode.Additive);
+            var op = _sceneLoader.LoadSceneById(firstScene, LoadMode.Single);
 
-            if (command != null)
-            {
-                _cameraManager.UnloadCameras();
-                await command.ExecuteAsync();
-            }
-            else
-            {
-                _logger.LogWarning("Can't load scene");
-            }
+            await op;
             
             await _cameraManager.CreateCamera(CustomCameraType.UiCamera);
         }
@@ -78,17 +68,9 @@ namespace Core
                 return;
             }
             
-            var command = await _sceneCommandsFactory.CreateCommand(firstScene, LoadMode.Additive);
+            var op = _sceneLoader.LoadSceneById(firstScene, LoadMode.Additive);
 
-            if (command != null)
-            {
-                _cameraManager.UnloadCameras();
-                await command.ExecuteAsync();
-            }
-            else
-            {
-                _logger.LogWarning("Can't load scene");
-            }
+            await op;
             
             await _cameraManager.CreateCamera(CustomCameraType.UiCamera);
         }
@@ -120,27 +102,14 @@ namespace Core
                 return;
             }
             
-            var command = await _levelCommandsFactory.CreateCommand(levelName.LevelName);
-
-            if (command != null)
-            {
-                await command.ExecuteAsync();
-                _lastLoadedLevel = levelName.LevelName;
-            }
-            else
-            {
-                _logger.LogWarning($"Can't create command for level with name {levelName.LevelName}");
-            }
+            var op = _levelManager.LoadLevelByName(levelName.LevelName);
+            await op;
         }
 
         public async UniTask RestartLevel()
         {
-            var command = await _levelCommandsFactory.CreateCommand(_lastLoadedLevel);
-            
-            if (command != null)
-            {
-                await command.ExecuteAsync();
-            }
+            var op= _levelManager.LoadCurrentLevel();
+            await op;
         }
 
         public UniTask PauseGame()

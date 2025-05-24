@@ -10,75 +10,38 @@ namespace Ui
     {
         public ReactiveProperty<GameState> CurrentState => _currentState; 
         private readonly IGameStateManager _gameStateManager;
-        private readonly IInput _input;
         
         private readonly ReactiveProperty<GameState> _currentState;
         private readonly CompositeDisposable _compositeDisposable;
 
-        private bool _isPaused;
-
-        public PauseResumeModel(IGameStateManager gameStateManager, IInput input)
+        public PauseResumeModel(IGameStateManager gameStateManager)
         {
             _gameStateManager = gameStateManager;
-            _input = input;
             _compositeDisposable = new CompositeDisposable();
             _currentState = new ReactiveProperty<GameState>();
             
-            _gameStateManager
-                .OnGameStateChanged
-                .Subscribe(OnGameStateChanged)
+            _gameStateManager.OnGameStateChanged
+                .Subscribe(s => _currentState.Value = s)
                 .AddTo(_compositeDisposable);
-
-            _input.OnPauseClicked += HandleClick;
-        }
-
-        private void HandleClick()
-        {
-            if (_isPaused)
-            {
-                OnGameStateChanged(GameState.Resume).Forget();
-            }
-            else
-            {
-                OnGameStateChanged(GameState.Pause).Forget();
-            }
-        }
-
-        private async UniTaskVoid OnGameStateChanged(GameState state)
-        {
-            switch (state)
-            {
-                case GameState.Pause:
-                    await Pause();
-                    _isPaused = true;
-                    break;
-                case GameState.Resume:
-                    await Resume();
-                    _isPaused = false;
-                    break;
-            }
         }
 
         public async UniTask Pause()
         {
             await _gameStateManager.FireTrigger(GameTrigger.Pause);
-            _currentState.Value = GameState.Pause;
         }
 
         public async UniTask GoToMainMenu()
         {
-            await _gameStateManager.FireTrigger(GameTrigger.QuitToMenu);
+            await _gameStateManager.FireTrigger(GameTrigger.GoToMainMenu);
         }
 
         public async UniTask Resume()
         {
             await _gameStateManager.FireTrigger(GameTrigger.Resume);
-            _currentState.Value = GameState.Resume;
         }
 
         public void Dispose()
         {
-            _input.OnPauseClicked -= HandleClick;
             _compositeDisposable.Dispose();
         }
     }

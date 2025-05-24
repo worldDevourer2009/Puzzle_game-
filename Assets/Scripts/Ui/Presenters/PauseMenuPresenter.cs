@@ -1,28 +1,46 @@
 using System;
 using Core;
+using Cysharp.Threading.Tasks;
 using R3;
 using CompositeDisposable = R3.CompositeDisposable;
 
 namespace Ui
 {
-    public class PauseResumePresenter : IDisposable
+    public class PauseMenuPresenter : IDisposable
     {
         private readonly CompositeDisposable _compositeDisposable;
         private readonly PauseResumeModel _pauseResumeModel;
+        private readonly IInput _input;
         private readonly IPauseResumeView _pauseResumeView;
+        private bool _isPaused;
 
-        public PauseResumePresenter(PauseResumeModel pauseResumeModel, IPauseResumeView pauseResumeView)
+        public PauseMenuPresenter(PauseResumeModel pauseResumeModel, IPauseResumeView pauseResumeView, IInput input)
         {
             _pauseResumeModel = pauseResumeModel;
             _pauseResumeView = pauseResumeView;
+            _input = input;
+            
             _compositeDisposable = new CompositeDisposable();
 
             _pauseResumeView.OnDestroyed += Dispose;
             _pauseResumeView.OnPauseMenuClicked += HandleViewClick;
+            _input.OnPauseClicked += HandleClick;
             
             _pauseResumeModel.CurrentState
                 .Subscribe(HandleViewDisplay)
                 .AddTo(_compositeDisposable);
+        }
+        
+        private void HandleClick()
+        {
+            if (!_isPaused)
+            {
+                _pauseResumeModel.Pause().Forget();
+            }
+            else
+            {
+                _pauseResumeModel.Resume().Forget();
+            }
         }
 
         private void HandleViewDisplay(GameState state)
@@ -60,6 +78,7 @@ namespace Ui
 
         public void Dispose()
         {
+            _input.OnPauseClicked -= HandleClick;
             _compositeDisposable.Dispose();
             _pauseResumeView.OnPauseMenuClicked -= HandleViewClick;
             _pauseResumeView.OnDestroyed -= Dispose;

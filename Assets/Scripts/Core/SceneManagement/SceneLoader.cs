@@ -12,8 +12,14 @@ namespace Core
         event Action OnLoaded;
         event Action OnUnload;
         event Action OnUnloaded;
-        UniTask LoadSceneById(string id, LoadSceneMode loadSceneMode = LoadSceneMode.Additive);
+        UniTask LoadSceneById(string id, LoadMode loadSceneMode = LoadMode.Additive);
         UniTask UnloadSceneById(string id);
+    }
+
+    public enum LoadMode
+    {
+        Single,
+        Additive
     }
     
     public class SceneLoader : ISceneLoader
@@ -37,16 +43,11 @@ namespace Core
             _sceneInstances = new Dictionary<string, SceneInstance>();
         }
 
-        public async UniTask LoadSceneById(string id, LoadSceneMode loadSceneMode = LoadSceneMode.Additive)
+        public async UniTask LoadSceneById(string id, LoadMode loadSceneMode = LoadMode.Additive)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 _logger.LogWarning("Scene id is null");
-                return;
-            }
-
-            if (IsSceneLoaded(id))
-            {
                 return;
             }
             
@@ -56,7 +57,22 @@ namespace Core
             var loadingScene = await _addressableLoader.LoadScene(LoadingSceneId, LoadSceneMode.Single);
             await _cameraManager.SetActiveCamera(CustomCameraType.LoadCamera);
             SceneManager.SetActiveScene(loadingScene.Scene);
-            var targetScene = await _addressableLoader.LoadScene(id, loadSceneMode);
+
+            LoadSceneMode sceneMode;
+
+            switch (loadSceneMode)
+            {
+                case LoadMode.Single:
+                    sceneMode = LoadSceneMode.Single;
+                    break;
+                case LoadMode.Additive:
+                    sceneMode = LoadSceneMode.Additive;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(loadSceneMode), loadSceneMode, null);
+            }
+            
+            var targetScene = await _addressableLoader.LoadScene(id, sceneMode);
             SceneManager.SetActiveScene(targetScene.Scene);
             _sceneInstances[id] = targetScene;
             OnLoaded?.Invoke();

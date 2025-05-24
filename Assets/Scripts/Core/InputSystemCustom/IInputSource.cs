@@ -5,13 +5,14 @@ namespace Core
     public interface IInputSource
     {
         Vector3 GetMoveDirection();
-        bool IsJumpPressed();
-        bool IsUsePressed();
+        bool Jumped();
+        bool Pressed();
         bool IsRunning();
-        bool IsPausePressed();
-        bool IsClicked(out Vector3 pos);
+        bool Paused();
+        bool Clicked(out Vector3 pos);
     }
 
+    //TODO сделать компановщик
     public sealed class KeyboardSource : IInputSource
     {
         private readonly InputConfig _inputConfig;
@@ -42,7 +43,7 @@ namespace Core
             return Input.GetKey(_inputConfig.GetKeyboardKey(action)) ? direction : Vector3.zero;
         }
 
-        public bool IsJumpPressed()
+        public bool Jumped()
         {
             if (Input.GetKeyDown(_inputConfig.GetKeyboardKey(InputAction.Jump)))
             {
@@ -52,7 +53,7 @@ namespace Core
             return false;
         }
 
-        public bool IsUsePressed()
+        public bool Pressed()
         {
             if (Input.GetKeyDown(_inputConfig.GetKeyboardKey(InputAction.Use)))
             {
@@ -72,7 +73,7 @@ namespace Core
             return false;
         }
 
-        public bool IsPausePressed()
+        public bool Paused()
         {
             if (Input.GetKeyDown(_inputConfig.GetKeyboardKey(InputAction.Pause)))
             {
@@ -82,7 +83,7 @@ namespace Core
             return false;
         }
 
-        public bool IsClicked(out Vector3 pos)
+        public bool Clicked(out Vector3 pos)
         {
             pos = Vector3.zero;
             var button = _inputConfig.GetMouseKey(InputAction.Click);

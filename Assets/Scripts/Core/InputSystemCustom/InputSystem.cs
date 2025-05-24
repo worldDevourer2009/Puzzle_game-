@@ -100,7 +100,7 @@ namespace Core
 
         private void HandlePause()
         {
-            var isPauseClicked = _inputSource.IsPausePressed();
+            var isPauseClicked = _inputSource.Paused();
 
             if (!isPauseClicked)
             {
@@ -137,7 +137,7 @@ namespace Core
 
         private void HandleClick()
         {
-            var isClicked = _inputSource.IsClicked(out var pos);
+            var isClicked = _inputSource.Clicked(out var pos);
 
             if (!isClicked)
             {
@@ -163,7 +163,7 @@ namespace Core
 
         private void HandleJump()
         {
-            var isJumping = _inputSource.IsJumpPressed();
+            var isJumping = _inputSource.Jumped();
 
             if (!isJumping)
             {
@@ -175,7 +175,7 @@ namespace Core
         
         private void HandleUse()
         {
-            var isUsing = _inputSource.IsUsePressed();
+            var isUsing = _inputSource.Pressed();
 
             if (!isUsing)
             {

@@ -38,12 +38,16 @@ namespace Core
 
         public GameState? NextState(GameTrigger trigger)
         {
-            return trigger switch
+            switch (trigger)
             {
-                GameTrigger.Resume => GameState.Resume,
-                GameTrigger.QuitToMenu => GameState.MainMenu,
-                _ => null
-            };
+                case GameTrigger.QuitToMenu:
+                case GameTrigger.GoToMainMenu:
+                    return GameState.MainMenu;
+                case GameTrigger.Resume:
+                    return GameState.Resume;
+            }
+
+            return null;
         }
     }
 }

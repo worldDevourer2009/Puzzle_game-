@@ -15,7 +15,7 @@ namespace Installers
                 .AsCached();
             
             Container.Bind<IStepable>()
-                .To<StepComponent>()
+                .To<StepLogic>()
                 .AsCached();
             
             Container.Bind<IJumpable>()
@@ -27,7 +27,7 @@ namespace Installers
                 .AsCached();
             
             Container.Bind<IRotatable>()
-                .To<RotationComponent>()
+                .To<RotationLogic>()
                 .AsCached();
 
             Container.Bind<Cube>()
@@ -47,7 +47,7 @@ namespace Installers
                 .FromComponentInHierarchy()
                 .AsSingle();
 
-            Container.BindInterfacesAndSelfTo<PauseResumePresenter>()
+            Container.BindInterfacesAndSelfTo<PauseMenuPresenter>()
                 .AsSingle()
                 .NonLazy();
         }

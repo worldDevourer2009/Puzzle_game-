@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace Game
 {
-    public sealed class RotationComponent : IRotatable
+    public sealed class RotationLogic : IRotatable
     {
-        public RotationComponent()
+        public RotationLogic()
         {
         }
 

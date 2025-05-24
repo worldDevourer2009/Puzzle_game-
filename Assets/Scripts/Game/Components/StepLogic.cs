@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class StepComponent : IStepable
+    public class StepLogic : IStepable
     {
         private const float MaxStepSlopeAngle = 45;
         private const float StepCheckDistance = 0.3f;
@@ -12,7 +12,7 @@ namespace Game
         private readonly IRaycaster _raycaster;
         private readonly LayerMask _stepLayerMask = LayerMask.GetMask("Default");
 
-        public StepComponent(IRaycaster raycaster)
+        public StepLogic(IRaycaster raycaster)
         {
             _raycaster = raycaster;
         }
