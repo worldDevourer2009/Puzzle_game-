@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace Game
 {
-    public class MoveComponent : IMoveable
+    public class MoveLogic : IMoveable
     {
-        public MoveComponent()
+        public MoveLogic()
         {
         }
 

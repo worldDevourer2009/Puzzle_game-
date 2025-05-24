@@ -11,7 +11,7 @@ namespace Installers
         public override void InstallBindings()
         {
             Container.Bind<IMoveable>()
-                .To<MoveComponent>()
+                .To<MoveLogic>()
                 .AsCached();
             
             Container.Bind<IStepable>()
@@ -19,11 +19,11 @@ namespace Installers
                 .AsCached();
             
             Container.Bind<IJumpable>()
-                .To<JumpComponent>()
+                .To<JumpLogic>()
                 .AsCached();
             
             Container.Bind<IGroundable>()
-                .To<GroundableComponent>()
+                .To<GroundableLogic>()
                 .AsCached();
             
             Container.Bind<IRotatable>()
@@ -60,7 +60,7 @@ namespace Installers
                 .NonLazy();
             
             Container.Bind<ICameraController>()
-                .To<PlayerCameraControllerComponent>()
+                .To<PlayerCameraLogic>()
                 .AsSingle();
             
             Container

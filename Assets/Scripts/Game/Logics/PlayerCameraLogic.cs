@@ -6,7 +6,7 @@ using ILogger = Core.ILogger;
 
 namespace Game
 {
-    public sealed class PlayerCameraControllerComponent : ICameraController, IDisposable
+    public sealed class PlayerCameraLogic : ICameraController, IDisposable
     {
         private readonly InputConfig _inputConfig;
         private readonly ICameraManager _cameraManager;
@@ -17,7 +17,7 @@ namespace Game
         private float _xRotation;
         private Camera _camera;
 
-        public PlayerCameraControllerComponent(InputConfig inputConfig,
+        public PlayerCameraLogic(InputConfig inputConfig,
             ICameraManager cameraManager, IPlayerInputHandler playerInputHandler, ILogger logger)
         {
             _xRotation = 0f;

@@ -4,7 +4,7 @@ using ILogger = Core.ILogger;
 
 namespace Game
 {
-    public class GroundableComponent : IGroundable
+    public class GroundableLogic : IGroundable
     {
         private readonly IRaycaster _raycaster;
         private readonly ILogger _logger;
@@ -14,7 +14,7 @@ namespace Game
         private RaycastParams _raycastParams;
         private bool _isGrounded;
 
-        public GroundableComponent(IRaycaster raycaster, ILogger logger)
+        public GroundableLogic(IRaycaster raycaster, ILogger logger)
         {
             _raycaster = raycaster;
             _logger = logger;

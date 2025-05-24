@@ -4,7 +4,7 @@ using Zenject;
 
 namespace Game
 {
-    public class Cube : InteractableComponent
+    public class Cube : InteractableLogic
     {
         [SerializeField] private int _index;
         private ILevelManager _levelManager;

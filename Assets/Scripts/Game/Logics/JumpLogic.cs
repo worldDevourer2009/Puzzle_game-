@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace Game
 {
-    public class JumpComponent : IJumpable
+    public class JumpLogic : IJumpable
     {
-        public JumpComponent()
+        public JumpLogic()
         {
         }
 

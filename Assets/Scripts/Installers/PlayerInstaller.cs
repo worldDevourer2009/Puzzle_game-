@@ -9,7 +9,7 @@ namespace Installers
         public override void InstallBindings()
         {
             Container.Bind<ICameraController>()
-                .To<PlayerCameraControllerComponent>()
+                .To<PlayerCameraLogic>()
                 .AsCached()
                 .NonLazy();
 

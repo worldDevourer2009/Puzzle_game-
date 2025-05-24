@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public abstract class InteractableComponent : MonoBehaviour, IInteractable
+    public abstract class InteractableLogic : MonoBehaviour, IInteractable
     {
         public abstract void Interact();
         
