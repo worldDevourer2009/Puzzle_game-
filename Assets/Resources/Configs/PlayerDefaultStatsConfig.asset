@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerStats:
     Health: 10
-    Speed: 15
+    Speed: 5
     JumpForce: 407
-    RunSpeed: 21
+    RunSpeed: 15
     CrouchSpeed: 5
     GroundRaycastParams:
       Origin: {x: 0, y: 0, z: 0}

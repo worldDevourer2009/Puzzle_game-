@@ -12,7 +12,6 @@ namespace Core
         bool Clicked(out Vector3 pos);
     }
 
-    //TODO сделать компановщик
     public sealed class KeyboardSource : IInputSource
     {
         private readonly InputConfig _inputConfig;

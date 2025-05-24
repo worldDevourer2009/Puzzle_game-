@@ -68,8 +68,7 @@ namespace Installers
                 .To<PlayerCore>()
                 .AsSingle();
             
-            Container.Bind(typeof(IPlayerInteractor), typeof(IDisposable))
-                .To<PlayerInteractor>()
+            Container.BindInterfacesTo<PlayerInteractor>()
                 .AsSingle();
 
             Container.Bind(typeof(IPlayerController), typeof(IDisposable))

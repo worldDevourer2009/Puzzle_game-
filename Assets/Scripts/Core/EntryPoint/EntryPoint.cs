@@ -7,26 +7,20 @@ namespace Core
         private readonly IAsyncGroupLoader _asyncGroupLoader;
         private readonly IGameStateManager _gameStateManager;
         private readonly ILogger _logger;
-        private readonly IGameLoop _gameLoop;
 
         private const string MainGroup = "MainGroup";
         private string parrallel;
 
-        public EntryPoint(IAsyncGroupLoader asyncGroupLoader, IGameStateManager gameStateManager, ILogger logger, IGameLoop gameLoop)
+        public EntryPoint(IAsyncGroupLoader asyncGroupLoader, IGameStateManager gameStateManager, ILogger logger)
         {
             _asyncGroupLoader = asyncGroupLoader;
             _gameStateManager = gameStateManager;
             _logger = logger;
-            _gameLoop = gameLoop;
-            
-            if (_gameLoop != null)
-            {
-                _gameLoop.AddToGameLoop(GameLoopType.Awake, this);
-            }
         }
 
         public async void AwakeCustom()
         {
+            
             CreatePlayableGroup();
             await RunGroups();
         }

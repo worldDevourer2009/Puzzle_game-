@@ -30,9 +30,8 @@ namespace Core
 
     public class InputSystem : IInput, IUpdatable, IFixedUpdatable, IAwakable
     {
-        private readonly IGameLoop _gameLoop;
         private readonly ICameraManager _cameraManager;
-        private readonly IInputSource _inputSource;
+        private readonly IInputSourceComposite _inputSource;
         private readonly ILookSource _lookSource;
         private readonly ILogger _logger;
         
@@ -52,20 +51,12 @@ namespace Core
 
         public event Action<Vector3> OnLookAction;
 
-        public InputSystem(IGameLoop gameLoop, ILookSource lookSource, IInputSource inputSource, ILogger logger, ICameraManager cameraManager)
+        public InputSystem(ILookSource lookSource, IInputSourceComposite inputSource, ILogger logger, ICameraManager cameraManager)
         {
-            _gameLoop = gameLoop;
             _lookSource = lookSource;
             _inputSource = inputSource;
             _logger = logger;
             _cameraManager = cameraManager;
-            
-            if (_gameLoop != null)
-            {
-                _gameLoop.AddToGameLoop(GameLoopType.Update, this);
-                _gameLoop.AddToGameLoop(GameLoopType.FixedUpdate, this);
-                _gameLoop.AddToGameLoop(GameLoopType.Awake, this);
-            }
         }
         
         public void AwakeCustom()

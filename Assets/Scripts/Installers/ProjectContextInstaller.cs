@@ -9,6 +9,10 @@ namespace Installers
     {
         public override void InstallBindings()
         {
+            Container.BindInterfacesTo<GameLoopRunner>()
+                .AsSingle()
+                .NonLazy();
+            
             Container.Bind<IGameManager>()
                 .To<GameManager>()
                 .AsSingle()
@@ -46,7 +50,7 @@ namespace Installers
                 .To<RaycasterSystem>()
                 .AsSingle();
             
-            Container.Bind<EntryPoint>()
+            Container.BindInterfacesAndSelfTo<EntryPoint>()
                 .AsSingle()
                 .NonLazy();
             
@@ -74,11 +78,14 @@ namespace Installers
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<IInput>()
-                .To<InputSystem>()
+            Container.BindInterfacesTo<InputSystem>()
                 .AsSingle()
                 .NonLazy();
 
+            Container.BindInterfacesTo<InputSourceComposite>()
+                .AsSingle()
+                .NonLazy();
+            
             Container.Bind<IInputSource>()
                 .To<KeyboardSource>()
                 .AsCached()
