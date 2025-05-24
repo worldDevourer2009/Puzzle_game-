@@ -13,9 +13,7 @@ namespace Game
         event Action OnIdle;
         event Action OnFall;
 
-        void Initialize(PlayerFacade entity, Rigidbody rb, float speed, float runSpeed, float jumpForce,
-            RaycastParams groundDistance);
-
+        void Initialize(PlayerFacade entity, Rigidbody rb);
         void Move(Vector3 direction, bool isRunning = false);
         void Rotate(Vector3 direction);
         void Jump();
@@ -35,7 +33,8 @@ namespace Game
         private readonly Core.ILogger _logger;
         private readonly ICameraManager _cameraManager;
         private readonly IRaycaster _raycaster;
-        
+
+        private readonly IPlayerDataHolder _playerDataHolder;
         private readonly IMoveable _moveable;
         private readonly IJumpable _jumpable;
         private readonly IRotatable _rotatable;
@@ -46,18 +45,14 @@ namespace Game
         private GameObject _gameObject;
         private Rigidbody _rb;
         private Camera _playerCam;
-
-        private float _speed;
-        private float _runSpeed;
         private bool _isGrounded;
-        private float _jumpForce;
-        private RaycastParams _groundParams;
 
         private MoveCallBack _moveCallBack;
         private AlwaysTrueFilter _alwaysTrueFilter;
         private RaycastParams _moveParams;
 
         public PlayerCore(Core.ILogger logger,
+            IPlayerDataHolder dataHolder,
             IMoveable moveable,
             IJumpable jumpable,
             IRotatable rotatable,
@@ -67,6 +62,7 @@ namespace Game
             IRaycaster raycaster)
         {
             _logger = logger;
+            _playerDataHolder = dataHolder;
             _moveable = moveable;
             _jumpable = jumpable;
             _rotatable = rotatable;
@@ -76,8 +72,7 @@ namespace Game
             _raycaster = raycaster;
         }
 
-        public void Initialize(PlayerFacade entity, Rigidbody rb, float speed, float runSpeed, float jumpForce,
-            RaycastParams groundDistance)
+        public void Initialize(PlayerFacade entity, Rigidbody rb)
         {
             _entity = entity;
 
@@ -109,11 +104,6 @@ namespace Game
             {
                 _playerCam = playerCam;
             }
-
-            _speed = speed;
-            _runSpeed = runSpeed;
-            _jumpForce = jumpForce;
-            _groundParams = groundDistance;
         }
 
         public void Move(Vector3 direction, bool isRunning = false)
@@ -123,7 +113,7 @@ namespace Game
                 return;
             }
 
-            _isGrounded = _groundable.IsGrounded(_entity, _groundParams);
+            _isGrounded = _groundable.IsGrounded(_entity, _playerDataHolder.PlayerGroundableParams.Value);
 
             if (CheckMoveDir(direction, out var moveDir))
             {
@@ -136,7 +126,7 @@ namespace Game
             }
 
             Step(moveDir);
-            _moveable.Move(_rb, !isRunning || !_isGrounded ? _speed : _runSpeed, moveDir);
+            _moveable.Move(_rb, !isRunning || !_isGrounded ? _playerDataHolder.PlayerSpeed.Value : _playerDataHolder.PlayerRunSpeed.Value, moveDir);
             FixZRotation();
             OnMove?.Invoke(direction, isRunning);
         }
@@ -199,14 +189,14 @@ namespace Game
                 return;
             }
 
-            _isGrounded = _groundable.IsGrounded(_entity, _groundParams);
+            _isGrounded = _groundable.IsGrounded(_entity, _playerDataHolder.PlayerGroundableParams.Value);
 
             if (!_isGrounded)
             {
                 return;
             }
 
-            _jumpable.Jump(_rb, _jumpForce);
+            _jumpable.Jump(_rb, _playerDataHolder.PlayerJumpForce.Value);
             OnJump?.Invoke();
         }
 

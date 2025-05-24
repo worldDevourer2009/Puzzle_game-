@@ -23,7 +23,7 @@ namespace Game
         Transform EyesTransform { get; }
         Transform BottomFoot { get; }
         Transform TopFoot { get; }
-        void Initialize(PlayerStats stats);
+        void Initialize();
         void Move(Vector3 direction, bool run = false);
         void Jump();
         void Use();

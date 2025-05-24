@@ -1,4 +1,6 @@
+using System;
 using Core;
+using Game;
 using Zenject;
 
 namespace Installers
@@ -100,6 +102,11 @@ namespace Installers
                 .To<SceneLoader>()
                 .AsSingle()
                 .NonLazy();
+
+            Container
+                .Bind(typeof(IPlayerDataHolder), typeof(IDisposable))
+                .To<PlayerDataHolder>()
+                .AsSingle();
 
             BindStates();
         }

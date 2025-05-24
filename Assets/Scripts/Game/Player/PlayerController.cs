@@ -15,7 +15,6 @@ namespace Game
     {
         private readonly ILevelManager _levelManager;
         private readonly IPlayerInputHandler _playerInputHandler;
-        private readonly PlayerDefaultStatsConfig _defaultStatsConfig;
 
         private IPlayerFacade _playerFacade;
 
@@ -25,12 +24,10 @@ namespace Game
         private Action _jumpHandler;
         private Action _idleHandler;
 
-        public PlayerController(ILevelManager levelManager, IPlayerInputHandler playerInputHandler,
-            PlayerDefaultStatsConfig defaultStatsConfig)
+        public PlayerController(ILevelManager levelManager, IPlayerInputHandler playerInputHandler)
         {
             _playerInputHandler = playerInputHandler;
             _levelManager = levelManager;
-            _defaultStatsConfig = defaultStatsConfig;
 
             if (_levelManager == null)
             {
@@ -50,7 +47,7 @@ namespace Game
                 _playerFacade = facade;
             }
 
-            _playerFacade.Initialize(_defaultStatsConfig.playerStats);
+            _playerFacade.Initialize();
 
             InitInputSubs();
 

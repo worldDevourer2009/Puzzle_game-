@@ -1,5 +1,4 @@
 using System;
-using Core;
 using UnityEngine;
 using Zenject;
 
@@ -61,9 +60,9 @@ namespace Game
             _core.OnIdle += _idleHandler;
         }
 
-        public void Initialize(PlayerStats stats)
+        public void Initialize()
         {
-            _core.Initialize(this, _rigidbody, stats.Speed, stats.RunSpeed, stats.JumpForce, stats.GroundRaycastParams);
+            _core.Initialize(this, _rigidbody);
             _animation.InitAnimation(this);
         }
 

@@ -1,5 +1,6 @@
 using ZLinq;
 using Cysharp.Threading.Tasks;
+using Game;
 using ModestTree;
 
 namespace Core
@@ -20,6 +21,7 @@ namespace Core
     public class GameManager : IGameManager
     {
         private readonly ScenesConfig _scenesConfig;
+        private readonly IPlayerDataHolder _playerDataHolder;
         private readonly ISceneLoader _sceneLoader;
         private readonly ILevelManager _levelManager;
         private readonly ICameraManager _cameraManager;
@@ -30,7 +32,7 @@ namespace Core
         private string _lastLoadedLevel;
 
         public GameManager(ISceneLoader sceneLoader, ILevelManager levelManager, ScenesConfig scenesConfig, 
-            ICameraManager cameraManager, LevelsConfig levelsConfig, IGameLoop gameLoop, ILogger logger)
+            ICameraManager cameraManager, LevelsConfig levelsConfig, IGameLoop gameLoop, IPlayerDataHolder playerDataHolder,  ILogger logger)
         {
             _sceneLoader = sceneLoader;
             _levelManager = levelManager;
@@ -38,6 +40,7 @@ namespace Core
             _cameraManager = cameraManager;
             _levelsConfig = levelsConfig;
             _gameLoop = gameLoop;
+            _playerDataHolder = playerDataHolder;
             _logger = logger;
         }
 
@@ -102,6 +105,7 @@ namespace Core
                 return;
             }
             
+            await _playerDataHolder.InitData();
             var op = _levelManager.LoadLevelByName(levelName.LevelName);
             await op;
         }
