@@ -16,6 +16,7 @@ namespace Core
         
         public float MaxStepSlopeAngle;
         public float StepCheckDistance;
+        public float StepHeight;
         public float StepMoveDistance;
     }
 }

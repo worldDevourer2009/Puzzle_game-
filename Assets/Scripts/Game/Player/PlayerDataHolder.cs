@@ -19,13 +19,15 @@ namespace Game
         MaxStepSlopeAngle,
         StepCheckDistance,
         StepMoveDistance,
+        StepHeight,
     }
 
     public enum PlayerInteractionDataType
     {
         LayerMask,
         InteractionDistance,
-        LayerMaskStep
+        LayerMaskStep,
+        MoveLayerMask
     }
 
     public interface IReactiveWrapper
@@ -58,10 +60,12 @@ namespace Game
         public UniTask InitData();
         ReactiveProperty<LayerMask> PlayerInteractionLayerMask { get; }
         ReactiveProperty<LayerMask> PlayerStepInteractionLayerMask { get; }
+        ReactiveProperty<LayerMask> PlayerMoveInteractionLayerMask { get; }
         ReactiveProperty<float> PlayerInteractionDistance { get; }
         ReactiveProperty<float> PlayerLookClamp { get; }
         ReactiveProperty<float> PlayerSpeed { get; }
         ReactiveProperty<float> PlayerMaxStepSlopeAngle { get; }
+        ReactiveProperty<float> PlayerStepHeight { get; }
         ReactiveProperty<float> PlayerStepCheckDistance { get; }
         ReactiveProperty<float> PlayerStepMoveDistance { get; }
         ReactiveProperty<float> PlayerRunSpeed { get; }
@@ -81,6 +85,7 @@ namespace Game
 
         public ReactiveProperty<LayerMask> PlayerInteractionLayerMask => _playerInteractionMask;
         public ReactiveProperty<LayerMask> PlayerStepInteractionLayerMask => _playerStepInteractionMask;
+        public ReactiveProperty<LayerMask> PlayerMoveInteractionLayerMask => _playerMoveInteractionMask;
         public ReactiveProperty<float> PlayerInteractionDistance => _playerInteractionDistance;
         public ReactiveProperty<float> PlayerLookClamp => _playerLookClamp;
 
@@ -91,6 +96,7 @@ namespace Game
         public ReactiveProperty<float> PlayerCrouchSpeed => _playerCrouchSpeed;
 
         public ReactiveProperty<float> PlayerMaxStepSlopeAngle => _playerMaxStepSlopeAngle;
+        public ReactiveProperty<float> PlayerStepHeight => _playerStepHeight;
         public ReactiveProperty<float> PlayerStepCheckDistance => _playerStepCheckDistance;
         public ReactiveProperty<float> PlayerStepMoveDistance => _playerStepMoveDistance;
         
@@ -100,6 +106,7 @@ namespace Game
 
         private readonly ReactiveProperty<LayerMask> _playerInteractionMask = new();
         private readonly ReactiveProperty<LayerMask> _playerStepInteractionMask = new();
+        private readonly ReactiveProperty<LayerMask> _playerMoveInteractionMask = new();
         private readonly ReactiveProperty<float> _playerInteractionDistance = new();
         
         private readonly ReactiveProperty<float> _playerLookClamp = new();
@@ -110,6 +117,7 @@ namespace Game
         private readonly ReactiveProperty<float> _playerJumpForce = new();
         private readonly ReactiveProperty<float> _playerCrouchSpeed = new();
         
+        private readonly ReactiveProperty<float> _playerStepHeight = new();
         private readonly ReactiveProperty<float> _playerMaxStepSlopeAngle = new();
         private readonly ReactiveProperty<float> _playerStepCheckDistance = new();
         private readonly ReactiveProperty<float> _playerStepMoveDistance = new();
@@ -138,6 +146,7 @@ namespace Game
             _playerStepCheckDistance.Value = playerStats.StepCheckDistance;
             _playerMaxStepSlopeAngle.Value = playerStats.MaxStepSlopeAngle;
             _playerStepMoveDistance.Value = playerStats.StepMoveDistance;
+            _playerStepHeight.Value = playerStats.StepHeight;
 
             _playerDataStats = new Dictionary<PlayerDataType, IReactiveWrapper>
             {
@@ -149,7 +158,8 @@ namespace Game
                 { PlayerDataType.LookClamp, new ReactiveWrapper<float>(_playerLookClamp) },
                 { PlayerDataType.MaxStepSlopeAngle, new ReactiveWrapper<float>(_playerMaxStepSlopeAngle) },
                 { PlayerDataType.StepCheckDistance, new ReactiveWrapper<float>(_playerStepCheckDistance) },
-                { PlayerDataType.StepMoveDistance, new ReactiveWrapper<float>(_playerStepMoveDistance) }
+                { PlayerDataType.StepMoveDistance, new ReactiveWrapper<float>(_playerStepMoveDistance) },
+                { PlayerDataType.StepHeight, new ReactiveWrapper<float>(_playerStepHeight) }
             };
 
             var playerInteractionStats = _playerInteractionConfig.PlayerInteraction;
@@ -157,12 +167,14 @@ namespace Game
             _playerInteractionMask.Value = playerInteractionStats.LayerMask;
             _playerInteractionDistance.Value = playerInteractionStats.InteractionDistance;
             _playerStepInteractionMask.Value = playerInteractionStats.StepLayerMask;
+            _playerMoveInteractionMask.Value = playerInteractionStats.MoveLayerMask;
 
             _playerInteractionSetters = new Dictionary<PlayerInteractionDataType, IReactiveWrapper>
             {
                 { PlayerInteractionDataType.LayerMask, new ReactiveWrapper<LayerMask>(_playerInteractionMask) },
                 { PlayerInteractionDataType.InteractionDistance, new ReactiveWrapper<float>(_playerInteractionDistance) },
-                { PlayerInteractionDataType.LayerMaskStep, new ReactiveWrapper<LayerMask>(_playerStepInteractionMask) }
+                { PlayerInteractionDataType.LayerMaskStep, new ReactiveWrapper<LayerMask>(_playerStepInteractionMask) },
+                { PlayerInteractionDataType.MoveLayerMask, new ReactiveWrapper<LayerMask>(_playerMoveInteractionMask) },
             };
 
             return UniTask.CompletedTask;

@@ -19,41 +19,33 @@ namespace Game
         {
             var dir = moveDirection.normalized;
 
-            var bottomParams = new RaycastParams
+            if (!TryCast(bottomRayOrigin.position, dir, _playerDataHolder.PlayerStepCheckDistance.Value,
+                    out var frontHit))
             {
-                Origin = bottomRayOrigin.position,
-                Direction = dir,
-                MaxDistance = _playerDataHolder.PlayerStepCheckDistance.Value,
-                LayerMask = _playerDataHolder.PlayerStepInteractionLayerMask.Value
-            };
+                return false;
+            }
 
-            var bottomCallback = new NormalCaptureCallback();
-            var filter = new AlwaysTrueFilter();
+            if (TryCast(topRayOrigin.position, dir, _playerDataHolder.PlayerStepCheckDistance.Value, out _))
+            {
+                return false;
+            }
+
+            var downOrigin = bottomRayOrigin.position + dir * _playerDataHolder.PlayerStepCheckDistance.Value +
+                             Vector3.up * _playerDataHolder.PlayerStepHeight.Value;
             
-            _raycaster.Raycast(ref bottomParams, ref filter, ref bottomCallback);
-
-            if (!bottomCallback.HasHit)
+            var downDist = _playerDataHolder.PlayerStepHeight.Value + 0.05f;
+            
+            if (!TryCast(downOrigin, Vector3.down, downDist, out var downHit))
             {
                 return false;
             }
 
-            if (Vector3.Angle(bottomCallback.HitNormal, Vector3.up) > _playerDataHolder.PlayerMaxStepSlopeAngle.Value)
+            if (Vector3.Angle(downHit.normal, Vector3.up) > _playerDataHolder.PlayerMaxStepSlopeAngle.Value)
             {
                 return false;
             }
 
-            var topParams = new RaycastParams
-            {
-                Origin = topRayOrigin.position,
-                Direction = dir,
-                MaxDistance = _playerDataHolder.PlayerStepCheckDistance.Value,
-                LayerMask = _playerDataHolder.PlayerStepInteractionLayerMask.Value
-            };
-
-            var topCallback = new HitDetectedCallback();
-            _raycaster.Raycast(ref topParams, ref filter, ref topCallback);
-
-            return topCallback.HasHit;
+            return true;
         }
 
         public void Step(Rigidbody rb, Vector3 moveDirection, Transform bottomRayOrigin, Transform topRayOrigin,
@@ -61,15 +53,39 @@ namespace Game
         {
             if (!CanStep(rb, moveDirection, bottomRayOrigin, topRayOrigin))
             {
-                Logger.Instance.Log("Can't step");
                 return;
             }
-            
+
             Logger.Instance.Log("Stepping");
 
             var dir = moveDirection.normalized;
             var stepOffset = dir * _playerDataHolder.PlayerStepMoveDistance.Value + Vector3.up * stepHeightOffset;
             rb.MovePosition(rb.position + stepOffset);
+        }
+
+        private bool TryCast(Vector3 origin, Vector3 dir, float dist, out RaycastHit hit)
+        {
+            hit = default;
+
+            var prms = new RaycastParams
+            {
+                Origin = origin,
+                Direction = dir,
+                MaxDistance = dist,
+                LayerMask = _playerDataHolder.PlayerStepInteractionLayerMask.Value
+            };
+
+            var callback = new HitDetectedCallback();
+            var filter = new AlwaysTrueFilter();
+
+            _raycaster.Raycast(ref prms, ref filter, ref callback);
+
+            if (callback.HasHit)
+            {
+                hit = callback.Hit;
+            }
+
+            return callback.HasHit;
         }
     }
 }

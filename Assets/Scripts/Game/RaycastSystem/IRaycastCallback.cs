@@ -42,7 +42,6 @@ namespace Core
 
         public void OnHit(in RaycastHit hit)
         {
-            Debug.Log($"Colliding with {hit.collider.name} move set to false");
             CanMove = false;
         }
     }
@@ -50,10 +49,12 @@ namespace Core
     public struct HitDetectedCallback : IRaycastCallback
     {
         public bool HasHit;
+        public RaycastHit Hit;
         
         public void OnHit(in RaycastHit hit)
         {
             HasHit = true;
+            Hit = hit;
         }
     }
 

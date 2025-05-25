@@ -122,10 +122,10 @@ namespace Game
             
             if (!CanMove(moveDir))
             {
+                Step(moveDir);
                 return;
             }
             
-            Step(moveDir);
             _moveable.Move(_rb, !isRunning || !_isGrounded ? _playerDataHolder.PlayerSpeed.Value : _playerDataHolder.PlayerRunSpeed.Value, moveDir);
             FixZRotation();
             OnMove?.Invoke(direction, isRunning);
@@ -138,12 +138,17 @@ namespace Game
 
         private bool CanMove(Vector3 direction)
         {
+            if (_entity.EntityGA == null)
+            {
+                return false;
+            }
+            
             _moveParams = new RaycastParams()
             {
                 MaxDistance = 0.9f,
-                Origin = _rb.position,
+                Origin = _entity.BottomFoot.position,
                 Direction = direction,
-                LayerMask = LayerMask.GetMask("Walls")
+                LayerMask = _playerDataHolder.PlayerMoveInteractionLayerMask.Value
             };
 
             _moveCallBack = new MoveCallBack()
