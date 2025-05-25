@@ -2,20 +2,22 @@ using Cysharp.Threading.Tasks;
 
 namespace Core
 {
-    public class EntryPoint : IAwakable
+    public class EntryPoint : IAwakable, IPrioritized
     {
+        public int Priority => 1;
+        
         private readonly IAsyncGroupLoader _asyncGroupLoader;
         private readonly IGameStateManager _gameStateManager;
-        private readonly ILogger _logger;
+        private readonly IAudioSystem _audioSystem;
 
         private const string MainGroup = "MainGroup";
         private string parrallel;
 
-        public EntryPoint(IAsyncGroupLoader asyncGroupLoader, IGameStateManager gameStateManager, ILogger logger)
+        public EntryPoint(IAsyncGroupLoader asyncGroupLoader, IGameStateManager gameStateManager, IAudioSystem audioSystem)
         {
             _asyncGroupLoader = asyncGroupLoader;
             _gameStateManager = gameStateManager;
-            _logger = logger;
+            _audioSystem = audioSystem;
         }
 
         public async void AwakeCustom()
@@ -32,8 +34,10 @@ namespace Core
 
         private void CreatePlayableGroup()
         {
-            _asyncGroupLoader.CreateGroup(AsyncGroupType.Sequential, MainGroup, true);
+            _asyncGroupLoader.CreateGroup(AsyncGroupType.Sequential, MainGroup);
+            
             _asyncGroupLoader.AddToGroup(MainGroup, () => _gameStateManager.InitStates());
+            _asyncGroupLoader.AddToGroup(MainGroup, () => _audioSystem.InitAudioSystem());
             _asyncGroupLoader.AddToGroup(MainGroup, () => _gameStateManager.SetState(GameState.MainMenu));
         }
     }

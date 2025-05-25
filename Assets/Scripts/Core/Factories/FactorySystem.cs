@@ -8,6 +8,10 @@ namespace Core
     public interface IFactorySystem
     {
         UniTask<GameObject> Create(string id);
+        UniTask<T> Create<T>(string id) where T : Component;
+        UniTask<T> Create<T>(string id, Vector3 position) where T : Component;
+        UniTask<T> Create<T>(string id, Transform parent) where T : Component;
+        UniTask<T> Create<T>(string id, Vector3 position, Transform parent) where T : Component;
         UniTask<GameObject> Create(string id, Vector3 position);
         UniTask<GameObject> Create(string id, Transform parent);
         UniTask<GameObject> Create(string id, Vector3 position, Transform parent);
@@ -15,7 +19,7 @@ namespace Core
         void Release(string id, GameObject obj);
         void Inject<T>(T objToInject);
     }
-    
+
     public class FactorySystem : IFactorySystem
     {
         private readonly IPoolSystem _poolSystem;
@@ -31,6 +35,48 @@ namespace Core
         {
             var (result, container) = await InternalCreate(id);
             container.InjectGameObject(result);
+            return result;
+        }
+
+        public async UniTask<T> Create<T>(string id) where T : Component
+        {
+            var (result, container) = await InternalCreate<T>(id);
+            container.Inject(result);
+            return result;
+        }
+
+        public async UniTask<T> Create<T>(string id, Vector3 position) where T : Component
+        {
+            var (result, container) = await InternalCreate<T>(id);
+            container.Inject(result);
+            result.transform.position = position;
+            return result;
+        }
+
+        public async UniTask<T> Create<T>(string id, Transform parent) where T : Component
+        {
+            var (result, container) = await InternalCreate<T>(id);
+            container.Inject(result);
+            
+            if (parent != null)
+            {
+                result.transform.SetParent(parent);
+            }
+
+            return result;
+        }
+
+        public async UniTask<T> Create<T>(string id, Vector3 position, Transform parent) where T : Component
+        {
+            var (result, container) = await InternalCreate<T>(id);
+            container.Inject(result);
+
+            if (parent != null)
+            {
+                result.transform.position = position;
+                result.transform.SetParent(parent);
+            }
+
             return result;
         }
 
@@ -63,23 +109,23 @@ namespace Core
         {
             mat.enableInstancing = true;
             var obj = await _poolSystem.GetObject(id);
-            
+
             var renderParams = new RenderParams(mat)
             {
                 worldBounds = new Bounds(obj.transform.position, Vector3.one * 10f)
             };
-            
+
             var mesh = meshFilter.sharedMesh;
-            
+
             if (mesh == null)
             {
                 return obj;
             }
-            
-            data.Matrix4X4 = obj.transform.localToWorldMatrix; 
+
+            data.Matrix4X4 = obj.transform.localToWorldMatrix;
             var instances = new NativeArray<InstanceData>(1, Allocator.Temp);
             instances[0] = data;
-            
+
             Graphics.RenderMeshInstanced(renderParams, mesh, 0, instances, 1, 0);
             instances.Dispose();
 
@@ -104,8 +150,16 @@ namespace Core
             var context = _diContainer.ResolveFor(result);
             return (result, context);
         }
+
+        private async UniTask<(T result, DiContainer context)> InternalCreate<T>(string id) where T : Component
+        {
+            var asyncOp = _poolSystem.GetObject<T>(id);
+            var result = await asyncOp;
+            var context = _diContainer.ResolveFor(result);
+            return (result, context);
+        }
     }
-    
+
     public struct InstanceData
     {
         public Matrix4x4 Matrix4X4;

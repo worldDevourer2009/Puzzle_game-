@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a4b08f275d94b5cbd86c24133902b3e, type: 3}
+  m_Name: AudioDataConfig
+  m_EditorClassIdentifier: 
+  audioData:
+  - Category: 3
+    SoundType: 0
+    AudioClipId: 0
+    Is3D: 0
+    Volume: 0
+    Pitch: 0
+    Loop: 0
+    PlayOnAwake: 0
+    SpatialBlend: 0
+    MinDistance: 0
+    MaxDistance: 0
+    VolumeRolloff:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    PositionOffset: {x: 0, y: 0, z: 0}
+    Velocity: {x: 0, y: 0, z: 0}
+    DopplerLevel: 0
+    UseLowPassFilter: 0
+    LowPassCutoffFrequency: 0
+    UseHighPassFilter: 0
+    HighPassCutoffFrequency: 0
+    UseReverbFilter: 0
+    ReverbLevel: 0
+    Delay: 0
+    RandomPitchMin: 0
+    RandomPitchMax: 0
+    RandomVolumeMin: 0
+    RandomVolumeMax: 0
+    Priority: 0
+    DestroyOnEnd: 0
+    FadeInDuration: 0
+    FadeOutDuration: 0
+  maxSounds: 50

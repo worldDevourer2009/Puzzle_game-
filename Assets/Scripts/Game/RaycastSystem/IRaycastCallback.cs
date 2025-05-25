@@ -65,12 +65,7 @@ namespace Core
         {
             if (hit.collider.gameObject.layer == targetLayer)
             { 
-                Debug.Log("Setting to true");
                 OnGroundHit?.Invoke();
-            }
-            else
-            {
-                Debug.Log("Setting to false");
             }
         }
     }

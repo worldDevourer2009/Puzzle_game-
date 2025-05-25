@@ -90,6 +90,10 @@ namespace Installers
                 .To<KeyboardSource>()
                 .AsCached()
                 .NonLazy();
+
+            Container.BindInterfacesTo<AudioSystem>()
+                .AsSingle()
+                .NonLazy();
             
             Container.Bind<ILookSource>()
                 .To<LookSourceMouse>()
@@ -183,6 +187,14 @@ namespace Installers
             
             Container.Bind<CursorConfig>()
                 .FromResource("Configs/CursorConfig")
+                .AsSingle();
+            
+            Container.Bind<InternalSettingsConfig>()
+                .FromResource("Configs/InternalSettingsConfig")
+                .AsSingle();
+            
+            Container.Bind<AudioDataConfig>()
+                .FromResource("Configs/AudioDataConfig")
                 .AsSingle();
         }
     }

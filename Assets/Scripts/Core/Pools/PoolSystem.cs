@@ -6,8 +6,14 @@ namespace Core
 {
     public interface IPoolSystem
     {
-        UniTask Prewarm(string id, int count);
+        UniTask Prewarm(string id, int count, string parentName = null, bool dontDestroyOnLoad = false);
+
+        UniTask Prewarm<T>(string id, int count, string parentName = null, bool dontDestroyOnLoad = false)
+            where T : Component;
+
         UniTask<GameObject> GetObject(string id);
+        UniTask<T> GetObject<T>(string id) where T : Component;
+        void ReleaseObject<T>(string id, T component) where T : Component;
         void ReleaseObject(string id, GameObject obj);
     }
 
@@ -23,8 +29,8 @@ namespace Core
             _poolDictionary = new Dictionary<string, Queue<GameObject>>();
             _poolCompDictionary = new Dictionary<string, Queue<Component>>();
         }
-        
-        public async UniTask Prewarm(string id, int count)
+
+        public async UniTask Prewarm(string id, int count, string parentName = null, bool dontDestroyOnLoad = false)
         {
             if (!_poolDictionary.TryGetValue(id, out var queue))
             {
@@ -32,14 +38,78 @@ namespace Core
                 _poolDictionary[id] = queue;
             }
 
+            var parent = GetOrCreateParent(parentName, dontDestroyOnLoad);
             var toCreate = count - queue.Count;
 
             for (var i = 0; i < toCreate; i++)
             {
                 var obj = await CreateObject(id);
+
+                if (dontDestroyOnLoad)
+                {
+                    Object.DontDestroyOnLoad(obj);
+                }
+
+                if (parent != null)
+                {
+                    obj.transform.SetParent(parent);
+                }
+
                 obj.SetActive(false);
                 queue.Enqueue(obj);
             }
+        }
+
+        public async UniTask Prewarm<T>(string id, int count, string parentName = null, bool dontDestroyOnLoad = false)
+            where T : Component
+        {
+            if (!_poolDictionary.TryGetValue(id, out var queue))
+            {
+                queue = new Queue<GameObject>();
+                _poolDictionary[id] = queue;
+            }
+
+            var parent = GetOrCreateParent(parentName, dontDestroyOnLoad);
+
+            var toCreate = count - queue.Count;
+
+            for (var i = 0; i < toCreate; i++)
+            {
+                var obj = await CreateObject(id);
+
+                if (dontDestroyOnLoad)
+                {
+                    Object.DontDestroyOnLoad(obj);
+                }
+
+                if (parent != null)
+                {
+                    obj.transform.SetParent(parent);
+                }
+
+                obj.SetActive(false);
+                queue.Enqueue(obj);
+            }
+        }
+
+        private Transform GetOrCreateParent(string parentName, bool dontDestroyOnLoad)
+        {
+            var name = string.IsNullOrWhiteSpace(parentName) ? "Pool_Root" : parentName;
+            var existing = GameObject.Find(name);
+
+            if (existing != null)
+            {
+                return existing.transform;
+            }
+
+            var go = new GameObject(name);
+
+            if (dontDestroyOnLoad)
+            {
+                Object.DontDestroyOnLoad(go);
+            }
+
+            return go.transform;
         }
 
         private async UniTask<GameObject> CreateObject(string id)
@@ -56,7 +126,7 @@ namespace Core
                 queue = new Queue<GameObject>();
                 _poolDictionary[id] = queue;
             }
-            
+
             if (queue.Count == 0)
             {
                 return await CreateObject(id);
@@ -64,10 +134,41 @@ namespace Core
 
             var obj = queue.Dequeue();
             obj.SetActive(true);
-            
+
             return obj;
         }
-        
+
+        public async UniTask<T> GetObject<T>(string id) where T : Component
+        {
+            if (!_poolDictionary.TryGetValue(id, out var objQueue))
+            {
+                objQueue = new Queue<GameObject>();
+                _poolDictionary[id] = objQueue;
+            }
+
+            GameObject obj;
+
+            if (objQueue.Count == 0)
+            {
+                obj = await CreateObject(id);
+            }
+            else
+            {
+                obj = objQueue.Dequeue();
+            }
+
+            obj.SetActive(true);
+
+            var component = obj.GetComponent<T>();
+            if (component == null)
+            {
+                Logger.Instance.LogWarning($"GA does not contain compo");
+                return null;
+            }
+
+            return component;
+        }
+
         public void ReleaseObject(string id, GameObject obj)
         {
             if (!_poolDictionary.TryGetValue(id, out var queue))
@@ -75,9 +176,18 @@ namespace Core
                 queue = new Queue<GameObject>();
                 _poolDictionary[id] = queue;
             }
-            
+
             obj.SetActive(false);
             _poolDictionary[id].Enqueue(obj);
+        }
+
+        public void ReleaseObject<T>(string id, T component) where T : Component
+        {
+            if (component == null)
+                return;
+
+            var obj = component.gameObject;
+            ReleaseObject(id, obj);
         }
     }
 }
