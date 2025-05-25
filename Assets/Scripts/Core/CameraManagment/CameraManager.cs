@@ -19,6 +19,7 @@ namespace Core
 
     public interface ICameraManager
     {
+        event Action OnCameraChanged;
         UniTask<ICamera> CreateCamera(CustomCameraType type, Transform parent = null);
         UniTask SetActiveCamera(CustomCameraType type, Transform parent = null);
         Camera GetActiveCamera();
@@ -35,6 +36,8 @@ namespace Core
         private const string MainCameraTag = "MainCamera";
         private const string DisabledCamera = "DisabledCamera";
 
+        public event Action OnCameraChanged;
+        
         private readonly IFactorySystem _factorySystem;
         private readonly ILogger _logger;
         private readonly Dictionary<CustomCameraType, HashSet<ICamera>> _cameras;
@@ -160,23 +163,9 @@ namespace Core
                 }
             }
 
-            SetCursor(customCameraType);
+            OnCameraChanged?.Invoke();
         }
-
-        private void SetCursor(CustomCameraType customCameraType)
-        {
-            if (customCameraType == CustomCameraType.PlayerCamera)
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-            }
-        }
-
+        
         private void DisableAllCameras()
         {
             var toRemove = new List<ICamera>();

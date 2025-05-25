@@ -110,6 +110,10 @@ namespace Installers
                 .AsSingle()
                 .NonLazy();
 
+            Container.BindInterfacesTo<CursorManager>()
+                .AsSingle()
+                .NonLazy();
+
             Container
                 .Bind(typeof(IPlayerDataHolder), typeof(IDisposable))
                 .To<PlayerDataHolder>()
@@ -175,6 +179,10 @@ namespace Installers
             
             Container.Bind<ScenesConfig>()
                 .FromResource("Configs/ScenesConfig")
+                .AsSingle();
+            
+            Container.Bind<CursorConfig>()
+                .FromResource("Configs/CursorConfig")
                 .AsSingle();
         }
     }

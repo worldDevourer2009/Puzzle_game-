@@ -14,6 +14,9 @@ namespace Core
 
     public sealed class Logger : ILogger
     {
+        public static Logger Instance => _instance ??= new Logger();
+        private static Logger _instance;
+        
         private readonly HashSet<string> _logs;
 
         public Logger()
