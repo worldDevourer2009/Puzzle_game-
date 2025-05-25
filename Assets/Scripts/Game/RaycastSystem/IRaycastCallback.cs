@@ -70,6 +70,25 @@ namespace Core
         }
     }
 
+    public struct GroundCallback : IRaycastCallback
+    {
+        public Action OnGroundHit;
+        private int targetLayer => LayerMask.NameToLayer(Const.GroundLayerName);
+        
+        public void OnHit(in RaycastHit hit)
+        {
+            if (hit.collider.gameObject.layer == targetLayer)
+            { 
+                Debug.Log("Setting to true");
+                OnGroundHit?.Invoke();
+            }
+            else
+            {
+                Debug.Log("Setting to false");
+            }
+        }
+    }
+
     public struct PosCallback : IRaycastCallback
     {
         public Vector3 Pos;
