@@ -8,7 +8,7 @@ namespace Installers
     {
         public override void InstallBindings()
         {
-            Container.Bind<ICameraController>()
+            Container.Bind<IPlayerCameraLogic>()
                 .To<PlayerCameraLogic>()
                 .AsCached()
                 .NonLazy();

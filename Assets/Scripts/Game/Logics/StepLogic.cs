@@ -1,11 +1,11 @@
 using Core;
 using UnityEngine;
-using Logger = Core.Logger;
 
 namespace Game
 {
     public class StepLogic : IStepable
     {
+        private const float DownDistThreshold = 0.05f;
         private readonly IPlayerDataHolder _playerDataHolder;
         private readonly IRaycaster _raycaster;
 
@@ -33,7 +33,7 @@ namespace Game
             var downOrigin = bottomRayOrigin.position + dir * _playerDataHolder.PlayerStepCheckDistance.Value +
                              Vector3.up * _playerDataHolder.PlayerStepHeight.Value;
             
-            var downDist = _playerDataHolder.PlayerStepHeight.Value + 0.05f;
+            var downDist = _playerDataHolder.PlayerStepHeight.Value + DownDistThreshold;
             
             if (!TryCast(downOrigin, Vector3.down, downDist, out var downHit))
             {
@@ -55,8 +55,6 @@ namespace Game
             {
                 return;
             }
-
-            Logger.Instance.Log("Stepping");
 
             var dir = moveDirection.normalized;
             var stepOffset = dir * _playerDataHolder.PlayerStepMoveDistance.Value + Vector3.up * stepHeightOffset;

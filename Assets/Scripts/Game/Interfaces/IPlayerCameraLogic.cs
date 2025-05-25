@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public interface ICameraController
+    public interface IPlayerCameraLogic
     {
         UniTask InitCamera();
         UniTaskVoid MoveCamera(Vector3 direction);

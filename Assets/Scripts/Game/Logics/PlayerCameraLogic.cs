@@ -6,7 +6,7 @@ using ILogger = Core.ILogger;
 
 namespace Game
 {
-    public sealed class PlayerCameraLogic : ICameraController, IDisposable
+    public sealed class PlayerCameraLogic : IPlayerCameraLogic, IDisposable
     {
         private readonly InputConfig _inputConfig;
         private readonly IPlayerDataHolder _playerDataHolder;

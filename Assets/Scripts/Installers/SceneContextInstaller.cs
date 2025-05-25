@@ -58,7 +58,7 @@ namespace Installers
                 .AsSingle()
                 .NonLazy();
             
-            Container.Bind<ICameraController>()
+            Container.Bind<IPlayerCameraLogic>()
                 .To<PlayerCameraLogic>()
                 .AsSingle();
             

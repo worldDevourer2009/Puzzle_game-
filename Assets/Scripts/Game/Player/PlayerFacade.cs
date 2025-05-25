@@ -32,7 +32,7 @@ namespace Game
         private IAnimation _animation;
 
         //to make injections lazy
-        private ICameraController _cameraController;
+        private IPlayerCameraLogic _playerCameraLogic;
         private IPlayerInteractor _playerInteractor;
 
         private Action<Vector3, bool> _moveHandler;
@@ -42,11 +42,11 @@ namespace Game
 
         [Inject]
         public void Construct(IPlayerCore core, IAnimation animation, 
-            ICameraController cameraController, IPlayerInteractor playerInteractor)
+            IPlayerCameraLogic playerCameraLogic, IPlayerInteractor playerInteractor)
         {
             _core = core;
             _animation = animation;
-            _cameraController = cameraController;
+            _playerCameraLogic = playerCameraLogic;
             _playerInteractor = playerInteractor;
             
             _moveHandler = (dir, run) => OnMove?.Invoke(dir, run);
