@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Zenject;
 
 namespace Core
@@ -76,7 +75,6 @@ namespace Core
             {
                 if (knownSet.Add(obj))
                 {
-                    Debug.Log($"Calling method for {typeof(T)} in loop type {loopType}");
                     _innerGameLoop.AddToGameLoop(loopType, obj);
                     onAdd?.Invoke(obj);
                 }
