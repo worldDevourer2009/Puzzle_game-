@@ -19,9 +19,9 @@ namespace Core
     public class FactorySystem : IFactorySystem
     {
         private readonly IPoolSystem _poolSystem;
-        private readonly DiContainer _diContainer;
+        private readonly IContextResolver _diContainer;
 
-        public FactorySystem(IPoolSystem poolSystem, DiContainer diContainer)
+        public FactorySystem(IPoolSystem poolSystem, IContextResolver diContainer)
         {
             _poolSystem = poolSystem;
             _diContainer = diContainer;
@@ -29,37 +29,33 @@ namespace Core
 
         public async UniTask<GameObject> Create(string id)
         {
-            var asyncOp = _poolSystem.GetObject(id);
-            var result = await asyncOp;
-            _diContainer.Inject(result);
+            var (result, container) = await InternalCreate(id);
+            container.InjectGameObject(result);
             return result;
         }
 
         public async UniTask<GameObject> Create(string id, Vector3 position)
         {
-            var asyncOp = _poolSystem.GetObject(id);
-            var result = await asyncOp;
+            var (result, container) = await InternalCreate(id);
             result.transform.position = position;
-            _diContainer.Inject(result);
+            container.InjectGameObject(result);
             return result;
         }
 
         public async UniTask<GameObject> Create(string id, Transform parent)
         {
-            var asyncOp = _poolSystem.GetObject(id);
-            var result = await asyncOp;
+            var (result, container) = await InternalCreate(id);
             result.transform.SetParent(parent);
-            _diContainer.Inject(result);
+            container.InjectGameObject(result);
             return result;
         }
 
         public async UniTask<GameObject> Create(string id, Vector3 position, Transform parent)
         {
-            var asyncOp = _poolSystem.GetObject(id);
-            var result = await asyncOp;
+            var (result, container) = await InternalCreate(id);
             result.transform.SetParent(parent);
             result.transform.position = position;
-            _diContainer.Inject(result);
+            container.InjectGameObject(result);
             return result;
         }
 
@@ -97,7 +93,16 @@ namespace Core
 
         public void Inject<T>(T objToInject)
         {
-            _diContainer.Inject(objToInject);
+            var context = _diContainer.ResolveFor(objToInject);
+            context.Inject(objToInject);
+        }
+
+        private async UniTask<(GameObject result, DiContainer context)> InternalCreate(string id)
+        {
+            var asyncOp = _poolSystem.GetObject(id);
+            var result = await asyncOp;
+            var context = _diContainer.ResolveFor(result);
+            return (result, context);
         }
     }
     

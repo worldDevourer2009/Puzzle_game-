@@ -6,7 +6,7 @@ namespace Core
     [Serializable]
     public struct LevelData
     {
-        public int LevelIndex;
-        public int LastTriggeredEventIndex;
+        public string LevelName;
+        public string LastTriggeredEventName;
     }
 }

@@ -6,6 +6,7 @@ namespace Core
     [CreateAssetMenu(fileName = "Input Config", menuName = "Configs/Input", order = 1)]
     public class InputConfig : ScriptableObject
     {
+        public KeyboardInput KeyboardInput => _keyboardInput;
         private readonly ILogger _logger;
         [SerializeField] private KeyboardInput _keyboardInput;
         [SerializeField] private float _sensitivity;
@@ -38,6 +39,9 @@ namespace Core
                     return _keyboardInput.UseKey;
                 case InputAction.Run:
                     return _keyboardInput.RunKey;
+                case InputAction.Pause:
+                    return _keyboardInput.PauseKey;
+                case InputAction.Click:
                 default:
                     _logger.LogError($"Out of range exception in {nameof(GetKeyboardKey)}");
                     break;
@@ -73,6 +77,7 @@ namespace Core
         public KeyCode UseKey;
         public MouseButton MouseLeft;
         public MouseButton MouseRight;
+        public KeyCode PauseKey;
     }
     
     public enum MouseButton

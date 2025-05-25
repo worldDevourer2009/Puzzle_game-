@@ -4,6 +4,6 @@ namespace Game
 {
     public interface IMoveable
     {
-        void Move(GameObject obj, float speed, Vector3 direction);
+        void Move(Rigidbody obj, float speed, Vector3 direction);
     }
 }

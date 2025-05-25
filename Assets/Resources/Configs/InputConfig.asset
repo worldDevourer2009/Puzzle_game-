@@ -22,4 +22,5 @@ MonoBehaviour:
     UseKey: 101
     MouseLeft: 0
     MouseRight: 0
+    PauseKey: 27
   _sensitivity: 100

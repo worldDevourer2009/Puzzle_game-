@@ -20,7 +20,10 @@ namespace Game
 
     public interface IPlayerFacade : IEntity
     {
-        void Initialize(Cam cam, PlayerStats stats);
+        Transform EyesTransform { get; }
+        Transform BottomFoot { get; }
+        Transform TopFoot { get; }
+        void Initialize();
         void Move(Vector3 direction, bool run = false);
         void Jump();
         void Use();

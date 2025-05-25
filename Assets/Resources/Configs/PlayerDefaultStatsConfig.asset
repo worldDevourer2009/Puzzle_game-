@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerStats:
     Health: 10
-    Speed: 7
-    JumpForce: 406
+    Speed: 5
+    JumpForce: 407
     RunSpeed: 15
     CrouchSpeed: 5
     GroundRaycastParams:
@@ -25,3 +25,8 @@ MonoBehaviour:
       LayerMask:
         serializedVersion: 2
         m_Bits: 64
+    LookClamp: 70
+    MaxStepSlopeAngle: 45
+    StepCheckDistance: 0.1
+    StepHeight: 0.2
+    StepMoveDistance: 0.2

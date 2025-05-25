@@ -8,15 +8,51 @@ namespace Core
     {
         void OnHit(in RaycastHit hit);
     }
-    
+
     public struct InteractableCallback : IRaycastCallback
     {
         public IInteractable Interactable;
-        
+
         public void OnHit(in RaycastHit hit)
         {
             if (hit.collider.TryGetComponent<IInteractable>(out var interactable))
+            {
                 Interactable = interactable;
+            }
+        }
+    }
+
+    public struct MoveCallBack : IRaycastCallback
+    {
+        public bool CanMove;
+
+        public void OnHit(in RaycastHit hit)
+        {
+            CanMove = false;
+        }
+    }
+
+    public struct HitDetectedCallback : IRaycastCallback
+    {
+        public bool HasHit;
+        public RaycastHit Hit;
+        
+        public void OnHit(in RaycastHit hit)
+        {
+            HasHit = true;
+            Hit = hit;
+        }
+    }
+
+    public struct NormalCaptureCallback : IRaycastCallback
+    {
+        public bool HasHit;
+        public Vector3 HitNormal;
+
+        public void OnHit(in RaycastHit hit)
+        {
+            HasHit = true;
+            HitNormal = hit.normal;
         }
     }
 
@@ -42,7 +78,7 @@ namespace Core
     public struct PosCallback : IRaycastCallback
     {
         public Vector3 Pos;
-        
+
         public void OnHit(in RaycastHit hit)
         {
             Pos = hit.point;

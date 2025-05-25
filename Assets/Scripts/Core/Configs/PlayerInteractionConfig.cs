@@ -14,5 +14,7 @@ namespace Core
     {
         public LayerMask LayerMask;
         public float InteractionDistance;
+        public LayerMask StepLayerMask;
+        public LayerMask MoveLayerMask;
     }
 }

@@ -18,6 +18,7 @@ namespace Core
         public string GDName;
         public Vector3 PlayerPos;
         public PlayerStats PlayerStats;
+        public PlayerInteraction PlayerInteraction;
         public LevelData LevelData;
     }
 

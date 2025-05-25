@@ -1,5 +1,6 @@
 using System;
 using Core;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Game
@@ -10,13 +11,12 @@ namespace Game
         void UnsubInput();
     }
 
-    public sealed class PlayerController : IPlayerController, IAwakable, IDisposable
+    public sealed class PlayerController : IPlayerController, IDisposable
     {
-        private readonly IGameLoop _gameLoop;
-        private readonly IPlayerFacade _playerFacade;
+        private readonly ILevelManager _levelManager;
         private readonly IPlayerInputHandler _playerInputHandler;
-        private readonly PlayerDefaultStatsConfig _defaultStatsConfig;
-        private readonly Cam _cam;
+
+        private IPlayerFacade _playerFacade;
 
         private Action<Vector3, bool> _moveHandler;
         private Action<Vector3> _lookHandler;
@@ -24,25 +24,34 @@ namespace Game
         private Action _jumpHandler;
         private Action _idleHandler;
 
-        public PlayerController(IGameLoop gameLoop, IPlayerFacade playerFacade, IPlayerInputHandler playerInputHandler,
-            Cam cam, PlayerDefaultStatsConfig defaultStatsConfig)
+        public PlayerController(ILevelManager levelManager, IPlayerInputHandler playerInputHandler)
         {
-            _gameLoop = gameLoop;
-            _playerFacade = playerFacade;
             _playerInputHandler = playerInputHandler;
-            _cam = cam;
-            _defaultStatsConfig = defaultStatsConfig;
+            _levelManager = levelManager;
 
-            if (_gameLoop != null)
+            if (_levelManager == null)
             {
-                _gameLoop.AddToGameLoop(GameLoopType.Awake, this);
+                return;
             }
+
+            _levelManager.OnPlayerCreated += () => InitPlayerFacade()
+                .Forget();
         }
 
-        public void AwakeCustom()
+        private UniTask InitPlayerFacade()
         {
-            _playerFacade.Initialize(_cam, _defaultStatsConfig.playerStats);
+            var facade = _levelManager.PlayerEntity;
+
+            if (facade != null)
+            {
+                _playerFacade = facade;
+            }
+
+            _playerFacade.Initialize();
+
             InitInputSubs();
+
+            return UniTask.CompletedTask;
         }
 
         public void InitInputSubs()
@@ -52,7 +61,7 @@ namespace Game
             _useHandler = () => _playerFacade.Use();
             _idleHandler = () => _playerFacade.Idle();
             _jumpHandler = () => _playerFacade.Jump();
-            
+
             _playerInputHandler.OnMoveAction += _moveHandler;
             _playerInputHandler.OnJumpAction += _jumpHandler;
             _playerInputHandler.OnNoneAction += _idleHandler;
@@ -71,7 +80,6 @@ namespace Game
 
         public void Dispose()
         {
-            _gameLoop.RemoveFromLoop(GameLoopType.Awake, this);
             UnsubInput();
         }
     }

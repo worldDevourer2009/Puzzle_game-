@@ -1,72 +1,40 @@
 using Cysharp.Threading.Tasks;
 
-namespace Core.EntryPoint
+namespace Core
 {
     public class EntryPoint : IAwakable
     {
         private readonly IAsyncGroupLoader _asyncGroupLoader;
+        private readonly IGameStateManager _gameStateManager;
         private readonly ILogger _logger;
-        private readonly IGameLoop _gameLoop;
 
-        private string sequentId1;
+        private const string MainGroup = "MainGroup";
         private string parrallel;
 
-        public EntryPoint(IAsyncGroupLoader asyncGroupLoader, ILogger logger, IGameLoop gameLoop)
+        public EntryPoint(IAsyncGroupLoader asyncGroupLoader, IGameStateManager gameStateManager, ILogger logger)
         {
             _asyncGroupLoader = asyncGroupLoader;
+            _gameStateManager = gameStateManager;
             _logger = logger;
-            _gameLoop = gameLoop;
-
-            if (_gameLoop != null)
-            {
-                _gameLoop.AddToGameLoop(GameLoopType.Awake, this);
-            }
         }
 
-        public void AwakeCustom()
+        public async void AwakeCustom()
         {
-            // sequentId1 = "sequentional group";
-            // _asyncGroupLoader.CreateGroup(AsyncGroupType.Sequential, sequentId1);
-            // AddGroupSequent(sequentId1);
-            //
-            // parrallel = "parrallel group";
-            // _asyncGroupLoader.CreateGroup(AsyncGroupType.Parallel, parrallel);
-            // AddGroupParallel(parrallel);
-            //
-            // await RunGroups();
-        }
-
-        private void AddGroupParallel(string sequentId)
-        {
-            _asyncGroupLoader.AddToGroup(sequentId, () => UniTask.WaitForSeconds(3f)
-                .ContinueWith(() => _logger.Log("Delay after 3 sec")), false);
             
-            _asyncGroupLoader.AddToGroup(sequentId, () => UniTask.WaitForSeconds(4f)
-                .ContinueWith(() => _logger.Log("Delay after 4 sec")), false);
-            
-            _asyncGroupLoader.AddToGroup(sequentId, () => UniTask.WaitForSeconds(5f)
-                .ContinueWith(() => _logger.Log("Delay after 5 sec")), false);
+            CreatePlayableGroup();
+            await RunGroups();
         }
 
         private async UniTask RunGroups()
         {
-            await _asyncGroupLoader.RunGroup(sequentId1);
-
-            await UniTask.WaitForSeconds(3f);
-            
-            await _asyncGroupLoader.RunGroup(parrallel);
+            await _asyncGroupLoader.RunGroup(MainGroup);
         }
 
-        private void AddGroupSequent(string sequentId)
+        private void CreatePlayableGroup()
         {
-            _asyncGroupLoader.AddToGroup(sequentId, () => UniTask.WaitForSeconds(3f)
-                .ContinueWith(() => _logger.Log("Delay after 3 sec")));
-            
-            _asyncGroupLoader.AddToGroup(sequentId, () => UniTask.WaitForSeconds(4f)
-                .ContinueWith(() => _logger.Log("Delay after 4 sec")));
-            
-            _asyncGroupLoader.AddToGroup(sequentId, () => UniTask.WaitForSeconds(5f)
-                .ContinueWith(() => _logger.Log("Delay after 5 sec")));
+            _asyncGroupLoader.CreateGroup(AsyncGroupType.Sequential, MainGroup, true);
+            _asyncGroupLoader.AddToGroup(MainGroup, () => _gameStateManager.InitStates());
+            _asyncGroupLoader.AddToGroup(MainGroup, () => _gameStateManager.SetState(GameState.MainMenu));
         }
     }
 }

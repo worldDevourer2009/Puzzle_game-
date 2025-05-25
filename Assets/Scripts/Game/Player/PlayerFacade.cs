@@ -1,5 +1,4 @@
 using System;
-using Core;
 using UnityEngine;
 using Zenject;
 
@@ -7,6 +6,9 @@ namespace Game
 {
     public sealed class PlayerFacade : MonoBehaviour, IPlayerFacade
     {
+        public Transform EyesTransform => _eyesTransform;
+        public Transform BottomFoot => _bottomFoot;
+        public Transform TopFoot => _topFoot;
         public GameObject EntityGA => gameObject;
         public Transform RightHandTransform => _rightHandTransform;
         public Transform LeftHandTransform => _leftHandTransform;
@@ -17,13 +19,21 @@ namespace Game
         public event Action OnUse;
         public event Action OnIdle;
         
+        [Header("Transforms")]
         [SerializeField] private Transform _rightHandTransform;
         [SerializeField] private Transform _leftHandTransform;
         [SerializeField] private Transform _centerBottomTransform;
+        [SerializeField] private Transform _eyesTransform;
         [SerializeField] private Rigidbody _rigidbody;
+        [SerializeField] private Transform _bottomFoot;
+        [SerializeField] private Transform _topFoot;
         
         private IPlayerCore _core;
         private IAnimation _animation;
+
+        //to make injections lazy
+        private IPlayerCameraLogic _playerCameraLogic;
+        private IPlayerInteractor _playerInteractor;
 
         private Action<Vector3, bool> _moveHandler;
         private Action _useHandler;
@@ -31,10 +41,13 @@ namespace Game
         private Action _idleHandler;
 
         [Inject]
-        public void Construct(IPlayerCore core, IAnimation animation)
+        public void Construct(IPlayerCore core, IAnimation animation, 
+            IPlayerCameraLogic playerCameraLogic, IPlayerInteractor playerInteractor)
         {
             _core = core;
             _animation = animation;
+            _playerCameraLogic = playerCameraLogic;
+            _playerInteractor = playerInteractor;
             
             _moveHandler = (dir, run) => OnMove?.Invoke(dir, run);
             _useHandler = () => OnUse?.Invoke();
@@ -47,9 +60,9 @@ namespace Game
             _core.OnIdle += _idleHandler;
         }
 
-        public void Initialize(Cam cam, PlayerStats stats)
+        public void Initialize()
         {
-            _core.Initialize(this, _rigidbody, cam, stats.Speed, stats.RunSpeed, stats.JumpForce, stats.GroundRaycastParams);
+            _core.Initialize(this, _rigidbody);
             _animation.InitAnimation(this);
         }
 

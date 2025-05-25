@@ -1,0 +1,76 @@
+using System;
+using Core;
+using Cysharp.Threading.Tasks;
+using UnityEngine;
+using ILogger = Core.ILogger;
+
+namespace Game
+{
+    public sealed class PlayerCameraLogic : IPlayerCameraLogic, IDisposable
+    {
+        private readonly InputConfig _inputConfig;
+        private readonly IPlayerDataHolder _playerDataHolder;
+        private readonly ICameraManager _cameraManager;
+        private readonly IPlayerInputHandler _playerInputHandler;
+        private readonly ILogger _logger;
+        
+        private float _cameraSensitivity;
+        private float _xRotation;
+        private Camera _camera;
+
+        public PlayerCameraLogic(InputConfig inputConfig, IPlayerDataHolder playerDataHolder,
+            ICameraManager cameraManager, IPlayerInputHandler playerInputHandler, ILogger logger)
+        {
+            _xRotation = 0f;
+            _inputConfig = inputConfig;
+            _playerDataHolder = playerDataHolder;
+            _cameraManager = cameraManager;
+            _playerInputHandler = playerInputHandler;
+            _logger = logger;
+
+            _playerInputHandler.OnLookAction += MoveCameraHandler;
+        }
+
+        private void MoveCameraHandler(Vector3 dir)
+        {
+            MoveCamera(dir).Forget();
+        }
+
+        public UniTask InitCamera()
+        {
+            var cam = _cameraManager.GetPlayerCamera();
+            
+            if (cam != null)
+            {
+                _camera = cam;
+                _cameraSensitivity = _inputConfig.GetSensitivity();
+            }
+            
+            return UniTask.CompletedTask;
+        }
+
+        public async UniTaskVoid MoveCamera(Vector3 direction)
+        {
+            if (_camera == null)
+            {
+                await InitCamera();
+                
+                if (_camera == null)
+                {
+                    return;
+                }
+            }
+
+            var clamp = _playerDataHolder.PlayerLookClamp.Value;
+            var verticalInput = direction.y * _cameraSensitivity * Time.deltaTime;
+            _xRotation -= verticalInput;
+            _xRotation = Mathf.Clamp(_xRotation, -clamp, clamp);
+            _camera.transform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
+        }
+
+        public void Dispose()
+        {
+            _playerInputHandler.OnLookAction -= MoveCameraHandler;
+        }
+    }
+}

@@ -12,8 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 738eea32a3e04f9ba6ed9c3d2e79222d, type: 3}
   m_Name: LevelsConfig
   m_EditorClassIdentifier: 
+  LastLevelData:
+    LevelName: 
+    LastTriggeredEventName: 
   LevelData:
-  - LevelIndex: 1
-    LastTriggeredEventIndex: 0
-  - LevelIndex: 1
-    LastTriggeredEventIndex: 0
+  - LevelName: MainScene
+    LastTriggeredEventName: 
+  - LevelName: Test
+    LastTriggeredEventName: 
+  - LevelName: 
+    LastTriggeredEventName: 

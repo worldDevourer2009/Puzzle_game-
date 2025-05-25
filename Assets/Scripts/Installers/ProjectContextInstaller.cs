@@ -1,4 +1,6 @@
+using System;
 using Core;
+using Game;
 using Zenject;
 
 namespace Installers
@@ -7,6 +9,20 @@ namespace Installers
     {
         public override void InstallBindings()
         {
+            Container.BindInterfacesTo<GameLoopRunner>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<IGameManager>()
+                .To<GameManager>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<IContextResolver>()
+                .To<ContextResolver>()
+                .AsSingle()
+                .NonLazy();
+            
             Container.Bind<IJsonSerializer>()
                 .To<JsonSerializer>()
                 .AsSingle()
@@ -33,6 +49,15 @@ namespace Installers
                 .Bind<IRaycaster>()
                 .To<RaycasterSystem>()
                 .AsSingle();
+            
+            Container.BindInterfacesAndSelfTo<EntryPoint>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container
+                .Bind<ICameraManager>()
+                .To<CameraManager>()
+                .AsSingle();
 
             Container.Bind<ILogger>()
                 .To<Logger>()
@@ -53,11 +78,14 @@ namespace Installers
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<IInput>()
-                .To<InputSystem>()
+            Container.BindInterfacesTo<InputSystem>()
                 .AsSingle()
                 .NonLazy();
 
+            Container.BindInterfacesTo<InputSourceComposite>()
+                .AsSingle()
+                .NonLazy();
+            
             Container.Bind<IInputSource>()
                 .To<KeyboardSource>()
                 .AsCached()
@@ -72,10 +100,59 @@ namespace Installers
                 .To<InteractorCore>()
                 .AsSingle();
 
-            // Container.Bind<ILevelManager>()
-            //     .To<LevelManagerCore>()
-            //     .AsSingle()
-            //     .NonLazy();
+            Container.Bind<ILevelManager>()
+                .To<LevelManagerCore>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<ISceneLoader>()
+                .To<SceneLoader>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.BindInterfacesTo<CursorManager>()
+                .AsSingle()
+                .NonLazy();
+
+            Container
+                .Bind(typeof(IPlayerDataHolder), typeof(IDisposable))
+                .To<PlayerDataHolder>()
+                .AsSingle();
+
+            BindStates();
+        }
+
+        private void BindStates()
+        {
+            Container.Bind<IState>()
+                .To<MainMenuState>()
+                .AsTransient()
+                .NonLazy();
+            
+            Container.Bind<IState>()
+                .To<NewGameState>()
+                .AsTransient()
+                .NonLazy();
+            
+            Container.Bind<IState>()
+                .To<PauseState>()
+                .AsTransient()
+                .NonLazy();
+            
+            Container.Bind<IState>()
+                .To<ResumeState>()
+                .AsTransient()
+                .NonLazy();
+
+            Container.Bind<IGameStateFactory>()
+                .To<GameStateFactory>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<IGameStateManager>()
+                .To<GameStateManager>()
+                .AsSingle()
+                .NonLazy();
         }
 
         private void BindConfigs()
@@ -98,6 +175,14 @@ namespace Installers
             
             Container.Bind<AddressablesIdsConfig>()
                 .FromResource("Configs/AddressablesIds")
+                .AsSingle();
+            
+            Container.Bind<ScenesConfig>()
+                .FromResource("Configs/ScenesConfig")
+                .AsSingle();
+            
+            Container.Bind<CursorConfig>()
+                .FromResource("Configs/CursorConfig")
                 .AsSingle();
         }
     }

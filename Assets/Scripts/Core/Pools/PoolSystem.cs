@@ -15,11 +15,13 @@ namespace Core
     {
         private readonly IAddressableLoader _addressableLoader;
         private readonly Dictionary<string, Queue<GameObject>> _poolDictionary;
+        private readonly Dictionary<string, Queue<Component>> _poolCompDictionary;
 
         public PoolSystem(IAddressableLoader addressableLoader)
         {
             _addressableLoader = addressableLoader;
             _poolDictionary = new Dictionary<string, Queue<GameObject>>();
+            _poolCompDictionary = new Dictionary<string, Queue<Component>>();
         }
         
         public async UniTask Prewarm(string id, int count)
@@ -65,7 +67,7 @@ namespace Core
             
             return obj;
         }
-
+        
         public void ReleaseObject(string id, GameObject obj)
         {
             if (!_poolDictionary.TryGetValue(id, out var queue))

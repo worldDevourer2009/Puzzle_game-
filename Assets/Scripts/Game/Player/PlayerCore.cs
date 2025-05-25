@@ -1,5 +1,6 @@
 using System;
 using Core;
+using Extensions;
 using UnityEngine;
 
 namespace Game
@@ -12,7 +13,7 @@ namespace Game
         event Action OnIdle;
         event Action OnFall;
 
-        void Initialize(IEntity entity, Rigidbody rb, Cam cam, float speed, float runSpeed, float jumpForce, RaycastParams groundDistance);
+        void Initialize(PlayerFacade entity, Rigidbody rb);
         void Move(Vector3 direction, bool isRunning = false);
         void Rotate(Vector3 direction);
         void Jump();
@@ -30,38 +31,48 @@ namespace Game
         public event Action OnFall;
 
         private readonly Core.ILogger _logger;
-        
+        private readonly ICameraManager _cameraManager;
+        private readonly IRaycaster _raycaster;
+
+        private readonly IPlayerDataHolder _playerDataHolder;
         private readonly IMoveable _moveable;
         private readonly IJumpable _jumpable;
         private readonly IRotatable _rotatable;
         private readonly IGroundable _groundable;
+        private readonly IStepable _stepable;
 
-        private IEntity _entity;
+        private PlayerFacade _entity;
         private GameObject _gameObject;
         private Rigidbody _rb;
-        private Cam _cam;
-        
-        private float _speed;
-        private float _runSpeed;
+        private Camera _playerCam;
         private bool _isGrounded;
-        private float _jumpForce;
-        private RaycastParams _groundParams;
 
-        public PlayerCore(Core.ILogger logger, 
-            IMoveable moveable, 
-            IJumpable jumpable, 
+        private MoveCallBack _moveCallBack;
+        private AlwaysTrueFilter _alwaysTrueFilter;
+        private RaycastParams _moveParams;
+
+        public PlayerCore(Core.ILogger logger,
+            IPlayerDataHolder dataHolder,
+            IMoveable moveable,
+            IJumpable jumpable,
             IRotatable rotatable,
-            IGroundable groundable)
+            IGroundable groundable,
+            IStepable stepable,
+            ICameraManager cameraManager,
+            IRaycaster raycaster)
         {
             _logger = logger;
+            _playerDataHolder = dataHolder;
             _moveable = moveable;
             _jumpable = jumpable;
             _rotatable = rotatable;
             _groundable = groundable;
+            _stepable = stepable;
+            _cameraManager = cameraManager;
+            _raycaster = raycaster;
         }
 
-        public void Initialize(IEntity entity, Rigidbody rb, Cam cam, float speed, float runSpeed, float jumpForce, 
-            RaycastParams groundDistance)
+        public void Initialize(PlayerFacade entity, Rigidbody rb)
         {
             _entity = entity;
 
@@ -82,20 +93,17 @@ namespace Game
             {
                 _rb = rb;
             }
-            
-            if (cam == null)
+
+            var playerCam = _cameraManager.GetPlayerCamera();
+
+            if (playerCam == null)
             {
                 _logger.LogError("Cam is null");
             }
             else
             {
-                _cam = cam;
+                _playerCam = playerCam;
             }
-            
-            _speed = speed;
-            _runSpeed = runSpeed;
-            _jumpForce = jumpForce;
-            _groundParams = groundDistance;
         }
 
         public void Move(Vector3 direction, bool isRunning = false)
@@ -104,11 +112,79 @@ namespace Game
             {
                 return;
             }
+
+            _isGrounded = _groundable.IsGrounded(_entity, _playerDataHolder.PlayerGroundableParams.Value);
+
+            if (CheckMoveDir(direction, out var moveDir))
+            {
+                return;
+            }
             
-            _isGrounded = _groundable.IsGrounded(_entity, _groundParams);
-            var moveDir = _cam.GetCamForwardDirection(direction);
-            _moveable.Move(_rb.gameObject, !isRunning || !_isGrounded ? _speed : _runSpeed, moveDir);
+            if (!CanMove(moveDir))
+            {
+                Step(moveDir);
+                return;
+            }
+            
+            _moveable.Move(_rb, !isRunning || !_isGrounded ? _playerDataHolder.PlayerSpeed.Value : _playerDataHolder.PlayerRunSpeed.Value, moveDir);
+            FixZRotation();
             OnMove?.Invoke(direction, isRunning);
+        }
+
+        private void Step(Vector3 moveDir)
+        {
+            _stepable.Step(_rb, moveDir, _entity.BottomFoot, _entity.TopFoot, 0.3f);
+        }
+
+        private bool CanMove(Vector3 direction)
+        {
+            if (_entity.EntityGA == null)
+            {
+                return false;
+            }
+            
+            _moveParams = new RaycastParams()
+            {
+                MaxDistance = 0.9f,
+                Origin = _entity.BottomFoot.position,
+                Direction = direction,
+                LayerMask = _playerDataHolder.PlayerMoveInteractionLayerMask.Value
+            };
+
+            _moveCallBack = new MoveCallBack()
+            {
+                CanMove = true
+            };
+            
+            _alwaysTrueFilter = new AlwaysTrueFilter();
+            
+            _raycaster.Raycast(ref _moveParams, ref _alwaysTrueFilter, ref _moveCallBack);
+            
+            return _moveCallBack.CanMove;
+        }
+
+        private bool CheckMoveDir(Vector3 direction, out Vector3 moveDir)
+        {
+            moveDir = Vector3.zero;
+
+            if (_playerCam != null)
+            {
+                moveDir = _playerCam.GetCamForwardDirection(direction);
+            }
+            else
+            {
+                var cam = _cameraManager.GetPlayerCamera();
+
+                if (cam == null)
+                {
+                    return true;
+                }
+                
+                _playerCam = cam;
+                moveDir = _playerCam.GetCamForwardDirection(direction);
+            }
+
+            return false;
         }
 
         public void Jump()
@@ -118,14 +194,14 @@ namespace Game
                 return;
             }
 
-            _isGrounded = _groundable.IsGrounded(_entity, _groundParams);
-            
+            _isGrounded = _groundable.IsGrounded(_entity, _playerDataHolder.PlayerGroundableParams.Value);
+
             if (!_isGrounded)
             {
                 return;
             }
-            
-            _jumpable.Jump(_rb, _jumpForce);
+
+            _jumpable.Jump(_rb, _playerDataHolder.PlayerJumpForce.Value);
             OnJump?.Invoke();
         }
 
@@ -133,15 +209,26 @@ namespace Game
         {
             OnUse?.Invoke();
         }
-        
+
         public void Rotate(Vector3 direction)
         {
-            if (_gameObject == null)
+            if (_gameObject == null || _cameraManager.GetActiveCameraType() != CustomCameraType.PlayerCamera)
             {
                 return;
             }
             
             _rotatable.Rotate(_gameObject, direction, RotationAxis.Y);
+        }
+
+        private void FixZRotation()
+        {
+            if (_gameObject != null)
+            {
+                var euler = _gameObject.transform.eulerAngles;
+                euler.x = 0f;
+                euler.z = 0f;
+                _gameObject.transform.rotation = Quaternion.Euler(euler);
+            }
         }
 
         public void Idle()
