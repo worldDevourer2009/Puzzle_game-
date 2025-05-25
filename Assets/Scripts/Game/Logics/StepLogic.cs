@@ -1,20 +1,18 @@
 using Core;
 using UnityEngine;
+using Logger = Core.Logger;
 
 namespace Game
 {
     public class StepLogic : IStepable
     {
-        private const float MaxStepSlopeAngle = 45;
-        private const float StepCheckDistance = 0.3f;
-        private const float StepMoveDistance = 0.3f;
-        
+        private readonly IPlayerDataHolder _playerDataHolder;
         private readonly IRaycaster _raycaster;
-        private readonly LayerMask _stepLayerMask = LayerMask.GetMask("Default");
 
-        public StepLogic(IRaycaster raycaster)
+        public StepLogic(IRaycaster raycaster, IPlayerDataHolder playerDataHolder)
         {
             _raycaster = raycaster;
+            _playerDataHolder = playerDataHolder;
         }
 
         public bool CanStep(Rigidbody rb, Vector3 moveDirection, Transform bottomRayOrigin, Transform topRayOrigin)
@@ -25,8 +23,8 @@ namespace Game
             {
                 Origin = bottomRayOrigin.position,
                 Direction = dir,
-                MaxDistance = StepCheckDistance,
-                LayerMask = _stepLayerMask
+                MaxDistance = _playerDataHolder.PlayerStepCheckDistance.Value,
+                LayerMask = _playerDataHolder.PlayerStepInteractionLayerMask.Value
             };
 
             var bottomCallback = new NormalCaptureCallback();
@@ -39,7 +37,7 @@ namespace Game
                 return false;
             }
 
-            if (Vector3.Angle(bottomCallback.HitNormal, Vector3.up) > MaxStepSlopeAngle)
+            if (Vector3.Angle(bottomCallback.HitNormal, Vector3.up) > _playerDataHolder.PlayerMaxStepSlopeAngle.Value)
             {
                 return false;
             }
@@ -48,8 +46,8 @@ namespace Game
             {
                 Origin = topRayOrigin.position,
                 Direction = dir,
-                MaxDistance = StepCheckDistance,
-                LayerMask = _stepLayerMask
+                MaxDistance = _playerDataHolder.PlayerStepCheckDistance.Value,
+                LayerMask = _playerDataHolder.PlayerStepInteractionLayerMask.Value
             };
 
             var topCallback = new HitDetectedCallback();
@@ -63,11 +61,14 @@ namespace Game
         {
             if (!CanStep(rb, moveDirection, bottomRayOrigin, topRayOrigin))
             {
+                Logger.Instance.Log("Can't step");
                 return;
             }
+            
+            Logger.Instance.Log("Stepping");
 
             var dir = moveDirection.normalized;
-            var stepOffset = dir * StepMoveDistance + Vector3.up * stepHeightOffset;
+            var stepOffset = dir * _playerDataHolder.PlayerStepMoveDistance.Value + Vector3.up * stepHeightOffset;
             rb.MovePosition(rb.position + stepOffset);
         }
     }

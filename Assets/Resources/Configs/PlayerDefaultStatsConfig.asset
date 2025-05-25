@@ -26,3 +26,6 @@ MonoBehaviour:
         serializedVersion: 2
         m_Bits: 64
     LookClamp: 70
+    MaxStepSlopeAngle: 45
+    StepCheckDistance: 0.5
+    StepMoveDistance: 0.3

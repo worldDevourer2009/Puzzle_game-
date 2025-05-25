@@ -124,7 +124,7 @@ namespace Game
             {
                 return;
             }
-
+            
             Step(moveDir);
             _moveable.Move(_rb, !isRunning || !_isGrounded ? _playerDataHolder.PlayerSpeed.Value : _playerDataHolder.PlayerRunSpeed.Value, moveDir);
             FixZRotation();
