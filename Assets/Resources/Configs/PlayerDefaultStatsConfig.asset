@@ -25,3 +25,4 @@ MonoBehaviour:
       LayerMask:
         serializedVersion: 2
         m_Bits: 64
+    LookClamp: 70

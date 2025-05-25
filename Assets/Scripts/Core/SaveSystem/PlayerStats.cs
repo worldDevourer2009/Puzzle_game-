@@ -11,5 +11,6 @@ namespace Core
         public float RunSpeed;
         public float CrouchSpeed;
         public RaycastParams GroundRaycastParams;
+        public float LookClamp;
     }
 }

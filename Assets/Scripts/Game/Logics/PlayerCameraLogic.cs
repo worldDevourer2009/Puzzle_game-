@@ -9,6 +9,7 @@ namespace Game
     public sealed class PlayerCameraLogic : ICameraController, IDisposable
     {
         private readonly InputConfig _inputConfig;
+        private readonly IPlayerDataHolder _playerDataHolder;
         private readonly ICameraManager _cameraManager;
         private readonly IPlayerInputHandler _playerInputHandler;
         private readonly ILogger _logger;
@@ -17,11 +18,12 @@ namespace Game
         private float _xRotation;
         private Camera _camera;
 
-        public PlayerCameraLogic(InputConfig inputConfig,
+        public PlayerCameraLogic(InputConfig inputConfig, IPlayerDataHolder playerDataHolder,
             ICameraManager cameraManager, IPlayerInputHandler playerInputHandler, ILogger logger)
         {
             _xRotation = 0f;
             _inputConfig = inputConfig;
+            _playerDataHolder = playerDataHolder;
             _cameraManager = cameraManager;
             _playerInputHandler = playerInputHandler;
             _logger = logger;
@@ -47,7 +49,7 @@ namespace Game
             return UniTask.CompletedTask;
         }
 
-        public async UniTaskVoid MoveCamera(Vector3 direction, float clamp = 90)
+        public async UniTaskVoid MoveCamera(Vector3 direction)
         {
             if (_camera == null)
             {
@@ -59,6 +61,7 @@ namespace Game
                 }
             }
 
+            var clamp = _playerDataHolder.PlayerLookClamp.Value;
             var verticalInput = direction.y * _cameraSensitivity * Time.deltaTime;
             _xRotation -= verticalInput;
             _xRotation = Mathf.Clamp(_xRotation, -clamp, clamp);

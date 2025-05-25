@@ -15,6 +15,7 @@ namespace Game
         CrouchSpeed,
         JumpForce,
         GroundableParams,
+        LookClamp
     }
 
     public enum PlayerInteractionDataType
@@ -31,9 +32,21 @@ namespace Game
     public class ReactiveWrapper<T> : IReactiveWrapper
     {
         private readonly ReactiveProperty<T> _prop;
-        public ReactiveWrapper(ReactiveProperty<T> prop) => _prop = prop;
-        public object GetValue() => _prop.Value;
-        public void SetValue(T value) => _prop.Value = value;
+        
+        public ReactiveWrapper(ReactiveProperty<T> prop)
+        {
+            _prop = prop;
+        }
+        
+        public object GetValue()
+        {
+            return _prop.Value;
+        }
+        
+        public void SetValue(T value)
+        {
+            _prop.Value = value;
+        }
     }
 
     public interface IPlayerDataHolder
@@ -41,6 +54,7 @@ namespace Game
         public UniTask InitData();
         ReactiveProperty<LayerMask> PlayerInteractionLayerMask { get; }
         ReactiveProperty<float> PlayerInteractionDistance { get; }
+        ReactiveProperty<float> PlayerLookClamp { get; }
         ReactiveProperty<float> PlayerSpeed { get; }
         ReactiveProperty<float> PlayerRunSpeed { get; }
         ReactiveProperty<float> PlayerJumpForce { get; }
@@ -59,6 +73,7 @@ namespace Game
 
         public ReactiveProperty<LayerMask> PlayerInteractionLayerMask => _playerInteractionMask;
         public ReactiveProperty<float> PlayerInteractionDistance => _playerInteractionDistance;
+        public ReactiveProperty<float> PlayerLookClamp => _playerLookClamp;
 
         public ReactiveProperty<float> PlayerSpeed => _playerSpeed;
         public ReactiveProperty<float> PlayerRunSpeed => _playerRunSpeed;
@@ -72,6 +87,8 @@ namespace Game
 
         private readonly ReactiveProperty<LayerMask> _playerInteractionMask = new();
         private readonly ReactiveProperty<float> _playerInteractionDistance = new();
+        
+        private readonly ReactiveProperty<float> _playerLookClamp = new();
 
         private readonly ReactiveProperty<float> _playerSpeed = new();
         private readonly ReactiveProperty<RaycastParams> _playerGroundableParams = new();
@@ -98,6 +115,7 @@ namespace Game
             _playerCrouchSpeed.Value = playerStats.CrouchSpeed;
             _playerJumpForce.Value = playerStats.JumpForce;
             _playerGroundableParams.Value = playerStats.GroundRaycastParams;
+            _playerLookClamp.Value = playerStats.LookClamp;
 
             _playerDataStats = new Dictionary<PlayerDataType, IReactiveWrapper>
             {
@@ -106,6 +124,7 @@ namespace Game
                 { PlayerDataType.CrouchSpeed, new ReactiveWrapper<float>(_playerCrouchSpeed) },
                 { PlayerDataType.JumpForce, new ReactiveWrapper<float>(_playerJumpForce) },
                 { PlayerDataType.GroundableParams, new ReactiveWrapper<RaycastParams>(_playerGroundableParams) },
+                { PlayerDataType.LookClamp, new ReactiveWrapper<float>(_playerLookClamp) }
             };
 
             var playerInteractionStats = _playerInteractionConfig.PlayerInteraction;
