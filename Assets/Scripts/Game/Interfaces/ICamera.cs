@@ -7,5 +7,6 @@ namespace Game
     {
         CustomCameraType CameraType { get; }
         Camera Camera { get; }
+        AudioListener AudioListener {get;}
     }
 }

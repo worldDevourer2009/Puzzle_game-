@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
@@ -102,12 +101,10 @@ namespace Core
         {
             if (_currentMusicId != SoundClipId.None)
             {
-                Logger.Instance.Log("Stoping sound");
                 StopSound(_currentMusicId);
             }
 
             _currentMusicId = id;
-            Logger.Instance.Log("Playing music");
             await PlayInternal(id, false, null);
         }
 

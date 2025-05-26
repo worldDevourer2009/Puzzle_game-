@@ -157,8 +157,9 @@ namespace Core
                 if (cam != null && cam.Camera != null)
                 {
                     cam.Camera.enabled = true;
+                    cam.AudioListener.enabled = true;
                     cam.Camera.tag = MainCameraTag;
-
+                    
                     _activeCameras[customCameraType] = cam.Camera;
                 }
             }
@@ -185,6 +186,7 @@ namespace Core
 
                     cameraComp.Camera.enabled = false;
                     cameraComp.Camera.tag = DisabledCamera;
+                    cameraComp.AudioListener.enabled = false;
                 }
 
                 foreach (var dead in toRemove)
