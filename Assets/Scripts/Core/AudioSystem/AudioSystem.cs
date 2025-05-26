@@ -178,6 +178,15 @@ namespace Core
             source.priority = data.Priority;
             source.volume = data.Volume;
 
+            var pitch = data.Pitch != 0 ? data.Pitch : 1f;
+
+            var randomMin = data.RandomPitchMin > 0 ? data.RandomPitchMin : 1f;
+            var randomMax = data.RandomPitchMax > 0 ? data.RandomPitchMax : 1f;
+
+            var randomFactor = UnityEngine.Random.Range(randomMin, randomMax);
+
+            source.pitch = pitch * randomFactor;
+
             if (data.Category == SoundCategory.SFX)
             {
                 source.spatialBlend = data.SpatialBlend;

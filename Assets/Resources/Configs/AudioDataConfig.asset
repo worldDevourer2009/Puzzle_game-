@@ -16,11 +16,10 @@ MonoBehaviour:
   - Category: 1
     SoundType: 1
     AudioClipId: 2
-    Is3D: 1
     Volume: 1
     Pitch: 1
     Loop: 1
-    PlayOnAwake: 1
+    PlayOnAwake: 0
     SpatialBlend: 0
     MinDistance: 0
     MaxDistance: 0
@@ -30,8 +29,6 @@ MonoBehaviour:
       m_PreInfinity: 0
       m_PostInfinity: 0
       m_RotationOrder: 0
-    PositionOffset: {x: 0, y: 0, z: 0}
-    Velocity: {x: 0, y: 0, z: 0}
     DopplerLevel: 0
     UseLowPassFilter: 0
     LowPassCutoffFrequency: 0
@@ -45,17 +42,15 @@ MonoBehaviour:
     RandomVolumeMin: 0.3
     RandomVolumeMax: 1
     Priority: 0
-    DestroyOnEnd: 0
     FadeInDuration: 0.7
     FadeOutDuration: 0.3
   - Category: 1
     SoundType: 1
     AudioClipId: 3
-    Is3D: 1
-    Volume: 0.513
+    Volume: 0.064
     Pitch: 1
     Loop: 1
-    PlayOnAwake: 1
+    PlayOnAwake: 0
     SpatialBlend: 0
     MinDistance: 0
     MaxDistance: 0
@@ -65,8 +60,6 @@ MonoBehaviour:
       m_PreInfinity: 0
       m_PostInfinity: 0
       m_RotationOrder: 0
-    PositionOffset: {x: 0, y: 0, z: 0}
-    Velocity: {x: 0, y: 0, z: 0}
     DopplerLevel: 0
     UseLowPassFilter: 0
     LowPassCutoffFrequency: 0
@@ -80,7 +73,99 @@ MonoBehaviour:
     RandomVolumeMin: 0.3
     RandomVolumeMax: 1
     Priority: 0
-    DestroyOnEnd: 0
     FadeInDuration: 1.2
     FadeOutDuration: 0.3
+  - Category: 3
+    SoundType: 0
+    AudioClipId: 10
+    Volume: 1
+    Pitch: 1
+    Loop: 0
+    PlayOnAwake: 0
+    SpatialBlend: 1
+    MinDistance: 1
+    MaxDistance: 20
+    VolumeRolloff:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 0
+    DopplerLevel: 0
+    UseLowPassFilter: 0
+    LowPassCutoffFrequency: 0
+    UseHighPassFilter: 0
+    HighPassCutoffFrequency: 0
+    UseReverbFilter: 0
+    ReverbLevel: 0
+    Delay: 0
+    RandomPitchMin: 0.95
+    RandomPitchMax: 1.05
+    RandomVolumeMin: 0
+    RandomVolumeMax: 0
+    Priority: 128
+    FadeInDuration: 0
+    FadeOutDuration: 0.2
+  - Category: 3
+    SoundType: 0
+    AudioClipId: 11
+    Volume: 1
+    Pitch: 1
+    Loop: 0
+    PlayOnAwake: 0
+    SpatialBlend: 1
+    MinDistance: 1
+    MaxDistance: 20
+    VolumeRolloff:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 0
+    DopplerLevel: 0
+    UseLowPassFilter: 0
+    LowPassCutoffFrequency: 0
+    UseHighPassFilter: 0
+    HighPassCutoffFrequency: 0
+    UseReverbFilter: 0
+    ReverbLevel: 0
+    Delay: 0
+    RandomPitchMin: 0.95
+    RandomPitchMax: 1.05
+    RandomVolumeMin: 0
+    RandomVolumeMax: 0
+    Priority: 128
+    FadeInDuration: 0
+    FadeOutDuration: 0.2
+  - Category: 3
+    SoundType: 0
+    AudioClipId: 12
+    Volume: 1
+    Pitch: 1
+    Loop: 0
+    PlayOnAwake: 0
+    SpatialBlend: 1
+    MinDistance: 1
+    MaxDistance: 20
+    VolumeRolloff:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 0
+    DopplerLevel: 0
+    UseLowPassFilter: 0
+    LowPassCutoffFrequency: 0
+    UseHighPassFilter: 0
+    HighPassCutoffFrequency: 0
+    UseReverbFilter: 0
+    ReverbLevel: 0
+    Delay: 0
+    RandomPitchMin: 0.95
+    RandomPitchMax: 1.05
+    RandomVolumeMin: 0
+    RandomVolumeMax: 0
+    Priority: 128
+    FadeInDuration: 0
+    FadeOutDuration: 0
   maxSounds: 50
