@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -37,27 +38,8 @@ namespace Core
                 queue = new Queue<GameObject>();
                 _poolDictionary[id] = queue;
             }
-
-            var parent = GetOrCreateParent(parentName, dontDestroyOnLoad);
-            var toCreate = count - queue.Count;
-
-            for (var i = 0; i < toCreate; i++)
-            {
-                var obj = await CreateObject(id);
-
-                if (dontDestroyOnLoad)
-                {
-                    Object.DontDestroyOnLoad(obj);
-                }
-
-                if (parent != null)
-                {
-                    obj.transform.SetParent(parent);
-                }
-
-                obj.SetActive(false);
-                queue.Enqueue(obj);
-            }
+            
+            await PrewarmInternal<GameObject>(id, count, parentName, dontDestroyOnLoad, queue);
         }
 
         public async UniTask Prewarm<T>(string id, int count, string parentName = null, bool dontDestroyOnLoad = false)
@@ -69,6 +51,11 @@ namespace Core
                 _poolDictionary[id] = queue;
             }
 
+            await PrewarmInternal<T>(id, count, parentName, dontDestroyOnLoad, queue);
+        }
+
+        private async Task PrewarmInternal<T>(string id, int count, string parentName, bool dontDestroyOnLoad, Queue<GameObject> queue)
+        {
             var parent = GetOrCreateParent(parentName, dontDestroyOnLoad);
 
             var toCreate = count - queue.Count;
