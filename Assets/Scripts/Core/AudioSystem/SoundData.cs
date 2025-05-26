@@ -18,6 +18,12 @@ namespace Core
         UI,
         SFX
     }
+    
+    public enum SoundType
+    {
+        Sound,
+        Music
+    }
 
     [Serializable]
     public class SoundData
@@ -25,7 +31,6 @@ namespace Core
         public SoundCategory Category;
         public SoundType SoundType;
         public SoundClipId AudioClipId;
-        public bool Is3D;
         [Range(0f, 1f)]
         public float Volume = 1f;
         public float Pitch = 1f;
@@ -37,8 +42,6 @@ namespace Core
         public float MaxDistance;
         public AnimationCurve VolumeRolloff;
         
-        public Vector3 PositionOffset;
-        public Vector3 Velocity;
         public float DopplerLevel;
         
         public bool UseLowPassFilter;
@@ -51,14 +54,14 @@ namespace Core
         public float ReverbLevel;
         
         public float Delay;
+        
         public float RandomPitchMin = 1f;
         public float RandomPitchMax = 1f;
+        
         public float RandomVolumeMin = 1f;
         public float RandomVolumeMax = 1f;
 
         public int Priority;
-        
-        public bool DestroyOnEnd;
         
         public float FadeInDuration;
         public float FadeOutDuration;

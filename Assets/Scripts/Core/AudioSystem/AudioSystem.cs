@@ -8,12 +8,6 @@ using Object = UnityEngine.Object;
 
 namespace Core
 {
-    public enum SoundType
-    {
-        Sound,
-        Music
-    }
-
     public interface IAudioSystem
     {
         UniTask InitAudioSystem();
@@ -128,6 +122,11 @@ namespace Core
             }
 
             ConfigureAudioSource(soundEmittable.AudioSource, soundData, audioClip);
+
+            if (soundData.Delay > 0)
+            {
+                await UniTask.WaitForSeconds(soundData.Delay);
+            }
 
             if (soundData.FadeInDuration > 0f)
             {

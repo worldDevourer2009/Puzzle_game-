@@ -20,15 +20,9 @@ namespace Core
         private readonly HashSet<IAwakable> _awakables = new();
         private readonly HashSet<IUpdatable> _updatables = new();
         private readonly HashSet<IFixedUpdatable> _fixedUpdatables = new();
-        private readonly HashSet<ILateUpdatable> knownLateUpdatables = new();
+        private readonly HashSet<ILateUpdatable> _lateUpdatables = new();
         
         private bool _initialized;
-
-        public event Action OnAfterInit
-        {
-            add => _innerGameLoop.OnAfterInit += value;
-            remove => _innerGameLoop.OnAfterInit -= value;
-        }
 
         public GameLoopRunner(
             IGameLoop innerGameLoop,
@@ -62,11 +56,11 @@ namespace Core
             AddNewSubscribers(_awakables, GameLoopType.Awake, a => a.AwakeCustom());
             AddNewSubscribers(_updatables, GameLoopType.Update);
             AddNewSubscribers(_fixedUpdatables, GameLoopType.FixedUpdate);
-            AddNewSubscribers(knownLateUpdatables, GameLoopType.LateUpdate);
+            AddNewSubscribers(_lateUpdatables, GameLoopType.LateUpdate);
             RemoveStaleSubscribers(_awakables, GameLoopType.Awake);
             RemoveStaleSubscribers(_updatables, GameLoopType.Update);
             RemoveStaleSubscribers(_fixedUpdatables, GameLoopType.FixedUpdate);
-            RemoveStaleSubscribers(knownLateUpdatables, GameLoopType.LateUpdate);
+            RemoveStaleSubscribers(_lateUpdatables, GameLoopType.LateUpdate);
         }
         
         private void AddNewSubscribers<T>(HashSet<T> knownSet, GameLoopType loopType, Action<T> onAdd = null)
@@ -136,26 +130,6 @@ namespace Core
         public void EnableUpdate(bool enable)
         {
             _innerGameLoop.EnableUpdate(enable);
-        }
-
-        public void Awake()
-        {
-            _innerGameLoop.Awake();
-        }
-
-        public void Update()
-        {
-            _innerGameLoop.Update();
-        }
-
-        public void FixedUpdate()
-        {
-            _innerGameLoop.FixedUpdate();
-        }
-
-        public void LateUpdate()
-        {
-            _innerGameLoop.LateUpdate();
         }
 
         public void Dispose()
