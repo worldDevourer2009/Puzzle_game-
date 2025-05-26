@@ -8,13 +8,15 @@ namespace Core
         private readonly IGameLoop _gameLoop;
         private readonly IInput _input;
         private readonly ILevelManager _levelManager;
+        private readonly IAudioSystem _audioSystem;
         private readonly ICameraManager _cameraManager;
 
-        public PauseState(IGameLoop gameLoop, ILevelManager levelManager, IInput input, ICameraManager cameraManager)
+        public PauseState(IGameLoop gameLoop, IInput input, ILevelManager levelManager, IAudioSystem audioSystem, ICameraManager cameraManager)
         {
             _gameLoop = gameLoop;
-            _levelManager = levelManager;
             _input = input;
+            _levelManager = levelManager;
+            _audioSystem = audioSystem;
             _cameraManager = cameraManager;
         }
 
@@ -24,6 +26,7 @@ namespace Core
             await _cameraManager.SetActiveCamera(CustomCameraType.UiCamera, player.EyesTransform);
             _gameLoop.EnableUpdate(false);
             _input.EnableInput(false);
+            _audioSystem.PauseAllSounds();
         }
 
         public UniTask OnUpdate()
@@ -33,6 +36,7 @@ namespace Core
 
         public UniTask OnExit()
         {
+            _audioSystem.ResumeAllSounds();
             return UniTask.CompletedTask;
         }
 
