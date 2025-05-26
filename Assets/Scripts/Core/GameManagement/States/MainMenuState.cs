@@ -11,16 +11,17 @@ namespace Core
         private readonly ISceneLoader _sceneLoader;
         private readonly IGameLoop _gameLoop;
         private readonly ICameraManager _cameraManager;
-        private readonly ILogger _logger;
+        private readonly IAudioSystem _audioSystem;
         
         private readonly ScenesConfig _scenesConfig;
 
-        public MainMenuState(ISceneLoader sceneLoader, IGameLoop gameLoop, ICameraManager cameraManager, ILogger logger, ScenesConfig scenesConfig)
+        public MainMenuState(ISceneLoader sceneLoader, IGameLoop gameLoop,
+            ICameraManager cameraManager, IAudioSystem audioSystem, ScenesConfig scenesConfig)
         {
             _sceneLoader = sceneLoader;
             _gameLoop = gameLoop;
             _cameraManager = cameraManager;
-            _logger = logger;
+            _audioSystem = audioSystem;
             _scenesConfig = scenesConfig;
         }
 
@@ -30,23 +31,24 @@ namespace Core
             
             if (string.IsNullOrWhiteSpace(mainMenu))
             {
-                _logger.Log("Can't find main menu scene");
+                Logger.Instance.Log("Can't find main menu scene");
                 return;
             }
             
             await _sceneLoader.LoadSceneById(mainMenu);
-            await _cameraManager.CreateCamera(CustomCameraType.UiCamera);
             _gameLoop.EnableUpdate(false);
+            await _cameraManager.CreateCamera(CustomCameraType.UiCamera);
         }
 
-        public UniTask OnUpdate()
+        public async UniTask OnUpdate()
         {
-            return UniTask.CompletedTask;
+            await _audioSystem.PlayMusic(SoundClipId.MainMenuIntro_1);
         }
 
-        public UniTask OnExit()
+        public async UniTask OnExit()
         {
-            return UniTask.CompletedTask;
+            _audioSystem.StopSound(SoundClipId.MainMenuIntro_1);
+            await UniTask.Delay(500);
         }
 
         public GameState? NextState(GameTrigger trigger)

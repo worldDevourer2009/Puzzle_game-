@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
@@ -101,11 +102,12 @@ namespace Core
         {
             if (_currentMusicId != SoundClipId.None)
             {
+                Logger.Instance.Log("Stoping sound");
                 StopSound(_currentMusicId);
             }
-            
+
             _currentMusicId = id;
-            
+            Logger.Instance.Log("Playing music");
             await PlayInternal(id, false, null);
         }
 
@@ -117,7 +119,7 @@ namespace Core
             }
 
             var (soundEmittable, audioClip) = await CreateSourceAndClip(soundData);
-            
+
             if (soundEmittable == null || audioClip == null || soundEmittable.AudioSource == null)
             {
                 return;
@@ -132,12 +134,16 @@ namespace Core
 
             if (soundData.FadeInDuration > 0f)
             {
+                soundEmittable.AudioSource.DOKill();
                 soundEmittable.AudioSource.volume = 0f;
                 soundEmittable.AudioSource.Play();
 
-                soundEmittable.AudioSource.DOFade(
-                    UnityEngine.Random.Range(soundData.RandomVolumeMin, soundData.RandomVolumeMax) * soundData.Volume,
-                    soundData.FadeInDuration);
+                var endVolume = UnityEngine.Random.Range(soundData.RandomVolumeMin, soundData.RandomVolumeMax) *
+                                soundData.Volume;
+
+                soundEmittable
+                    .AudioSource
+                    .DOFade(endVolume, soundData.FadeInDuration).SetEase(Ease.Linear);
             }
             else
             {
@@ -172,24 +178,26 @@ namespace Core
         {
             source.clip = clip;
             source.loop = data.Loop;
-            source.playOnAwake = false;
+            source.playOnAwake = data.PlayOnAwake;
             source.priority = data.Priority;
-            source.volume = 0f;
-            source.pitch = UnityEngine.Random.Range(data.RandomPitchMin, data.RandomPitchMax) * data.Pitch;
+            source.volume = data.Volume;
 
-            source.spatialBlend = data.SpatialBlend;
-            source.minDistance = data.MinDistance;
-            source.maxDistance = data.MaxDistance;
-            source.dopplerLevel = data.DopplerLevel;
+            if (data.Category == SoundCategory.SFX)
+            {
+                source.spatialBlend = data.SpatialBlend;
+                source.minDistance = data.MinDistance;
+                source.maxDistance = data.MaxDistance;
+                source.dopplerLevel = data.DopplerLevel;
 
-            if (data.VolumeRolloff != null && data.VolumeRolloff.length > 0)
-            {
-                source.rolloffMode = AudioRolloffMode.Custom;
-                source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, data.VolumeRolloff);
-            }
-            else
-            {
-                source.rolloffMode = AudioRolloffMode.Logarithmic;
+                if (data.VolumeRolloff != null && data.VolumeRolloff.length > 0)
+                {
+                    source.rolloffMode = AudioRolloffMode.Custom;
+                    source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, data.VolumeRolloff);
+                }
+                else
+                {
+                    source.rolloffMode = AudioRolloffMode.Logarithmic;
+                }
             }
 
             ApplyFilter<AudioLowPassFilter>(source, data.UseLowPassFilter,
@@ -291,7 +299,7 @@ namespace Core
             for (var i = _pausedSounds.Count - 1; i >= 0; i--)
             {
                 var sound = _pausedSounds[i];
-                
+
                 if (sound != null)
                 {
                     sound.AudioSource?.UnPause();
@@ -320,12 +328,14 @@ namespace Core
                     sound.AudioSource.DOFade(0f, data.FadeOutDuration).OnComplete(() =>
                     {
                         sound.AudioSource.Stop();
-                        _factorySystem.Release(data.SoundType.ToString(), sound.gameObject);
+                        sound.AudioSource.DOKill();
+                        _factorySystem.Release(_allSounds[id].SoundType.ToString(), sound.gameObject);
                     });
                 }
                 else
                 {
                     sound.AudioSource.Stop();
+                    sound.AudioSource.DOKill();
                     _factorySystem.Release(_allSounds[id].SoundType.ToString(), sound.gameObject);
                 }
             }

@@ -77,6 +77,10 @@ namespace Installers
             Container.Bind(typeof(IAnimation), typeof(IDisposable))
                 .To<PlayerAnimationController>()
                 .AsCached();
+            
+            Container.BindInterfacesTo<PlayerAudioController>()
+                .AsCached()
+                .NonLazy();
         }
     }
 }

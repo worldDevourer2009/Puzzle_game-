@@ -25,41 +25,42 @@ namespace Core
         public SoundCategory Category;
         public SoundType SoundType;
         public SoundClipId AudioClipId;
-        public bool Is3D = true;
+        public bool Is3D;
+        [Range(0f, 1f)]
         public float Volume = 1f;
         public float Pitch = 1f;
-        public bool Loop = false;
+        public bool Loop;
         public bool PlayOnAwake;
         
-        public float SpatialBlend = 1f;
-        public float MinDistance = 1f;
-        public float MaxDistance = 500f;
+        public float SpatialBlend;
+        public float MinDistance;
+        public float MaxDistance;
         public AnimationCurve VolumeRolloff;
         
         public Vector3 PositionOffset;
         public Vector3 Velocity;
-        public float DopplerLevel = 1f;
+        public float DopplerLevel;
         
-        public bool UseLowPassFilter = false;
-        public float LowPassCutoffFrequency = 5000f;
+        public bool UseLowPassFilter;
+        public float LowPassCutoffFrequency;
 
-        public bool UseHighPassFilter = false;
-        public float HighPassCutoffFrequency = 500f;
+        public bool UseHighPassFilter;
+        public float HighPassCutoffFrequency;
 
-        public bool UseReverbFilter = false;
-        public float ReverbLevel = 0f;
+        public bool UseReverbFilter;
+        public float ReverbLevel;
         
-        public float Delay = 0f;
+        public float Delay;
         public float RandomPitchMin = 1f;
         public float RandomPitchMax = 1f;
         public float RandomVolumeMin = 1f;
         public float RandomVolumeMax = 1f;
 
-        public int Priority = 128;
+        public int Priority;
         
-        public bool DestroyOnEnd = true;
+        public bool DestroyOnEnd;
         
-        public float FadeInDuration = 0f;
-        public float FadeOutDuration = 0f;
+        public float FadeInDuration;
+        public float FadeOutDuration;
     }
 }

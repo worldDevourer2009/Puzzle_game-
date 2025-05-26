@@ -13,41 +13,23 @@ MonoBehaviour:
   m_Name: AudioDataConfig
   m_EditorClassIdentifier: 
   audioData:
-  - Category: 3
-    SoundType: 0
-    AudioClipId: 0
-    Is3D: 0
-    Volume: 0
-    Pitch: 0
-    Loop: 0
-    PlayOnAwake: 0
+  - Category: 1
+    SoundType: 1
+    AudioClipId: 2
+    Is3D: 1
+    Volume: 1
+    Pitch: 1
+    Loop: 1
+    PlayOnAwake: 1
     SpatialBlend: 0
     MinDistance: 0
     MaxDistance: 0
     VolumeRolloff:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 2
-        outSlope: 2
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
+      m_Curve: []
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 0
     PositionOffset: {x: 0, y: 0, z: 0}
     Velocity: {x: 0, y: 0, z: 0}
     DopplerLevel: 0
@@ -58,12 +40,12 @@ MonoBehaviour:
     UseReverbFilter: 0
     ReverbLevel: 0
     Delay: 0
-    RandomPitchMin: 0
-    RandomPitchMax: 0
-    RandomVolumeMin: 0
-    RandomVolumeMax: 0
+    RandomPitchMin: 1
+    RandomPitchMax: 1
+    RandomVolumeMin: 0.3
+    RandomVolumeMax: 1
     Priority: 0
     DestroyOnEnd: 0
-    FadeInDuration: 0
-    FadeOutDuration: 0
+    FadeInDuration: 0.7
+    FadeOutDuration: 0.3
   maxSounds: 50
