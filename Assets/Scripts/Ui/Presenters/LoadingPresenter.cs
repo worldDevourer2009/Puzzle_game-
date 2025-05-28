@@ -28,8 +28,9 @@ namespace Ui
         public async UniTask Initialize()
         {
             _loadingView = await _factorySystem.CreateFromInterface<ILoadingView>(LoadingViewId);
-            await _uiSystem.ParentUnderCanvas(_loadingView, CanvasType.Windows);
             _loadingView.Hide();
+            _uiSystem.RegisterView(LoadingViewId, _loadingView);
+            await _uiSystem.ParentUnderCanvas(_loadingView, CanvasType.Windows);
             
             _sceneLoader.OnLoad += DisplayView;
             _sceneLoader.OnLoaded += HideView;

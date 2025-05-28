@@ -9,6 +9,7 @@ namespace Ui
     public class PauseMenuPresenter : IUIPresenter,  IDisposable
     {
         private const string PauseResumeViewId = "PauseResumeView";
+        private const string SettingViewId = "SettingsView";
         
         private readonly CompositeDisposable _compositeDisposable;
         private readonly PauseResumeModel _pauseResumeModel;
@@ -34,9 +35,9 @@ namespace Ui
         public async UniTask Initialize()
         {
             _pauseResumeView = await _factorySystem.CreateFromInterface<IPauseResumeView>(PauseResumeViewId);
-            var canvas = _uiSystem.GetCanvasByType(CanvasType.Windows);
-            _pauseResumeView.Parent(canvas.transform);
+            _uiSystem.RegisterView(PauseResumeViewId, _pauseResumeView);
             _pauseResumeView.Hide();
+            await _uiSystem.ParentUnderCanvas(_pauseResumeView, CanvasType.Windows);
             
             _pauseResumeView.OnDestroyed += Dispose;
             _pauseResumeView.OnPauseMenuClicked += HandleViewClick;
@@ -102,6 +103,8 @@ namespace Ui
                     await _pauseResumeModel.GoToMainMenu();
                     break;
                 case PauseMenuButtonAction.Settings:
+                    _uiSystem.ShowViewById(SettingViewId);
+                    break;
                 case PauseMenuButtonAction.None:
                 default:
                     throw new ArgumentOutOfRangeException(nameof(action), action, null);

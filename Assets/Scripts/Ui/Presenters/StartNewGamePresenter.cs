@@ -32,6 +32,7 @@ namespace Ui
         {
             _startNewGameView = await _factorySystem.CreateFromInterface<IStartNewGameView>(StartNewGameViewId);
             await _uiSystem.ParentUnderCanvas(_startNewGameView, CanvasType.Windows);
+            _uiSystem.RegisterView(StartNewGameViewId, _startNewGameView);
             _startNewGameView.Hide();
 
             _gameStateManager.OnGameStateChanged.Subscribe(DisplayView)

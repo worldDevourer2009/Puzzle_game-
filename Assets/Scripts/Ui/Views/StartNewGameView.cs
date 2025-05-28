@@ -51,7 +51,7 @@ namespace Ui
         
         public void Parent(Transform parent)
         {
-            transform.SetParent(parent);
+            transform.SetParent(parent, false);
         }
     }
 }

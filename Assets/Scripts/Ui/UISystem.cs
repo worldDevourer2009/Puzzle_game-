@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Core;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -14,7 +13,11 @@ namespace Ui
         UniTask ParentUnderCanvas(Transform objectToParent, CanvasType type);
         UniTask ParentUnderCanvas(IUIView view, CanvasType type);
         UniTask<GameObject> ShowView(string id, CanvasType type);
+        void ShowViewById(string id);
+        void HideViewById(string id);
         UniTask<IUIView> ShowViewFromInterface(string id, CanvasType type);
+        void RegisterView(string id, IUIView view);
+        void UnregisterView(string id);
         void HideView(string id, GameObject view);
     }
 
@@ -25,7 +28,7 @@ namespace Ui
         public UI UIRoot => _uiRoot;
         
         private readonly IFactorySystem _factorySystem;
-        private readonly Dictionary<string, GameObject> _activeViews;
+        private readonly Dictionary<string, IUIView> _activeViews;
 
         private UniTaskCompletionSource _completionSource;
         private UI _uiRoot;
@@ -34,7 +37,7 @@ namespace Ui
         public UISystem(IFactorySystem factorySystem)
         {
             _factorySystem = factorySystem;
-            _activeViews = new Dictionary<string, GameObject>();
+            _activeViews = new Dictionary<string, IUIView>();
             _completionSource = new UniTaskCompletionSource();
         }
 
@@ -94,6 +97,26 @@ namespace Ui
             return view;
         }
 
+        public void ShowViewById(string id)
+        {
+            if (!_activeViews.TryGetValue(id, out var view))
+            {
+                return;
+            }
+
+            view.Show();
+        }
+
+        public void HideViewById(string id)
+        {
+            if (!_activeViews.TryGetValue(id, out var view))
+            {
+                return;
+            }
+
+            view.Hide();
+        }
+
         public async UniTask<IUIView> ShowViewFromInterface(string id, CanvasType type)
         {
             if (_uiRoot == null)
@@ -105,6 +128,28 @@ namespace Ui
             view.Parent(GetCanvasByType(type).transform);
             view.Show();
             return view;
+        }
+
+        public void RegisterView(string id, IUIView view)
+        {
+            if (_activeViews.ContainsKey(id))
+            {
+                Logger.Instance.LogWarning($"View with id {id} was not registred");
+                return;
+            }
+
+            _activeViews[id] = view;
+        }
+
+        public void UnregisterView(string id)
+        {
+            if (_activeViews.ContainsKey(id))
+            {
+                Logger.Instance.LogWarning($"View with id {id} was not registred");
+                return;
+            }
+
+            _activeViews.Remove(id);
         }
 
         public void HideView(string id, GameObject view)

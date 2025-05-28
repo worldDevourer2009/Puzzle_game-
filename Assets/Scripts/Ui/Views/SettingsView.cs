@@ -1,3 +1,4 @@
+using System;
 using R3;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +7,7 @@ namespace Ui
 {
     public interface ISettingsView : IUIView
     {
+        event Action OnClose;
         ReactiveProperty<float> MasterVolume { get; }
         ReactiveProperty<float> SFXVolume { get; }
         ReactiveProperty<float> MusicVolume { get; }
@@ -15,6 +17,7 @@ namespace Ui
     public class SettingsView : MonoBehaviour, ISettingsView
     {
         public bool IsVisible => gameObject.activeInHierarchy;
+        public event Action OnClose;
         public ReactiveProperty<float> MasterVolume => _masterVolume;
         public ReactiveProperty<float> SFXVolume => _sfxVolume;
         public ReactiveProperty<float> MusicVolume => _musicVolume;
@@ -29,6 +32,8 @@ namespace Ui
         [SerializeField] private Slider _sfxSlider;
         [SerializeField] private Slider _musicSlider;
         [SerializeField] private Slider _uiSlider;
+        
+        [SerializeField] private Button _closeButton;
 
         public void Start()
         {
@@ -41,6 +46,8 @@ namespace Ui
             _sfxSlider.onValueChanged.AddListener((x) => _sfxVolume.Value = x);
             _musicSlider.onValueChanged.AddListener((x) => _musicVolume.Value = x);
             _uiSlider.onValueChanged.AddListener((x) => _uiVolume.Value = x);
+            
+            _closeButton.onClick.AddListener(() => OnClose?.Invoke());
         }
 
         public void OnDestroy()
@@ -63,7 +70,7 @@ namespace Ui
         
         public void Parent(Transform parent)
         {
-            transform.SetParent(parent);
+            transform.SetParent(parent, false);
         }
     }
 }

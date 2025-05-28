@@ -28,6 +28,7 @@ namespace Ui
         public async UniTask Initialize()
         {
             _settingsView = await _factorySystem.CreateFromInterface<ISettingsView>(SettingsId);
+            _uiSystem.RegisterView(SettingsId, _settingsView);
             _settingsView.Hide();
             await _uiSystem.ParentUnderCanvas(_settingsView, CanvasType.Windows);
             
@@ -47,6 +48,13 @@ namespace Ui
 
             _settingsView.UIVolume.Subscribe(value => _settingsModel.SetUIVolume(value))
                 .AddTo(_compositeDisposable);
+
+            _settingsView.OnClose += DisplayView;
+        }
+
+        private void DisplayView()
+        {
+            _settingsView.Hide();
         }
 
         public void Dispose()
