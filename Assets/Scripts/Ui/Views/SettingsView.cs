@@ -23,6 +23,8 @@ namespace Ui
         public ReactiveProperty<float> MusicVolume => _musicVolume;
         public ReactiveProperty<float> UIVolume => _uiVolume;
 
+        private readonly CompositeDisposable _compositeDisposable = new();
+
         private readonly ReactiveProperty<float> _masterVolume = new();
         private readonly ReactiveProperty<float> _sfxVolume = new();
         private readonly ReactiveProperty<float> _musicVolume = new();
@@ -37,25 +39,31 @@ namespace Ui
 
         public void Start()
         {
-            _masterSlider.value = MasterVolume.Value;
-            _sfxSlider.value = SFXVolume.Value;
-            _musicSlider.value = MusicVolume.Value;
-            _uiSlider.value = UIVolume.Value;
-            
-            _masterSlider.onValueChanged.AddListener((x) => _masterVolume.Value = x);
-            _sfxSlider.onValueChanged.AddListener((x) => _sfxVolume.Value = x);
-            _musicSlider.onValueChanged.AddListener((x) => _musicVolume.Value = x);
-            _uiSlider.onValueChanged.AddListener((x) => _uiVolume.Value = x);
-            
-            _closeButton.onClick.AddListener(() => OnClose?.Invoke());
+            BindSlider(_masterVolume, _masterSlider);
+            BindSlider(_sfxVolume, _sfxSlider);
+            BindSlider(_musicVolume, _musicSlider);
+            BindSlider(_uiVolume, _uiSlider);
+
+            _closeButton.onClick.AsObservable()
+                .Subscribe(_ => OnClose?.Invoke())
+                .AddTo(_compositeDisposable);
+        }
+        
+        private void BindSlider(ReactiveProperty<float> property, Slider slider)
+        {
+            property
+                .Subscribe(value => slider.value = value)
+                .AddTo(_compositeDisposable);
+
+            slider.onValueChanged
+                .AsObservable()
+                .Subscribe(value => property.Value = value)
+                .AddTo(_compositeDisposable);
         }
 
         public void OnDestroy()
         {
-            _masterSlider.onValueChanged.RemoveAllListeners();
-            _sfxSlider.onValueChanged.RemoveAllListeners();
-            _musicSlider.onValueChanged.RemoveAllListeners();
-            _uiSlider.onValueChanged.RemoveAllListeners();
+            _compositeDisposable.Dispose();
         }
         
         public void Show()

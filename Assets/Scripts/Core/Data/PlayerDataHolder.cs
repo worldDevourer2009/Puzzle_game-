@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Core;
 using Cysharp.Threading.Tasks;
 using R3;
 using UnityEngine;
-using ILogger = Core.ILogger;
 
-namespace Game
+namespace Core
 {
     public enum PlayerDataType
     {

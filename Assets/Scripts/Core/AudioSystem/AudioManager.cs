@@ -29,7 +29,7 @@ namespace Core
         {
             var musicVolume = _exposedSystemDataHolder.GetSystemParameterByType(ExposedSystemDataType.MusicVolume);
             var sfxVolume = _exposedSystemDataHolder.GetSystemParameterByType(ExposedSystemDataType.SFXVolume);
-            var masterVolume = _exposedSystemDataHolder.GetSystemParameterByType(ExposedSystemDataType.SFXVolume);
+            var masterVolume = _exposedSystemDataHolder.GetSystemParameterByType(ExposedSystemDataType.MasterVolume);
             var uiVolume = _exposedSystemDataHolder.GetSystemParameterByType(ExposedSystemDataType.UIVolume);
             
             masterVolume.Subscribe(value => { SetVolume(MixerType.Master, value.FloatValue); })

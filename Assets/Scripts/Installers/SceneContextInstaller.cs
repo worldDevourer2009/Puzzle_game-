@@ -27,17 +27,8 @@ namespace Installers
             Container.Bind<IRotatable>()
                 .To<RotationLogic>()
                 .AsCached();
-
-            Container.Bind<Cube>()
-                .FromComponentsInHierarchy()
-                .AsCached();
-
+            
             BindPlayers();
-            BindMVP();
-        }
-
-        private void BindMVP()
-        {
         }
 
         private void BindPlayers()
