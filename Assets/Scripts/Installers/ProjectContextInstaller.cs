@@ -1,6 +1,7 @@
 using System;
 using Core;
 using Game;
+using Ui;
 using Zenject;
 
 namespace Installers
@@ -50,14 +51,15 @@ namespace Installers
                 .To<RaycasterSystem>()
                 .AsSingle();
             
-            Container.BindInterfacesAndSelfTo<EntryPoint>()
-                .AsSingle()
-                .NonLazy();
-            
             Container
                 .Bind<ICameraManager>()
                 .To<CameraManager>()
                 .AsSingle();
+
+            Container.Bind<ISaver>()
+                .To<Saver>()
+                .AsSingle()
+                .NonLazy();
 
             Container.Bind<ILogger>()
                 .To<Logger>()
@@ -117,13 +119,64 @@ namespace Installers
             Container.BindInterfacesTo<CursorManager>()
                 .AsSingle()
                 .NonLazy();
+            
+            Container.BindInterfacesTo<AudioManager>()
+                .AsSingle()
+                .NonLazy();
 
             Container
                 .Bind(typeof(IPlayerDataHolder), typeof(IDisposable))
                 .To<PlayerDataHolder>()
                 .AsSingle();
+            
+            Container
+                .BindInterfacesTo<ExposedSystemDataHolder>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container
+                .BindInterfacesTo<InternalSystemDataHolder>()
+                .AsSingle()
+                .NonLazy();
 
             BindStates();
+            BindUI();
+        }
+
+        private void BindUI()
+        {
+            Container.BindInterfacesTo<UISystem>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<UIInitializer>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.BindInterfacesAndSelfTo<PauseResumeModel>()
+                .AsSingle();
+
+            Container.BindInterfacesAndSelfTo<PauseMenuPresenter>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.BindInterfacesAndSelfTo<SettingsModel>()
+                .AsSingle();
+            
+            Container.Bind<LoadingPresenter>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<StartNewGamePresenter>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<StartNewGameModel>()
+                .AsSingle();
+
+            Container.BindInterfacesAndSelfTo<SettingsPresenter>()
+                .AsSingle()
+                .NonLazy();
         }
 
         private void BindStates()
@@ -195,6 +248,10 @@ namespace Installers
             
             Container.Bind<AudioDataConfig>()
                 .FromResource("Configs/AudioDataConfig")
+                .AsSingle();
+            
+            Container.Bind<ExternalSettingsConfig>()
+                .FromResource("Configs/ExternalSettingsConfig")
                 .AsSingle();
         }
     }

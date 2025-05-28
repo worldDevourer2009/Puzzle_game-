@@ -15,6 +15,11 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: e4c61cf3fc33f4b19a715bf33526e101
   m_SerializeEntries:
+  - m_GUID: 064ea79539d924d59b7af9a5620b85f7
+    m_Address: SettingsView
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0bdddcc1ef546484cbeb21dfc07353da
     m_Address: Sound
     m_ReadOnly: 0
@@ -22,6 +27,16 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0d36f22b25dede7458323b3a77e85598
     m_Address: FirstLevelBackground_1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 11ffdca7ffe6f4259ba0c7ddae875f5a
+    m_Address: LoadingView
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 123def72310f2403098823bb4d3d49d9
+    m_Address: PauseResumeView
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -37,6 +52,16 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1ef51c3689cfbd54f9e7c5560403ccb3
     m_Address: MainMenuIntro_1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1faf7f97f9bbc4163958a68d06f49dad
+    m_Address: Bootstrap
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4477eaf6404e04d4cbe2bafb479ce2bd
+    m_Address: UIRoot
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -72,6 +97,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9b41ae52e936243feb123ba0fcdf059a
     m_Address: Test
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b647c5c103a8e44ef83cf21e33278958
+    m_Address: StartNewGameView
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

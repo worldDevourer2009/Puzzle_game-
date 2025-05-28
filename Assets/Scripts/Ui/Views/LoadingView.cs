@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Ui
 {
-    public interface ILoadingView
+    public interface ILoadingView : IUIView
     {
         void DisplayLoadingScreen();
         void HideLoadingScreen();
@@ -12,6 +12,8 @@ namespace Ui
     
     public class LoadingView : MonoBehaviour, ILoadingView
     {
+        public bool IsVisible => gameObject.activeInHierarchy;
+
         [Header("Core")]
         [SerializeField] private Image _backgroundImage;
         [SerializeField] private Image _loadingImage;
@@ -56,6 +58,21 @@ namespace Ui
             {
                 _loadingImageRect?.DOKill();
             }
+        }
+
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+        
+        public void Parent(Transform parent)
+        {
+            transform.SetParent(parent);
         }
     }
 }

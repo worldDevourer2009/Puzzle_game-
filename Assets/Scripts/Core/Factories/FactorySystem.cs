@@ -16,6 +16,10 @@ namespace Core
         UniTask<GameObject> Create(string id, Transform parent);
         UniTask<GameObject> Create(string id, Vector3 position, Transform parent);
         UniTask<GameObject> CreateGPU(string id, InstanceData data, MeshFilter meshFilter, Material mat);
+        UniTask<TInterface> CreateFromInterface<TInterface>(string id) where TInterface : class;
+        UniTask<TInterface> CreateFromInterface<TInterface>(string id, Vector3 position) where TInterface : class;
+        UniTask<TInterface> CreateFromInterface<TInterface>(string id, Transform parent) where TInterface : class;
+        UniTask<TInterface> CreateFromInterface<TInterface>(string id, Vector3 position, Transform parent) where TInterface : class;
         void Release(string id, GameObject obj);
         void Inject<T>(T objToInject);
     }
@@ -103,6 +107,41 @@ namespace Core
             result.transform.position = position;
             container.InjectGameObject(result);
             return result;
+        }
+        
+        public async UniTask<TInterface> CreateFromInterface<TInterface>(string id) where TInterface : class
+        {
+            var (go, container) = await InternalCreate(id);
+            container.InjectGameObject(go);
+            var inst = go.GetComponent<TInterface>();
+            if (inst == null)
+                Debug.LogError($"Prefab '{id}' не содержит компонент, реализующий {typeof(TInterface).Name}");
+            return inst;
+        }
+
+        public async UniTask<TInterface> CreateFromInterface<TInterface>(string id, Vector3 position) where TInterface : class
+        {
+            var inst = await CreateFromInterface<TInterface>(id);
+            if (inst is Component c) c.transform.position = position;
+            return inst;
+        }
+
+        public async UniTask<TInterface> CreateFromInterface<TInterface>(string id, Transform parent) where TInterface : class
+        {
+            var inst = await CreateFromInterface<TInterface>(id);
+            if (inst is Component c && parent != null) c.transform.SetParent(parent);
+            return inst;
+        }
+
+        public async UniTask<TInterface> CreateFromInterface<TInterface>(string id, Vector3 position, Transform parent) where TInterface : class
+        {
+            var inst = await CreateFromInterface<TInterface>(id);
+            if (inst is Component c && parent != null)
+            {
+                c.transform.position = position;
+                c.transform.SetParent(parent);
+            }
+            return inst;
         }
 
         public async UniTask<GameObject> CreateGPU(string id, InstanceData data, MeshFilter meshFilter, Material mat)

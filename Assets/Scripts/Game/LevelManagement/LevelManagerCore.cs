@@ -17,8 +17,6 @@ namespace Core
 
         UniTask InitPlayer(Vector3 position);
         UniTask SetEntity(ObjectType id, Vector3 pos = default, Transform parent = null);
-        UniTask TriggerLevelAction();
-        UniTask ResetLevel();
         UniTask LoadNextLevel();
         UniTask LoadCurrentLevel();
         UniTask LoadLevelByName(string name);
@@ -140,16 +138,6 @@ namespace Core
                     _logger.LogWarning($"entity {id} is not an IPlayerFacade");
                 }
             }
-        }
-
-        public async UniTask TriggerLevelAction()
-        {
-            //throw new NotImplementedException();
-        }
-
-        public async UniTask ResetLevel()
-        {
-            //throw new NotImplementedException();
         }
 
         public async UniTask LoadNextLevel()

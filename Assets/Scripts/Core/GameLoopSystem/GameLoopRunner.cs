@@ -43,7 +43,7 @@ namespace Core
         
         private void SubscribeSceneLoad()
         {
-            _sceneLoader.OnLoad += OnSceneLoaded;
+            _sceneLoader.OnLoaded += OnSceneLoaded;
         }
 
         private void OnSceneLoaded()

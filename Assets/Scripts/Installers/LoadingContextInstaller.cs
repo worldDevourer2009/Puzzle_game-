@@ -7,13 +7,6 @@ namespace Installers
     {
         public override void InstallBindings()
         {
-            Container.Bind<ILoadingView>()
-                .FromComponentInHierarchy()
-                .AsSingle();
-
-            Container.Bind<LoadingPresenter>()
-                .AsSingle()
-                .NonLazy();
         }
     }
 }

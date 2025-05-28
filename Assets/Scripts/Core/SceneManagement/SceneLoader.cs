@@ -30,6 +30,8 @@ namespace Core
         public event Action OnUnloaded;
         
         private const string LoadingSceneId = "LoadingScene";
+        private const string BootstrapSceneId = "Bootstrap";
+        
         private readonly IAddressableLoader _addressableLoader;
         private readonly ILogger _logger;
         private readonly ICameraManager _cameraManager;
@@ -52,32 +54,38 @@ namespace Core
             }
             
             OnLoad?.Invoke();
-
+            
             _cameraManager.DestroyAllCameras();
-            var loadingScene = await _addressableLoader.LoadScene(LoadingSceneId, LoadSceneMode.Single);
-            await _cameraManager.SetActiveCamera(CustomCameraType.LoadCamera);
+            
+            var loadingScene = await _addressableLoader.LoadScene(LoadingSceneId);
             SceneManager.SetActiveScene(loadingScene.Scene);
+            await _cameraManager.SetActiveCamera(CustomCameraType.LoadCamera);
 
-            LoadSceneMode sceneMode;
-
-            switch (loadSceneMode)
+            foreach (var kvp in _sceneInstances)
             {
-                case LoadMode.Single:
-                    sceneMode = LoadSceneMode.Single;
-                    break;
-                case LoadMode.Additive:
-                    sceneMode = LoadSceneMode.Additive;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(loadSceneMode), loadSceneMode, null);
+                if (kvp.Key != BootstrapSceneId && kvp.Key != LoadingSceneId)
+                {
+                    await _addressableLoader.UnloadScene(kvp.Value);
+                }
             }
             
-            var targetScene = await _addressableLoader.LoadScene(id, sceneMode);
+            var keysToKeep = new[] { BootstrapSceneId, LoadingSceneId };
+            foreach (var key in new List<string>(_sceneInstances.Keys))
+            {
+                if (Array.IndexOf(keysToKeep, key) == -1)
+                {
+                    _sceneInstances.Remove(key);
+                }
+            }
+            
+            var targetScene = await _addressableLoader.LoadScene(id);
             SceneManager.SetActiveScene(targetScene.Scene);
             _sceneInstances[id] = targetScene;
+            
             OnLoaded?.Invoke();
             
             await _addressableLoader.UnloadScene(loadingScene);
+            _sceneInstances.Remove(LoadingSceneId);
         }
 
         private bool IsSceneLoaded(string id)

@@ -1,6 +1,5 @@
 using System;
 using Game;
-using Ui;
 using Zenject;
 
 namespace Installers
@@ -39,16 +38,6 @@ namespace Installers
 
         private void BindMVP()
         {
-            Container.BindInterfacesAndSelfTo<PauseResumeModel>()
-                .AsSingle();
-
-            Container.Bind<IPauseResumeView>()
-                .FromComponentInHierarchy()
-                .AsSingle();
-
-            Container.BindInterfacesAndSelfTo<PauseMenuPresenter>()
-                .AsSingle()
-                .NonLazy();
         }
 
         private void BindPlayers()

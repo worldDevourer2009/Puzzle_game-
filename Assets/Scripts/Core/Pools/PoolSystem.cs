@@ -14,6 +14,7 @@ namespace Core
 
         UniTask<GameObject> GetObject(string id);
         UniTask<T> GetObject<T>(string id) where T : Component;
+        UniTask<TInterface> GetObjectInterface<TInterface>(string id) where TInterface : class;
         void ReleaseObject<T>(string id, T component) where T : Component;
         void ReleaseObject(string id, GameObject obj);
     }
@@ -154,6 +155,20 @@ namespace Core
             }
 
             return component;
+        }
+        
+        public async UniTask<TInterface> GetObjectInterface<TInterface>(string id) where TInterface : class
+        {
+            var go = await GetObject(id);
+            
+            var inst = go.GetComponent<TInterface>();
+            
+            if (inst == null)
+            {
+                Logger.Instance.LogWarning($"GA does not contain compo");
+            }
+            
+            return inst;
         }
 
         public void ReleaseObject(string id, GameObject obj)

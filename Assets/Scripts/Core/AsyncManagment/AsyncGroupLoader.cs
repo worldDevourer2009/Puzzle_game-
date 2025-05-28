@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using ZLinq;
 
 namespace Core
 {
@@ -127,19 +128,25 @@ namespace Core
         private async UniTask RunSequentially(AsyncGroup group, Action<float> onProgress = null,
             CancellationToken cancellationToken = default)
         {
-            var tasks = group.Sequential();
-            var total = tasks.Count;
+            var tasksSnapshot = group.Sequential().AsValueEnumerable().ToList();
+            var total = tasksSnapshot.Count;
             var completed = 0;
 
-            foreach (var task in tasks)
+            foreach (var task in tasksSnapshot)
             {
                 try
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     await task();
+                }
+                catch (OperationCanceledException)
+                {
+                    _logger.Log("RunSequentially was canceled.");
+                    throw;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning($"Running sequentially func failed {task.Method} with exception {ex.Message}");
+                    _logger.LogWarning($"Running sequentially func failed {task.Method.Name} with exception: {ex.Message}");
                 }
                 finally
                 {
@@ -156,6 +163,8 @@ namespace Core
             var total = tasks.Count;
             var completed = 0;
             var tasksList = new List<UniTask>();
+            
+            Logger.Instance.LogWarning($"Tasks count is {tasks.Count}");
 
             foreach (var task in tasks)
             {

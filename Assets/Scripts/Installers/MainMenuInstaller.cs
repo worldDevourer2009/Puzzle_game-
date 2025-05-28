@@ -14,22 +14,18 @@ namespace Installers
 
         private void BindModels()
         {
-            Container.Bind<StartNewGameModel>()
-                .AsSingle();
         }
 
         private void BindPresenters()
         {
-            Container.Bind<StartNewGamePresenter>()
-                .AsSingle();
         }
 
         private void BindViews()
         {
-            Container.Bind<IStartNewGameView>()
-                .To<StartNewGameView>()
-                .FromComponentsInHierarchy()
-                .AsCached();
+            // Container.Bind<IStartNewGameView>()
+            //     .To<StartNewGameView>()
+            //     .FromComponentsInHierarchy()
+            //     .AsCached();
         }
     }
 }

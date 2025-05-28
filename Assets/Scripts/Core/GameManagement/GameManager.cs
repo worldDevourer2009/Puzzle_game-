@@ -1,7 +1,11 @@
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using ZLinq;
 using Cysharp.Threading.Tasks;
 using Game;
 using ModestTree;
+using UnityEngine;
 
 namespace Core
 {
@@ -14,10 +18,9 @@ namespace Core
         UniTask RestartLevel();
         UniTask PauseGame();
         UniTask UnpauseGame();
-        UniTask SaveGame();
         UniTask QuitGame();
     }
-    
+
     public class GameManager : IGameManager
     {
         private readonly ScenesConfig _scenesConfig;
@@ -25,56 +28,59 @@ namespace Core
         private readonly ISceneLoader _sceneLoader;
         private readonly ILevelManager _levelManager;
         private readonly ICameraManager _cameraManager;
+        private readonly ISaver _saver;
         private readonly LevelsConfig _levelsConfig;
         private readonly IGameLoop _gameLoop;
-        private readonly ILogger _logger;
 
         private string _lastLoadedLevel;
-
-        public GameManager(ISceneLoader sceneLoader, ILevelManager levelManager, ScenesConfig scenesConfig, 
-            ICameraManager cameraManager, LevelsConfig levelsConfig, IGameLoop gameLoop, IPlayerDataHolder playerDataHolder,  ILogger logger)
+        
+        public GameManager(ScenesConfig scenesConfig, IPlayerDataHolder playerDataHolder, ISceneLoader sceneLoader,
+            ILevelManager levelManager, ICameraManager cameraManager, ISaver saver, LevelsConfig levelsConfig,
+            IGameLoop gameLoop)
         {
+            _scenesConfig = scenesConfig;
+            _playerDataHolder = playerDataHolder;
             _sceneLoader = sceneLoader;
             _levelManager = levelManager;
-            _scenesConfig = scenesConfig;
             _cameraManager = cameraManager;
+            _saver = saver;
             _levelsConfig = levelsConfig;
             _gameLoop = gameLoop;
-            _playerDataHolder = playerDataHolder;
-            _logger = logger;
         }
 
         public async UniTask LoadMainMenu()
         {
-            var firstScene = _scenesConfig.Scenes.AsValueEnumerable().FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+            var firstScene = _scenesConfig.Scenes.AsValueEnumerable()
+                .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
 
             if (firstScene == null || firstScene.IsEmpty())
             {
-                _logger.LogWarning("Can't find first scene");
+                Logger.Instance.LogWarning("Can't find first scene");
                 return;
             }
-            
+
             var op = _sceneLoader.LoadSceneById(firstScene, LoadMode.Single);
 
             await op;
-            
+
             await _cameraManager.CreateCamera(CustomCameraType.UiCamera);
         }
 
         public async UniTask LaunchGame()
         {
-            var firstScene = _scenesConfig.Scenes.AsValueEnumerable().FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+            var firstScene = _scenesConfig.Scenes.AsValueEnumerable()
+                .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
 
             if (firstScene == null || firstScene.IsEmpty())
             {
-                _logger.LogWarning("Can't find first scene");
+                Logger.Instance.LogWarning("Can't find first scene");
                 return;
             }
-            
+
             var op = _sceneLoader.LoadSceneById(firstScene, LoadMode.Additive);
 
             await op;
-            
+
             await _cameraManager.CreateCamera(CustomCameraType.UiCamera);
         }
 
@@ -93,7 +99,7 @@ namespace Core
                 await StartNewGame();
                 return;
             }
-            
+
             await LoadLevelHelper(levelName);
         }
 
@@ -101,10 +107,10 @@ namespace Core
         {
             if (string.IsNullOrWhiteSpace(levelName.LevelName))
             {
-                _logger.LogWarning("Can't get level name");
+                Logger.Instance.LogWarning("Can't get level name");
                 return;
             }
-            
+
             await _playerDataHolder.InitData();
             var op = _levelManager.LoadLevelByName(levelName.LevelName);
             await op;
@@ -112,7 +118,7 @@ namespace Core
 
         public async UniTask RestartLevel()
         {
-            var op= _levelManager.LoadCurrentLevel();
+            var op = _levelManager.LoadCurrentLevel();
             await op;
         }
 
@@ -128,14 +134,14 @@ namespace Core
             return UniTask.CompletedTask;
         }
 
-        public async UniTask SaveGame()
-        {
-            //throw new System.NotImplementedException();
-        }
-
         public async UniTask QuitGame()
         {
-            //throw new System.NotImplementedException();
+            await _saver.SaveAll();
+            
+#if UNITY_EDITOR
+            EditorApplication.isPlaying = false;
+#endif
+            Application.Quit();
         }
     }
 }

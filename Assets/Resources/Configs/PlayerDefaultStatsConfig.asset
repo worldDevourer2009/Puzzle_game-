@@ -27,6 +27,6 @@ MonoBehaviour:
         m_Bits: 64
     LookClamp: 70
     MaxStepSlopeAngle: 45
-    StepCheckDistance: 0.1
-    StepHeight: 0.2
-    StepMoveDistance: 0.2
+    StepCheckDistance: 0.3
+    StepHeight: 0.3
+    StepMoveDistance: 0.3

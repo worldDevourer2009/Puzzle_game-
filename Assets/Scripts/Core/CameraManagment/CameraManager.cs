@@ -54,7 +54,7 @@ namespace Core
         public async UniTask<ICamera> CreateCamera(CustomCameraType type, Transform parent = null)
         {
             var parsedType = type.ToString();
-
+            
             try
             {
                 if (_cameras.TryGetValue(type, out var activeCam))

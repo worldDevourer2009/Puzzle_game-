@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Audio;
 using ZLinq;
 using Object = UnityEngine.Object;
 
@@ -29,24 +30,31 @@ namespace Core
 
     public class AudioSystem : IAudioSystem
     {
-        private readonly IAddressableLoader _addressableLoader;
-        private readonly InternalSettingsConfig _internalSettings;
+        private readonly IInternalSystemDataHolder _internalSystemDataHolder;
         private readonly AudioDataConfig _audioDataConfig;
+
+        private readonly IAddressableLoader _addressableLoader;
         private readonly IPoolSystem _poolSystem;
         private readonly IFactorySystem _factorySystem;
+
         private readonly Dictionary<SoundClipId, SoundData> _allSounds;
         private readonly Dictionary<SoundClipId, List<SoundEmittable>> _activeEmitters;
         private readonly List<SoundEmittable> _pausedSounds;
 
+        private AudioMixerGroup _masterMixer;
+        private AudioMixerGroup _musicMixer;
+        private AudioMixerGroup _uiMixer;
+        private AudioMixerGroup _sfxMixer;
+
         private SoundClipId _currentMusicId;
 
         public AudioSystem(IAddressableLoader addressableLoader, IPoolSystem poolSystem, IFactorySystem factorySystem,
-            InternalSettingsConfig internalSettings, AudioDataConfig audioDataConfig)
+            IInternalSystemDataHolder internalSystemDataHolder, AudioDataConfig audioDataConfig)
         {
             _addressableLoader = addressableLoader;
             _poolSystem = poolSystem;
             _factorySystem = factorySystem;
-            _internalSettings = internalSettings;
+            _internalSystemDataHolder = internalSystemDataHolder;
             _audioDataConfig = audioDataConfig;
 
             _allSounds = new Dictionary<SoundClipId, SoundData>();
@@ -56,11 +64,29 @@ namespace Core
 
         public async UniTask InitAudioSystem()
         {
+            var musicPrewardCount =
+                _internalSystemDataHolder.GetSystemParameterByType<int>(InternalSystemDataType.PrewardMusicCount);
+
+            var sfxPrewarmCount =
+                _internalSystemDataHolder.GetSystemParameterByType<int>(InternalSystemDataType.PrewardSFXCount);
+
+            _musicMixer = _internalSystemDataHolder.GetSystemParameterByType<AudioMixerGroup>(InternalSystemDataType
+                .MusicMixer);
+
+            _uiMixer = _internalSystemDataHolder.GetSystemParameterByType<AudioMixerGroup>(InternalSystemDataType
+                .UIMixer);
+
+            _sfxMixer = _internalSystemDataHolder.GetSystemParameterByType<AudioMixerGroup>(InternalSystemDataType
+                .SFXMixer);
+
+            _masterMixer = _internalSystemDataHolder.GetSystemParameterByType<AudioMixerGroup>(InternalSystemDataType
+                .MasterMixer);
+
             await _poolSystem.Prewarm<SoundEmittable>(SoundType.Music.ToString(),
-                _internalSettings.InternalSettings.PrewardMusicCount, "Music", true);
+                musicPrewardCount, "Music", true);
 
             await _poolSystem.Prewarm<SoundEmittable>(SoundType.Sound.ToString(),
-                _internalSettings.InternalSettings.PrewardSFXCount, "Sounds", true);
+                sfxPrewarmCount, "Sounds", true);
 
             foreach (var data in _audioDataConfig.AudioData)
             {
@@ -219,17 +245,16 @@ namespace Core
 
         private void AddToMixer(AudioSource source, SoundData data)
         {
-            var audioSettings = _internalSettings.InternalSettings;
             switch (data.Category)
             {
                 case SoundCategory.Music:
-                    source.outputAudioMixerGroup = audioSettings.MusicMixer;
+                    source.outputAudioMixerGroup = _musicMixer;
                     break;
                 case SoundCategory.UI:
-                    source.outputAudioMixerGroup = audioSettings.UIMixer;
+                    source.outputAudioMixerGroup = _uiMixer;
                     break;
                 case SoundCategory.SFX:
-                    source.outputAudioMixerGroup = audioSettings.SFXMixer;
+                    source.outputAudioMixerGroup = _sfxMixer;
                     break;
                 case SoundCategory.None:
                 default:
@@ -350,20 +375,19 @@ namespace Core
 
         public void SetVolume(MixerType category, float volume)
         {
-            var audioSettings = _internalSettings.InternalSettings;
             switch (category)
             {
                 case MixerType.Music:
-                    audioSettings.MusicMixer.audioMixer.SetFloat("MusicVolume", Mathf.Log(volume) * 20f);
+                    _musicMixer.audioMixer.SetFloat("MusicVolume", Mathf.Log(volume) * 20f);
                     break;
                 case MixerType.UI:
-                    audioSettings.UIMixer.audioMixer.SetFloat("UIVolume", Mathf.Log(volume) * 20f);
+                    _uiMixer.audioMixer.SetFloat("UIVolume", Mathf.Log(volume) * 20f);
                     break;
                 case MixerType.SFX:
-                    audioSettings.SFXMixer.audioMixer.SetFloat("SFXVolume", Mathf.Log(volume) * 20f);
+                    _sfxMixer.audioMixer.SetFloat("SFXVolume", Mathf.Log(volume) * 20f);
                     break;
                 case MixerType.Master:
-                    audioSettings.MasterMixer.audioMixer.SetFloat("MasterVolume", Mathf.Log(volume) * 20f);
+                    _masterMixer.audioMixer.SetFloat("MasterVolume", Mathf.Log(volume) * 20f);
                     break;
                 default:
                     break;

@@ -5,22 +5,22 @@ using Zenject;
 
 namespace Ui
 {
-    public interface IStartNewGameView
+    public interface IStartNewGameView : IUIView
     {
-        void DisableButton();
+        void EnableButton(bool enable);
     }
     
-    [RequireComponent(typeof(Button))]
     public class StartNewGameView : MonoBehaviour, IStartNewGameView
     {
-        private Button _button;
+        public bool IsVisible => gameObject.activeInHierarchy;
+        
+        [SerializeField] private Button _button;
         private StartNewGamePresenter _startNewGamePresenter;
         
         [Inject]
         public void Construct(StartNewGamePresenter startNewGamePresenter)
         {
             _startNewGamePresenter = startNewGamePresenter;
-            _button = GetComponent<Button>();
         }
 
         public void Start()
@@ -34,9 +34,24 @@ namespace Ui
             _startNewGamePresenter.OnButtonClicked().Forget();
         }
 
-        public void DisableButton()
+        public void EnableButton(bool enable)
         {
-            _button.interactable = false;
+            _button.interactable = enable;
+        }
+
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+        
+        public void Parent(Transform parent)
+        {
+            transform.SetParent(parent);
         }
     }
 }

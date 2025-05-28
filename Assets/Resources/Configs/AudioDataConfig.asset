@@ -36,7 +36,7 @@ MonoBehaviour:
     HighPassCutoffFrequency: 0
     UseReverbFilter: 0
     ReverbLevel: 0
-    Delay: 0
+    Delay: 0.3
     RandomPitchMin: 1
     RandomPitchMax: 1
     RandomVolumeMin: 0.3
@@ -67,7 +67,7 @@ MonoBehaviour:
     HighPassCutoffFrequency: 0
     UseReverbFilter: 0
     ReverbLevel: 0
-    Delay: 0
+    Delay: 0.3
     RandomPitchMin: 1
     RandomPitchMax: 1
     RandomVolumeMin: 0.3
@@ -121,7 +121,7 @@ MonoBehaviour:
       m_Curve: []
       m_PreInfinity: 0
       m_PostInfinity: 0
-      m_RotationOrder: 0
+      m_RotationOrder: 4
     DopplerLevel: 0
     UseLowPassFilter: 0
     LowPassCutoffFrequency: 0
@@ -136,7 +136,7 @@ MonoBehaviour:
     RandomVolumeMax: 0
     Priority: 128
     FadeInDuration: 0
-    FadeOutDuration: 0.2
+    FadeOutDuration: 0
   - Category: 3
     SoundType: 0
     AudioClipId: 12

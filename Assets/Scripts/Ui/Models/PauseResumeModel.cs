@@ -8,7 +8,6 @@ namespace Ui
 {
     public class PauseResumeModel : IDisposable
     {
-        public ReactiveProperty<GameState> CurrentState => _currentState; 
         private readonly IGameStateManager _gameStateManager;
         
         private readonly ReactiveProperty<GameState> _currentState;

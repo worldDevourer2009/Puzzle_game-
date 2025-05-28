@@ -1,15 +1,22 @@
 using System;
 using System.IO;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Core
 {
+    public enum SaveFormat
+    {
+        Json,
+    }
+    
     public interface ISaveSystem
     {
         void Save(GameData data, bool overrideSave = true);
         void DeleteSave(string saveName);
-        GameData Load(string saveName);
+        UniTask<GameData> Load(string saveName);
         string GetPath(string fileName);
+        DateTime? GetLastSaveTime(string saveName);
     }
 
     [Serializable]
@@ -20,6 +27,7 @@ namespace Core
         public PlayerStats PlayerStats;
         public PlayerInteraction PlayerInteraction;
         public LevelData LevelData;
+        public DateTime SaveTimeUtc;
     }
 
     public sealed class SaveSystem : ISaveSystem
@@ -36,7 +44,6 @@ namespace Core
         {
             _jsonSerializer = jsonSerializer;
             _logger = logger;
-
             _persistentPath = Application.persistentDataPath;
             _extension = ".json";
         }
@@ -73,18 +80,30 @@ namespace Core
 
             File.Delete(path);
         }
+        
+        public DateTime? GetLastSaveTime(string saveName)
+        {
+            var path = GetPath(saveName);
+            
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+            
+            return File.GetLastWriteTimeUtc(path);
+        }
 
-        public GameData Load(string saveName)
+        public UniTask<GameData> Load(string saveName)
         {
             var path = GetPath(saveName);
 
             if (!File.Exists(path))
             {
                 _logger.LogWarning($"File doesn't exist with name {saveName}");
-                return new GameData();
+                return UniTask.FromResult(new GameData());
             }
 
-            return _jsonSerializer.Deserialize<GameData>(File.ReadAllText(path));
+            return UniTask.FromResult(_jsonSerializer.Deserialize<GameData>(File.ReadAllText(path)));
         }
 
         public string GetPath(string fileName)

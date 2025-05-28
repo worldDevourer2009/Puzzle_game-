@@ -77,8 +77,8 @@ namespace Core
                     _logger.Log($"Can't create state {state}");
                     continue;
                 }
-
-                _states.Add(newState.Name, newState);
+                
+                _states[newState.Name] = newState;
             }
 
             _state.Value = GameState.MainMenu;

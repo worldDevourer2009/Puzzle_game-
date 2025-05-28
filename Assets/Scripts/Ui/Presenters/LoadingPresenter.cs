@@ -1,32 +1,49 @@
 using System;
 using Core;
+using Cysharp.Threading.Tasks;
 using R3;
 
 namespace Ui
 {
-    public class LoadingPresenter : IDisposable
+    public class LoadingPresenter : IUIPresenter, IDisposable
     {
+        private const string LoadingViewId = "LoadingView";
+        
         private readonly CompositeDisposable _compositeDisposable;
+        private readonly IFactorySystem _factorySystem;
+        private readonly IUISystem _uiSystem;
         private readonly ISceneLoader _sceneLoader;
-        private readonly ILoadingView _loadingView;
+        
+        private ILoadingView _loadingView;
 
-        public LoadingPresenter(ISceneLoader sceneLoader, ILoadingView loadingView)
+        public LoadingPresenter(ISceneLoader sceneLoader, IFactorySystem factorySystem, IUISystem uiSystem)
         {
             _sceneLoader = sceneLoader;
-            _loadingView = loadingView;
+            _factorySystem = factorySystem;
+            _uiSystem = uiSystem;
+            
             _compositeDisposable = new CompositeDisposable();
-
+        }
+        
+        public async UniTask Initialize()
+        {
+            _loadingView = await _factorySystem.CreateFromInterface<ILoadingView>(LoadingViewId);
+            await _uiSystem.ParentUnderCanvas(_loadingView, CanvasType.Windows);
+            _loadingView.Hide();
+            
             _sceneLoader.OnLoad += DisplayView;
             _sceneLoader.OnLoaded += HideView;
         }
 
         private void DisplayView()
         {
+            _loadingView.Show();
             _loadingView.DisplayLoadingScreen();
         }
 
         private void HideView()
         {
+            _loadingView.Hide();
             _loadingView.HideLoadingScreen();
         }
 
