@@ -110,6 +110,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd3b48ae7241d41ac91d405c830f0c2f
+    m_Address: BackupCamera
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e35a67b3131914e05ac8e360986015d3
     m_Address: PlayerCamera
     m_ReadOnly: 0

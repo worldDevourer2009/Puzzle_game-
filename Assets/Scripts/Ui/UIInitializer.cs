@@ -5,7 +5,7 @@ namespace Ui
 {
     public class UIInitializer
     {
-        private const string GroupName = "InitizlieControlers";
+        private const string GroupName = "InitControllers";
         
         private readonly IAsyncGroupLoader _asyncGroupLoader;
         
@@ -33,11 +33,11 @@ namespace Ui
 
         private void CreateGroupToInitializeControllers()
         {
-            _asyncGroupLoader.CreateGroup(AsyncGroupType.Sequential, GroupName);
-            _asyncGroupLoader.AddToGroup(GroupName, () => _startNewGameView.Initialize());
-            _asyncGroupLoader.AddToGroup(GroupName, () => _pauseMenuPresenter.Initialize());
-            _asyncGroupLoader.AddToGroup(GroupName, () => _settingsPresenter.Initialize());
-            _asyncGroupLoader.AddToGroup(GroupName, () => _startNewGamePresenter.Initialize());
+            _asyncGroupLoader.CreateGroup(AsyncGroupType.Parallel, GroupName);
+            _asyncGroupLoader.AddToGroup(GroupName, () => _startNewGameView.Initialize(), false);
+            _asyncGroupLoader.AddToGroup(GroupName, () => _pauseMenuPresenter.Initialize(), false);
+            _asyncGroupLoader.AddToGroup(GroupName, () => _settingsPresenter.Initialize(), false);
+            _asyncGroupLoader.AddToGroup(GroupName, () => _startNewGamePresenter.Initialize(), false);
         }
     }
 }

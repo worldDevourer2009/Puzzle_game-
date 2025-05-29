@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Game;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace Core
         UiCamera,
         NotInGameCamera,
         LoadCamera,
+        BackupCamera,
         Default
     }
 
@@ -244,10 +246,17 @@ namespace Core
 
         public void DestroyAllCameras()
         {
+            ICamera backupCamera = null;
+            
             foreach (var cameraSet in _cameras.Values)
             {
                 foreach (var cameraComp in cameraSet)
                 {
+                    if (cameraComp.CameraType == CustomCameraType.BackupCamera)
+                    {
+                        backupCamera = cameraComp;
+                        continue;
+                    }
                     if (cameraComp?.Camera != null)
                     {
                         Object.Destroy(cameraComp.Camera.gameObject);
@@ -255,8 +264,19 @@ namespace Core
                 }
             }
 
+            if (backupCamera == null || backupCamera.Camera == null)
+            {
+                return;
+            }
+            
             _cameras.Clear();
             _activeCameras.Clear();
+
+
+            _cameras[CustomCameraType.BackupCamera] = new HashSet<ICamera> { backupCamera };
+            _activeCameras[CustomCameraType.BackupCamera] = backupCamera.Camera;
+
+            OnCameraChanged?.Invoke();
         }
 
         public Camera GetPlayerCamera()
@@ -266,13 +286,30 @@ namespace Core
 
         public void UnloadCameras()
         {
-            _cameras.Clear();
-            _activeCameras.Clear();
+            if (_cameras.TryGetValue(CustomCameraType.BackupCamera, out var backupSet) &&
+                backupSet.AsValueEnumerable().FirstOrDefault() is ICamera backupCamera && backupCamera.Camera != null)
+            {
+                _cameras.Clear();
+                _activeCameras.Clear();
+
+                _cameras[CustomCameraType.BackupCamera] = new HashSet<ICamera> { backupCamera };
+                _activeCameras[CustomCameraType.BackupCamera] = backupCamera.Camera;
+            }
+            else
+            {
+                _cameras.Clear();
+                _activeCameras.Clear();
+            }
         }
 
         public Camera GetCameraByType(CustomCameraType type)
         {
             return _activeCameras.GetValueOrDefault(type);
+        }
+        
+        public ICamera GetAnyCameraByType(CustomCameraType type)
+        {
+            return _cameras[type].FirstOrDefault();
         }
     }
 }

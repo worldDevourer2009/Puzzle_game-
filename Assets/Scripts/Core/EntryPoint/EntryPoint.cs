@@ -11,6 +11,7 @@ namespace Core
         private IUISystem _uiSystem;
         private IAudioSystem _audioSystem;
         private IAudioManager _audioManager;
+        private ICameraManager _cameraManager;
         private UIInitializer _uiInitializer;
         
         private bool _initialized;
@@ -19,13 +20,14 @@ namespace Core
 
         [Inject]
         public void Construct(IAsyncGroupLoader asyncGroupLoader, IGameStateManager gameStateManager, IUISystem uiSystem,
-            IAudioSystem audioSystem, IAudioManager audioManager, UIInitializer uiInitializer)
+            IAudioSystem audioSystem, IAudioManager audioManager, ICameraManager cameraManager, UIInitializer uiInitializer)
         {
             _asyncGroupLoader = asyncGroupLoader;
             _gameStateManager = gameStateManager;
             _uiSystem = uiSystem;
             _audioSystem = audioSystem;
             _audioManager = audioManager;
+            _cameraManager = cameraManager;
             _uiInitializer = uiInitializer;
         }
 
@@ -43,6 +45,7 @@ namespace Core
             _asyncGroupLoader.AddToGroup(MainGroup, () => _audioSystem.InitAudioSystem());
             _asyncGroupLoader.AddToGroup(MainGroup, () => _audioManager.InitAudioManager());
             _asyncGroupLoader.AddToGroup(MainGroup, () => _uiInitializer.InitializeUI());
+            _asyncGroupLoader.AddToGroup(MainGroup, () => _cameraManager.CreateCamera(CustomCameraType.BackupCamera));
             _asyncGroupLoader.AddToGroup(MainGroup, () => _gameStateManager.SetState(GameState.MainMenu));
         }
     }

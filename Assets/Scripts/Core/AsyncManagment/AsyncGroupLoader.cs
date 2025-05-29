@@ -163,8 +163,6 @@ namespace Core
             var total = tasks.Count;
             var completed = 0;
             var tasksList = new List<UniTask>();
-            
-            Logger.Instance.LogWarning($"Tasks count is {tasks.Count}");
 
             foreach (var task in tasks)
             {
