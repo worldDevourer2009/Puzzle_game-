@@ -36,17 +36,17 @@ namespace Core
     public class ReactiveWrapper<T> : IReactiveWrapper
     {
         private readonly ReactiveProperty<T> _prop;
-        
+
         public ReactiveWrapper(ReactiveProperty<T> prop)
         {
             _prop = prop;
         }
-        
+
         public object GetValue()
         {
             return _prop.Value;
         }
-        
+
         public void SetValue(T value)
         {
             _prop.Value = value;
@@ -70,6 +70,7 @@ namespace Core
         ReactiveProperty<float> PlayerJumpForce { get; }
         ReactiveProperty<RaycastParams> PlayerGroundableParams { get; }
         ReactiveProperty<float> PlayerCrouchSpeed { get; }
+        UniTask ApplySavedData(PlayerStats stats, PlayerInteraction interaction);
         void SetPlayerData(PlayerDataType dataType, float value);
         void SetInteractionData<T>(PlayerInteractionDataType key, T value);
         T GetPlayerData<T>(PlayerDataType dataType);
@@ -97,7 +98,7 @@ namespace Core
         public ReactiveProperty<float> PlayerStepHeight => _playerStepHeight;
         public ReactiveProperty<float> PlayerStepCheckDistance => _playerStepCheckDistance;
         public ReactiveProperty<float> PlayerStepMoveDistance => _playerStepMoveDistance;
-        
+
         private readonly ILogger _logger;
         private readonly PlayerInteractionConfig _playerInteractionConfig;
         private readonly PlayerDefaultStatsConfig _defaultStatsConfig;
@@ -106,7 +107,7 @@ namespace Core
         private readonly ReactiveProperty<LayerMask> _playerStepInteractionMask = new();
         private readonly ReactiveProperty<LayerMask> _playerMoveInteractionMask = new();
         private readonly ReactiveProperty<float> _playerInteractionDistance = new();
-        
+
         private readonly ReactiveProperty<float> _playerLookClamp = new();
 
         private readonly ReactiveProperty<float> _playerSpeed = new();
@@ -114,7 +115,7 @@ namespace Core
         private readonly ReactiveProperty<float> _playerRunSpeed = new();
         private readonly ReactiveProperty<float> _playerJumpForce = new();
         private readonly ReactiveProperty<float> _playerCrouchSpeed = new();
-        
+
         private readonly ReactiveProperty<float> _playerStepHeight = new();
         private readonly ReactiveProperty<float> _playerMaxStepSlopeAngle = new();
         private readonly ReactiveProperty<float> _playerStepCheckDistance = new();
@@ -134,7 +135,7 @@ namespace Core
         public UniTask InitData()
         {
             var playerStats = _defaultStatsConfig.playerStats;
-            
+
             _playerSpeed.Value = playerStats.Speed;
             _playerRunSpeed.Value = playerStats.RunSpeed;
             _playerCrouchSpeed.Value = playerStats.CrouchSpeed;
@@ -170,10 +171,27 @@ namespace Core
             _playerInteractionSetters = new Dictionary<PlayerInteractionDataType, IReactiveWrapper>
             {
                 { PlayerInteractionDataType.LayerMask, new ReactiveWrapper<LayerMask>(_playerInteractionMask) },
-                { PlayerInteractionDataType.InteractionDistance, new ReactiveWrapper<float>(_playerInteractionDistance) },
+                {
+                    PlayerInteractionDataType.InteractionDistance,
+                    new ReactiveWrapper<float>(_playerInteractionDistance)
+                },
                 { PlayerInteractionDataType.LayerMaskStep, new ReactiveWrapper<LayerMask>(_playerStepInteractionMask) },
                 { PlayerInteractionDataType.MoveLayerMask, new ReactiveWrapper<LayerMask>(_playerMoveInteractionMask) },
             };
+
+            return UniTask.CompletedTask;
+        }
+
+        public UniTask ApplySavedData(PlayerStats stats, PlayerInteraction interaction)
+        {
+            _playerSpeed.Value = stats.Speed;
+            _playerRunSpeed.Value = stats.RunSpeed;
+            _playerCrouchSpeed.Value = stats.CrouchSpeed;
+            _playerJumpForce.Value = stats.JumpForce;
+            _playerGroundableParams.Value = stats.GroundRaycastParams;
+
+            _playerInteractionDistance.Value = interaction.InteractionDistance;
+            _playerInteractionMask.Value = interaction.LayerMask;
 
             return UniTask.CompletedTask;
         }
@@ -187,7 +205,7 @@ namespace Core
             }
             else
             {
-                _logger.LogWarning($"Wrong type or missing entry for {dataType}");
+                _logger.LogWarning($"Wrong type for {dataType}");
             }
         }
 
@@ -202,13 +220,13 @@ namespace Core
                         break;
                     default:
                         _logger.LogWarning(
-                            $"Type mismatch for {dataType}: expected {wrapper.GetType()}, got {typeof(T)}");
+                            $"Type for {dataType}: expects {wrapper.GetType()}, got {typeof(T)}");
                         break;
                 }
             }
             else
             {
-                _logger.LogWarning($"No interaction data entry for {dataType}");
+                _logger.LogWarning($"No interaction data");
             }
         }
 
@@ -220,7 +238,7 @@ namespace Core
                 return val;
             }
 
-            _logger.LogWarning($"Can't get {type} as {typeof(T).Name}");
+            _logger.LogWarning($"Can't get {type}");
             return default;
         }
 
@@ -232,7 +250,7 @@ namespace Core
                 return val;
             }
 
-            _logger.LogWarning($"Can't get {dataType} as {typeof(T).Name}");
+            _logger.LogWarning($"Can't get {dataType}");
             return default;
         }
 

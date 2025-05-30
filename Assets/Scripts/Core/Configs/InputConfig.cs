@@ -7,18 +7,27 @@ namespace Core
     public class InputConfig : ScriptableObject
     {
         public KeyboardInput KeyboardInput => _keyboardInput;
-        private readonly ILogger _logger;
+        private ILogger _logger;
         [SerializeField] private KeyboardInput _keyboardInput;
+
         [SerializeField] private float _sensitivity;
 
-        public InputConfig(ILogger logger)
-        {
-            _logger = logger;
-        }
+        [SerializeField] private float _maxSensitivity;
+        [SerializeField] private float _minSensitivity;
 
         public float GetSensitivity()
         {
             return _sensitivity;
+        }
+
+        public float GetMaxSensitivity()
+        {
+            return _maxSensitivity;
+        }
+        
+        public float GetMinSensitivity()
+        {
+            return _minSensitivity;
         }
 
         public KeyCode GetKeyboardKey(InputAction action)
@@ -49,7 +58,7 @@ namespace Core
 
             return default;
         }
-        
+
         public MouseButton GetMouseKey(InputAction action)
         {
             switch (action)
@@ -64,7 +73,16 @@ namespace Core
             return default;
         }
     }
-
+    
+    [Serializable]
+    public struct InputData
+    {
+        public KeyboardInput KeyboardInput;
+        public float Sensitivity;
+        public float MaxSensitivity;
+        public float MinSensitivity;
+    }
+    
     [Serializable]
     public struct KeyboardInput
     {
@@ -79,7 +97,7 @@ namespace Core
         public MouseButton MouseRight;
         public KeyCode PauseKey;
     }
-    
+
     public enum MouseButton
     {
         Left = 0,

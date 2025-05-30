@@ -6,9 +6,9 @@ namespace Ui
     public class UIInitializer
     {
         private const string GroupName = "InitControllers";
-        
+
         private readonly IAsyncGroupLoader _asyncGroupLoader;
-        
+
         private readonly LoadingPresenter _startNewGameView;
         private readonly PauseMenuPresenter _pauseMenuPresenter;
         private readonly SettingsPresenter _settingsPresenter;
@@ -16,7 +16,9 @@ namespace Ui
 
         private bool _initialized;
 
-        public UIInitializer(IAsyncGroupLoader asyncGroupLoader, LoadingPresenter startNewGameView, PauseMenuPresenter pauseMenuPresenter, SettingsPresenter settingsPresenter, StartNewGamePresenter startNewGamePresenter)
+        public UIInitializer(IAsyncGroupLoader asyncGroupLoader, LoadingPresenter startNewGameView,
+            PauseMenuPresenter pauseMenuPresenter, SettingsPresenter settingsPresenter,
+            StartNewGamePresenter startNewGamePresenter)
         {
             _asyncGroupLoader = asyncGroupLoader;
             _startNewGameView = startNewGameView;

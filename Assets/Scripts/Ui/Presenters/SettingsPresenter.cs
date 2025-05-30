@@ -32,6 +32,10 @@ namespace Ui
             _settingsView.Hide();
             await _uiSystem.ParentUnderCanvas(_settingsView, CanvasType.Windows);
             
+            _settingsView.SetMinSensitivity(_settingsModel.GetMinSensitivity());
+            _settingsView.SetMaxSensitivity(_settingsModel.GetMaxSensitivity());
+            _settingsView.SetCurrentSensitivity(_settingsModel.GetCurrentSensitivity());
+            
             _settingsView.MasterVolume.Value = _settingsModel.GetCurrentMasterVolume();
             _settingsView.MusicVolume.Value = _settingsModel.GetCurrentMusicVolume();
             _settingsView.SFXVolume.Value = _settingsModel.GetCurrentSFXVolume();
@@ -48,6 +52,11 @@ namespace Ui
 
             _settingsView.UIVolume.Subscribe(value => _settingsModel.SetUIVolume(value))
                 .AddTo(_compositeDisposable);
+            
+            _settingsView.Sensitivity.Subscribe(value => _settingsModel.SetSensitivity(value))
+                .AddTo(_compositeDisposable);
+            
+            _settingsView.BindSliders();
 
             _settingsView.OnClose += DisplayView;
         }
@@ -60,6 +69,7 @@ namespace Ui
         public void Dispose()
         {
             _compositeDisposable?.Dispose();
+            _settingsView.OnClose -= DisplayView;
         }
     }
 }

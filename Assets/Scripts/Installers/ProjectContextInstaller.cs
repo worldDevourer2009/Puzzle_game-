@@ -32,6 +32,16 @@ namespace Installers
                 .AsSingle()
                 .NonLazy();
 
+            Container.Bind<ILoader>()
+                .To<SaveLoader>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<ISaver>()
+                .To<Saver>()
+                .AsSingle()
+                .NonLazy();
+
             Container.Bind<IAsyncGroupLoader>()
                 .To<AsyncGroupLoader>()
                 .AsSingle()
@@ -51,11 +61,6 @@ namespace Installers
                 .Bind<ICameraManager>()
                 .To<CameraManager>()
                 .AsSingle();
-
-            Container.Bind<ISaver>()
-                .To<Saver>()
-                .AsSingle()
-                .NonLazy();
 
             Container.Bind<ILogger>()
                 .To<Logger>()
@@ -132,6 +137,11 @@ namespace Installers
             
             Container
                 .BindInterfacesTo<InternalSystemDataHolder>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container
+                .BindInterfacesTo<InputDataHolder>()
                 .AsSingle()
                 .NonLazy();
 

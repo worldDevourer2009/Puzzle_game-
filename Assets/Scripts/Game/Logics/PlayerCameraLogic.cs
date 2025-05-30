@@ -2,31 +2,27 @@ using System;
 using Core;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using ILogger = Core.ILogger;
 
 namespace Game
 {
     public sealed class PlayerCameraLogic : IPlayerCameraLogic, IDisposable
     {
-        private readonly InputConfig _inputConfig;
+        private readonly IInputDataHolder _inputDataHolder;
         private readonly IPlayerDataHolder _playerDataHolder;
         private readonly ICameraManager _cameraManager;
         private readonly IPlayerInputHandler _playerInputHandler;
-        private readonly ILogger _logger;
         
-        private float _cameraSensitivity;
         private float _xRotation;
         private Camera _camera;
 
-        public PlayerCameraLogic(InputConfig inputConfig, IPlayerDataHolder playerDataHolder,
-            ICameraManager cameraManager, IPlayerInputHandler playerInputHandler, ILogger logger)
+        public PlayerCameraLogic(IInputDataHolder inputDataHolder, IPlayerDataHolder playerDataHolder,
+            ICameraManager cameraManager, IPlayerInputHandler playerInputHandler)
         {
             _xRotation = 0f;
-            _inputConfig = inputConfig;
+            _inputDataHolder = inputDataHolder;
             _playerDataHolder = playerDataHolder;
             _cameraManager = cameraManager;
             _playerInputHandler = playerInputHandler;
-            _logger = logger;
 
             _playerInputHandler.OnLookAction += MoveCameraHandler;
         }
@@ -43,7 +39,6 @@ namespace Game
             if (cam != null)
             {
                 _camera = cam;
-                _cameraSensitivity = _inputConfig.GetSensitivity();
             }
             
             return UniTask.CompletedTask;
@@ -60,9 +55,9 @@ namespace Game
                     return;
                 }
             }
-
+            
             var clamp = _playerDataHolder.PlayerLookClamp.Value;
-            var verticalInput = direction.y * _cameraSensitivity * Time.deltaTime;
+            var verticalInput = direction.y * _inputDataHolder.Sensitivity.Value * Time.deltaTime;
             _xRotation -= verticalInput;
             _xRotation = Mathf.Clamp(_xRotation, -clamp, clamp);
             _camera.transform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7628899923091080902}
   - component: {fileID: 1087128794894792003}
   - component: {fileID: 2261369832487413181}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Windows
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -113,7 +113,7 @@ GameObject:
   - component: {fileID: 8540371170810098395}
   - component: {fileID: 1574463980309886775}
   - component: {fileID: 3435684654141810297}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Hud
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -214,7 +214,7 @@ GameObject:
   - component: {fileID: 7314679323313667880}
   - component: {fileID: 7958607501327667203}
   - component: {fileID: 7900835191842585884}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Popups
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -315,7 +315,7 @@ GameObject:
   - component: {fileID: 5670585755130088956}
   - component: {fileID: 2541825896011572407}
   - component: {fileID: 3271243899678094851}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Hints
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -415,7 +415,7 @@ GameObject:
   - component: {fileID: 1446048268017233151}
   - component: {fileID: 8531858475318477645}
   - component: {fileID: 4639891912019669627}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: EventSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -493,7 +493,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3473576163427128828}
   - component: {fileID: 8908655404927830804}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: UIRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}

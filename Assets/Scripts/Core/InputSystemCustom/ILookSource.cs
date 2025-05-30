@@ -10,18 +10,18 @@ namespace Core
     public sealed class LookSourceMouse : ILookSource
     {
         private readonly ILogger _logger;
-        private readonly InputConfig _inputConfig;
+        private readonly IInputDataHolder _inputDataHolder;
 
-        public LookSourceMouse(ILogger logger, InputConfig inputConfig)
+        public LookSourceMouse(ILogger logger, IInputDataHolder inputDataHolder)
         {
             _logger = logger;
-            _inputConfig = inputConfig;
+            _inputDataHolder = inputDataHolder;
         }
 
         public Vector2 GetLookDelta()
         {
-            var x = Input.GetAxis("Mouse X") * _inputConfig.GetSensitivity();
-            var y = Input.GetAxis("Mouse Y") * _inputConfig.GetSensitivity();
+            var x = Input.GetAxis("Mouse X") * _inputDataHolder.Sensitivity.Value;
+            var y = Input.GetAxis("Mouse Y") * _inputDataHolder.Sensitivity.Value;
 
             var dir = new Vector2(x, y);
             return dir;

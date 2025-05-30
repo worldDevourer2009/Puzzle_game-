@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -16,6 +17,7 @@ namespace Core
         void DeleteSave(string saveName);
         UniTask<GameData> Load(string saveName);
         string GetPath(string fileName);
+        List<string> ListSaves();
         DateTime? GetLastSaveTime(string saveName);
     }
 
@@ -28,6 +30,8 @@ namespace Core
         public PlayerInteraction PlayerInteraction;
         public LevelData LevelData;
         public DateTime SaveTimeUtc;
+        public List<ExposedSystemParameter> SystemData;
+        public InputData InputData;
     }
 
     public sealed class SaveSystem : ISaveSystem
@@ -80,7 +84,25 @@ namespace Core
 
             File.Delete(path);
         }
-        
+
+        public List<string> ListSaves()
+        {
+            if (!Directory.Exists(_persistentPath))
+            {
+                return new List<string>();
+            }
+            
+            var files = Directory.GetFiles(_persistentPath, "*" + _extension);
+            var result = new List<string>(files.Length);
+            
+            foreach (var file in files)
+            {
+                result.Add(Path.GetFileNameWithoutExtension(file));
+            }
+            
+            return result;
+        }
+
         public DateTime? GetLastSaveTime(string saveName)
         {
             var path = GetPath(saveName);

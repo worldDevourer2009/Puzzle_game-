@@ -146,7 +146,13 @@ namespace Core
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning($"Running sequentially func failed {task.Method.Name} with exception: {ex.Message}");
+                    var methodName = task.Method.Name;
+                    var targetType = task.Target?.GetType().Name ?? "<static>";
+                    
+                    _logger.LogWarning(
+                        $"Running sequentially func failed: " +
+                        $"{methodName} on {targetType} threw exception: {ex.GetType().Name}: {ex.Message}"
+                    );
                 }
                 finally
                 {
