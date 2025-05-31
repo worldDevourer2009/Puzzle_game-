@@ -2,7 +2,9 @@ using System;
 using Core;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
+using UnityEngine;
 using CompositeDisposable = R3.CompositeDisposable;
+using Logger = Core.Logger;
 
 namespace Ui
 {
@@ -47,16 +49,27 @@ namespace Ui
                 .Dispose();
         }
 
-        private void HandleClick()
+        private async void HandleClick()
         {
             if (!_isPaused)
             {
                 _pauseResumeModel.Pause().Forget();
-                _pauseResumeView.Show();
+                var targetScale = _pauseResumeView.GetScale();
+
+                if (targetScale != null)
+                {
+                    _pauseResumeView.SetScale(Vector3.zero);
+                    _pauseResumeView.Show();
+                    _pauseResumeView.PlayScaleAnimation((Vector3)targetScale).Forget();
+                }
+                else
+                {
+                    _pauseResumeView.Show();
+                }
             }
             else
             {
-                _pauseResumeView.Hide();
+                await HideViewWithAnimation();
                 _pauseResumeModel.Resume().Forget();
             }
         }
@@ -74,10 +87,10 @@ namespace Ui
             switch (state)
             {
                 case GameState.Resume:
-                    _pauseResumeView.Hide();
+                    HideViewWithAnimation().Forget();
                     break;
                 case GameState.Playing:
-                    _pauseResumeView.Hide();
+                    HideViewWithAnimation().Forget();
                     break;
                 case GameState.Default:
                 case GameState.MainMenu:
@@ -90,12 +103,28 @@ namespace Ui
             }
         }
 
+        private async UniTask HideViewWithAnimation()
+        {
+            var targetScale = _pauseResumeView.GetScale();
+            
+            if (targetScale != null)
+            {
+                await _pauseResumeView.PlayScaleAnimation(Vector3.zero);
+                _pauseResumeView.Hide();
+                _pauseResumeView.SetScale((Vector3)targetScale);
+            }
+            else
+            {
+                _pauseResumeView.Hide();
+            }
+        }
+
         private async void HandleViewClick(PauseMenuButtonAction action)
         {
             switch (action)
             {
                 case PauseMenuButtonAction.Resume:
-                    _pauseResumeView.Hide();
+                    await HideViewWithAnimation();
                     await _pauseResumeModel.Resume();
                     break;
                 case PauseMenuButtonAction.MainMenu:

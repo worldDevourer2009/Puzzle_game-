@@ -7,7 +7,7 @@ namespace Ui
 {
     public static class PlayAnimationExtension
     {
-        public static async UniTask PlayFadeAnimation(this IUIView view, float alpha, float duration,
+        public static async UniTask PlayFadeAnimation(this IUIView view, float alpha, float duration = 0.5f,
             Ease ease = Ease.Linear)
         {
             var monoBehavior = GetMonoBehavior(view);
@@ -26,7 +26,7 @@ namespace Ui
             await canvas.DOFade(alpha, duration).SetEase(ease).AsyncWaitForCompletion().AsUniTask();
         }
 
-        public static async UniTask PlayScaleAnimation(this IUIView view, Vector3 targetScale, float duration,
+        public static async UniTask PlayScaleAnimation(this IUIView view, Vector3 targetScale, float duration = 0.5f,
             Ease ease = Ease.Linear)
         {
             var monoBehavior = GetMonoBehavior(view);

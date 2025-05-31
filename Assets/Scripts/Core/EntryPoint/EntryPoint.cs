@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using Ui;
 using UnityEngine;
 using Zenject;
