@@ -8,6 +8,7 @@ namespace Core
     {
         void AddToGameLoop(GameLoopType loopType, object objToAdd);
         void RemoveFromLoop(GameLoopType loopType, object obj);
+        void RefreshSubscribers();
         void EnableUpdate(bool enable);
     }
     
@@ -51,7 +52,7 @@ namespace Core
             RefreshSubscribers();
         }
 
-        private void RefreshSubscribers()
+        public void RefreshSubscribers()
         {
             AddNewSubscribers(_awakables, GameLoopType.Awake, a => a.AwakeCustom());
             AddNewSubscribers(_updatables, GameLoopType.Update);

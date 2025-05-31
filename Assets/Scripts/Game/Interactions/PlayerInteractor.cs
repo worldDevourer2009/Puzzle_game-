@@ -2,6 +2,7 @@ using System;
 using Core;
 using UnityEngine;
 using ILogger = Core.ILogger;
+using Logger = Core.Logger;
 
 namespace Game
 {
@@ -22,6 +23,7 @@ namespace Game
         private readonly IRaycaster _raycaster;
         private readonly PlayerInteractionConfig _playerInteractionConfig;
         private readonly ICameraManager _cameraManager;
+        private readonly IGameLoop _gameLoop;
         private readonly ILogger _logger;
         private readonly IInteractorCore _interactorCore;
 
@@ -33,11 +35,13 @@ namespace Game
         private InteractableCallback _callback;
 
         public PlayerInteractor(IInteractorCore interactorCore, ICameraManager cameraManager, IPlayerInputHandler input,
+            IGameLoop gameLoop,
             IRaycaster raycaster, PlayerInteractionConfig playerInteractionConfig, ILogger logger)
         {
             _interactorCore = interactorCore;
             _cameraManager = cameraManager;
             _input = input;
+            _gameLoop = gameLoop;
             _raycaster = raycaster;
             _playerInteractionConfig = playerInteractionConfig;
             _logger = logger;
@@ -48,9 +52,12 @@ namespace Game
             _input.OnUseAction += HandleInput;
             _interactorCore.OnPoint += HandlePoint;
             _interactorCore.OnInteract += HandleInteract;
+            
 
             _interactionMask = _playerInteractionConfig.PlayerInteraction.LayerMask;
             _interactonDistance = _playerInteractionConfig.PlayerInteraction.InteractionDistance;
+            
+            _gameLoop.AddToGameLoop(GameLoopType.Update, this);
         }
 
         private void InitPlayerCamera()
@@ -83,6 +90,7 @@ namespace Game
             if (_mainCamera == null || !_mainCamera.enabled)
             {
                 InitPlayerCamera();
+                Logger.Instance.Log("Checking interaction");
                 return;
             }
             

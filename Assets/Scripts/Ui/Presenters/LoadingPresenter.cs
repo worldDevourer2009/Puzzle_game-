@@ -44,8 +44,8 @@ namespace Ui
 
         private void HideView()
         {
-            _loadingView.Hide();
             _loadingView.HideLoadingScreen();
+            _loadingView.Hide();
         }
 
         public void Dispose()

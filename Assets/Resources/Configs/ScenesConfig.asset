@@ -15,4 +15,5 @@ MonoBehaviour:
   Scenes:
   - MainMenu
   - MainScene
+  - SecondLevel
   - Test

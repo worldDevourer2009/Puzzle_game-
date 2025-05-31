@@ -146,7 +146,7 @@ namespace Game
             _moveParams = new RaycastParams()
             {
                 MaxDistance = 0.9f,
-                Origin = _entity.BottomFoot.position,
+                Origin = _entity.CenterBottomTransform.position,
                 Direction = direction,
                 LayerMask = _playerDataHolder.PlayerMoveInteractionLayerMask.Value
             };
