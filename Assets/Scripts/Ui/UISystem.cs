@@ -8,6 +8,7 @@ namespace Ui
 {
     public interface IUISystem
     {
+        UIRoot UIRoot { get; }
         UniTask InitializeUiSystem();
         Canvas GetCanvasByType(CanvasType type);
         UniTask ParentUnderCanvas(Transform objectToParent, CanvasType type);
@@ -25,13 +26,13 @@ namespace Ui
     {
         private const string CanvasUIPrefabId = "UIRoot";
 
-        public UI UIRoot => _uiRoot;
+        public UIRoot UIRoot => _uiRoot;
         
         private readonly IFactorySystem _factorySystem;
         private readonly Dictionary<string, IUIView> _activeViews;
 
         private UniTaskCompletionSource _completionSource;
-        private UI _uiRoot;
+        private UIRoot _uiRoot;
         private bool _initializing;
 
         public UISystem(IFactorySystem factorySystem)
@@ -51,7 +52,7 @@ namespace Ui
             
             _initializing = true;
             
-            _uiRoot = await _factorySystem.Create<UI>(CanvasUIPrefabId);
+            _uiRoot = await _factorySystem.Create<UIRoot>(CanvasUIPrefabId);
             _uiRoot.InitCanvases();
             
             _initializing = false;

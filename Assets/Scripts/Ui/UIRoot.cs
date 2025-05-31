@@ -19,7 +19,7 @@ namespace Ui
         public CanvasType CanvasType;
     }
     
-    public class UI : MonoBehaviour
+    public class UIRoot : MonoBehaviour
     {
         [SerializeField] private TypedCanvas _windows;
         [SerializeField] private TypedCanvas _hud;
