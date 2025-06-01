@@ -26,6 +26,7 @@ namespace Core
     public enum ObjectType
     {
         Player,
-        Cube
+        Cube,
+        NextLevel
     }
 }

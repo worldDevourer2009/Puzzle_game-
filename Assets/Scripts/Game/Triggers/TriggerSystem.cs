@@ -18,6 +18,7 @@ namespace Core
     {
         void SetTriggers(IEnumerable<string> ids);
         bool IsTriggered(string id);
+        void ClearAllTriggers();
         UniTask Trigger(string id);
         UniTask SetTriggerState(string id, TriggerState state);
         IReadOnlyCollection<string> GetActiveTriggers();
@@ -83,6 +84,12 @@ namespace Core
             }
             _logger.LogWarning("Trigger was not defiened in the dictionnary return false");
             return false;
+        }
+
+        public void ClearAllTriggers()
+        {
+            _triggers.Clear();
+            _subjects.Clear();
         }
 
         public async UniTask Trigger(string id)

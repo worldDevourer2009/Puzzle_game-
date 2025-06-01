@@ -15,10 +15,30 @@ MonoBehaviour:
   LastLevelData:
     LevelName: 
     LastTriggeredEventName: 
+    PlayerSpawn: {x: 0, y: 0, z: 0}
+    Entities: []
+    Triggers: []
   LevelData:
   - LevelName: MainScene
     LastTriggeredEventName: 
+    PlayerSpawn: {x: 0, y: 0, z: 0}
+    Entities:
+    - EntityId: NextLevel
+      Position: {x: 8.05, y: -2.83, z: -11.29}
+      Rotation: {x: 0, y: 85.47277, z: 0}
+      ParentId: 
+    Triggers:
+    - TriggerId: StartLevel_1
+      InitialState: 1
+      DependsOn: 
   - LevelName: SecondLevel
     LastTriggeredEventName: 
+    PlayerSpawn: {x: 0, y: 0, z: 0}
+    Entities: []
+    Triggers: []
   - LevelName: 
     LastTriggeredEventName: 
+    PlayerSpawn: {x: 0, y: 0, z: 0}
+    Entities: []
+    Triggers: []
+  StartingLevelIndex: 0

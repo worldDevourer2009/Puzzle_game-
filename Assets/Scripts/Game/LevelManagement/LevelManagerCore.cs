@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Game;
 using UnityEngine;
@@ -29,6 +28,7 @@ namespace Core
         public IPlayerFacade PlayerEntity => _playerFacade;
 
         private readonly ICameraManager _cameraManager;
+        private readonly ITriggerSystem _triggerSystem;
         private readonly IFactorySystem _factorySystem;
         private readonly ISceneLoader _sceneLoader;
         private readonly ILogger _logger;
@@ -37,12 +37,31 @@ namespace Core
         private readonly LevelsConfig _levelsConfig;
 
         private readonly Dictionary<string, List<IEntity>> _entities;
+        private readonly Dictionary<string, List<IInteractable>> _interactables;
+        private readonly Dictionary<string, List<IActivatable>> _activatables;
+        
+        private LevelData CurrentLevel
+        {
+            get
+            {
+                if (_currentLevelIndex >= 0 && _currentLevelIndex < _levelsConfig.LevelData.Count)
+                {
+                    return _levelsConfig.LevelData[_currentLevelIndex];
+                }
+                
+                return default;
+            }
+        }
+        
         private IPlayerFacade _playerFacade;
+        
+        private int _currentLevelIndex = -1;
 
         public LevelManagerCore(IFactorySystem factorySystem,
             ICameraManager cameraManager,
             ILogger logger,
             ISceneLoader sceneLoader,
+            ITriggerSystem triggerSystem,
             AddressablesIdsConfig addressablesIdsConfig,
             LevelsConfig levelsConfig)
         {
@@ -50,10 +69,13 @@ namespace Core
             _cameraManager = cameraManager;
             _logger = logger;
             _sceneLoader = sceneLoader;
+            _triggerSystem = triggerSystem;
             _addressablesIdsConfig = addressablesIdsConfig;
             _levelsConfig = levelsConfig;
 
             _entities = new Dictionary<string, List<IEntity>>();
+            _interactables = new Dictionary<string, List<IInteractable>>();
+            _activatables = new Dictionary<string, List<IActivatable>>();
         }
 
         public async UniTask InitPlayer(Vector3 position)
@@ -103,31 +125,25 @@ namespace Core
                 obj = await _factorySystem.Create(id);
             }
 
-            if (!obj.TryGetComponent<IEntity>(out var comp))
+            if (obj.TryGetComponent<IEntity>(out var comp))
             {
-                _logger.LogWarning($"spawned object with id {id} does not implement IEntity");
-                return;
+                RegisterEntity(objectType, comp);
             }
-
-            RegisterEntity(objectType, comp);
+            
+            if (obj.TryGetComponent<IInteractable>(out var interactable))
+            {
+                RegisterInteractable(interactable);
+            }
+            
+            if (obj.TryGetComponent<IActivatable>(out var activatable))
+            {
+                RegisterActivatable(activatable);
+            }
         }
 
         private void RegisterEntity(ObjectType type, IEntity comp)
         {
-            var playerId = _addressablesIdsConfig.GetIdByType(type);
-            var id = _addressablesIdsConfig.GetIdByType(type);
-
-            if (!id.Equals(playerId, StringComparison.OrdinalIgnoreCase))
-            {
-                if (!_entities.TryGetValue(id, out var list))
-                {
-                    list = new List<IEntity>();
-                    _entities[id] = list;
-                }
-
-                list.Add(comp);
-            }
-            else
+            if (type == ObjectType.Player)
             {
                 if (comp is IPlayerFacade facade)
                 {
@@ -135,60 +151,204 @@ namespace Core
                 }
                 else
                 {
-                    _logger.LogWarning($"entity {id} is not an IPlayerFacade");
+                    _logger.LogWarning($"Entity has not player facade");
                 }
             }
+            else
+            {
+                var levelName = CurrentLevel.LevelName;
+
+                if (string.IsNullOrWhiteSpace(levelName))
+                {
+                    _logger.LogWarning("Can't register entity because level name is empty");
+                    return;
+                }
+            
+                if (!_entities.TryGetValue(levelName, out var list))
+                {
+                    list = new List<IEntity>();
+                    _entities[levelName] = list;
+                }
+            
+                list.Add(comp);
+            }
+        }
+        
+        private void RegisterInteractable(IInteractable comp)
+        {
+            var levelName = CurrentLevel.LevelName;
+            if (string.IsNullOrWhiteSpace(levelName))
+            {
+                _logger.LogWarning("Can't register interactable");
+                return;
+            }
+
+            if (!_interactables.TryGetValue(levelName, out var list))
+            {
+                list = new List<IInteractable>();
+                _interactables[levelName] = list;
+            }
+            
+            list.Add(comp);
+        }
+        
+        private void RegisterActivatable(IActivatable comp)
+        {
+            var levelName = CurrentLevel.LevelName;
+            if (string.IsNullOrWhiteSpace(levelName))
+            {
+                _logger.LogWarning("Can't register interactable");
+                return;
+            }
+
+            if (!_activatables.TryGetValue(levelName, out var list))
+            {
+                list = new List<IActivatable>();
+                _activatables[levelName] = list;
+            }
+            
+            list.Add(comp);
         }
 
         public async UniTask LoadNextLevel()
         {
-            await LoadLevelByName("1");
+            var nextIndex = _currentLevelIndex + 1;
+            
+            if (nextIndex >= _levelsConfig.LevelData.Count)
+            {
+                _logger.LogWarning("Can't find level");
+                return;
+            }
+
+            var nextLevel = _levelsConfig.LevelData[nextIndex].LevelName;
+            await LoadLevelByName(nextLevel);
         }
 
         public async UniTask LoadCurrentLevel()
         {
-            var currentLevel = _levelsConfig.LastLevelData.LevelName;
-            if (string.IsNullOrEmpty(currentLevel))
+            if (_currentLevelIndex < 0)
             {
-                var firstLevel = _levelsConfig.LevelData.AsValueEnumerable()
-                    .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.LevelName)).LevelName;
+                _currentLevelIndex = Mathf.Clamp(_levelsConfig.StartingLevelIndex, 0, _levelsConfig.LevelData.Count - 1);
+            }
 
-                if (!string.IsNullOrWhiteSpace(firstLevel))
-                {
-                    await _sceneLoader.LoadSceneById(firstLevel);
-                    await InitLevelManager();
-                }
-            }
-            else
+            var lvlName = _levelsConfig.LevelData[_currentLevelIndex].LevelName;
+            
+            if (string.IsNullOrEmpty(lvlName))
             {
-                await LoadLevelByName(currentLevel);
+                _logger.LogError("Has not name in config");
+                return;
             }
+
+            await LoadLevelByName(lvlName);
         }
 
         public async UniTask LoadLevelByName(string name)
         {
-            await _sceneLoader.LoadSceneById(name);
-            await InitLevelManager();
+            var index = _levelsConfig.LevelData.FindIndex(x => x.LevelName == name);
+            
+            if (index < 0)
+            {
+                _logger.LogError($"Has not level with name {name}");
+                return;
+            }
+
+            _currentLevelIndex = index;
+            var lvlData = _levelsConfig.LevelData[index];
+            
+            await _sceneLoader.LoadSceneById(lvlData.LevelName);
+            
+            CleanupPreviousLevelEntities();
+            
+            await InitLevelManager(lvlData);
+            
+            InitTriggers(lvlData);
+            
+            OnLevelLoaded?.Invoke(index);
         }
 
-        private async UniTask InitLevelManager()
+        private async UniTask InitLevelManager(LevelData lvlData)
         {
-            var levelManager = Object.FindFirstObjectByType<LevelManager>();
-                    
-            Vector3 pos;
-                    
-            if (levelManager != null)
+            await InitPlayer(lvlData.PlayerSpawn);
+            
+            foreach (var entityConfig in lvlData.Entities)
             {
-                pos = levelManager.PlayerDefaultSpawnPoint.position;
+                if (TryParseObjectType(entityConfig.EntityId, out var objType))
+                {
+                    await SetEntity(objType, entityConfig.Position);
+                }
+                else
+                {
+                    _logger.LogWarning($"Can't parse entity with id {entityConfig.EntityId}");
+                }
             }
-            else
+        }
+        
+        private bool TryParseObjectType(string entityId, out ObjectType result)
+        {
+            return Enum.TryParse(entityId, true, out result);
+        }
+        
+        private void InitTriggers(LevelData lvlData)
+        {
+            _triggerSystem.ClearAllTriggers(); 
+            
+            var ids = lvlData.Triggers.AsValueEnumerable().Select(t => t.TriggerId).ToList();
+            
+            _triggerSystem.SetTriggers(ids);
+            
+            foreach (var triggerConfig in lvlData.Triggers)
             {
-                pos = Vector3.zero;
+                _triggerSystem.SetTriggerState(triggerConfig.TriggerId, triggerConfig.InitialState).Forget();
+            }
+        }
+
+        private void CleanupPreviousLevelEntities()
+        {
+            if (CurrentLevel.LevelName == null)
+            {
+                return;
+            }
+
+            var lvlName = CurrentLevel.LevelName;
+            
+            if (_entities.TryGetValue(lvlName, out var entity))
+            {
+                foreach (var ent in entity)
+                {
+                    if (ent != null && ent is Component c)
+                    {
+                        Object.Destroy(c.gameObject);
+                    }
+                }
+            }
+
+            if (_activatables.TryGetValue(lvlName, out var activatables))
+            {
+                foreach (var activatable in activatables)
+                {
+                    var component = activatable as Component;
+                    
+                    if (activatable != null && component is not null)
+                    {
+                        Object.Destroy(component.gameObject);
+                    }
+                }
             }
             
-            await InitPlayer(pos);
-            
-            OnLevelLoaded?.Invoke(1);
+            if (_interactables.TryGetValue(lvlName, out var interactables))
+            {
+                foreach (var interactable in interactables)
+                {
+                    var component = interactable as Component;
+                    
+                    if (interactable != null && component is not null)
+                    {
+                        Object.Destroy(component.gameObject);
+                    }
+                }
+            }
+
+            _playerFacade = null;
         }
     }
 }

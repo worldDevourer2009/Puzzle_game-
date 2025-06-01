@@ -144,8 +144,27 @@ namespace Installers
                 .BindInterfacesTo<InputDataHolder>()
                 .AsSingle()
                 .NonLazy();
+            
+            Container
+                .BindInterfacesTo<TriggerSystem>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container
+                .BindInterfacesTo<TriggerFactory>()
+                .AsSingle()
+                .NonLazy();
 
+            BindTriggers();
             BindStates();
+        }
+
+        private void BindTriggers()
+        {
+            Container
+                .BindInterfacesTo<StartLevelTrigger>()
+                .AsCached()
+                .NonLazy();
         }
 
         private void BindStates()

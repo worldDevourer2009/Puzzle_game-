@@ -8,5 +8,6 @@ namespace Core
     {
         public LevelData LastLevelData;
         [SerializeField] public List<LevelData> LevelData;
+        public int StartingLevelIndex = 0;
     }
 }
