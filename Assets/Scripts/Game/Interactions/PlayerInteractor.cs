@@ -2,7 +2,6 @@ using System;
 using Core;
 using UnityEngine;
 using ILogger = Core.ILogger;
-using Logger = Core.Logger;
 
 namespace Game
 {
@@ -49,10 +48,13 @@ namespace Game
             _filter = new InteractableFilter();
             _callback = new InteractableCallback();
             
-            _input.OnUseAction += HandleInput;
-            _interactorCore.OnPoint += HandlePoint;
-            _interactorCore.OnInteract += HandleInteract;
+            _input.OnUseAction += HandleUse;
             
+            _input.OnReleaseAction += HandleRelease;
+            
+            _interactorCore.OnPoint += HandlePoint;
+            _interactorCore.OnStopPoint += HandleStopPoint;
+            _interactorCore.OnInteract += HandleInteract;
 
             _interactionMask = _playerInteractionConfig.PlayerInteraction.LayerMask;
             _interactonDistance = _playerInteractionConfig.PlayerInteraction.InteractionDistance;
@@ -70,12 +72,29 @@ namespace Game
             OnInteract?.Invoke(candidate);
         }
 
-        private void HandlePoint(IInteractable candid)
+        private void HandlePoint(IInteractable candidate)
         {
-            OnPoint?.Invoke(candid);
+            if (candidate != null)
+            {
+                candidate.Outline();
+                OnPoint?.Invoke(candidate);
+            }
         }
 
-        private void HandleInput()
+        private void HandleStopPoint(IInteractable candidate)
+        {
+            if (candidate != null)
+            {
+                candidate.ResetOutline();
+            }
+        }
+
+        private void HandleRelease()
+        {
+            Release();
+        }
+
+        private void HandleUse()
         {
             Interact();
         }
@@ -90,7 +109,6 @@ namespace Game
             if (_mainCamera == null || !_mainCamera.enabled)
             {
                 InitPlayerCamera();
-                Logger.Instance.Log("Checking interaction");
                 return;
             }
             
@@ -103,13 +121,40 @@ namespace Game
                 MaxDistance = _interactonDistance,
                 LayerMask = _interactionMask
             };
+            
+            _callback.Interactable = null;
 
             _raycaster.Raycast(ref raycastParams, ref _filter, ref _callback);
             _interactorCore.UpdateCandidate(_callback.Interactable);
         }
 
+        private void CheckInteractableBeforeUse()
+        {
+            if (_mainCamera == null || !_mainCamera.enabled)
+            {
+                InitPlayerCamera();
+                return;
+            }
+            
+            var ray = _mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            
+            var raycastParams = new RaycastParams
+            {
+                Origin = ray.origin,
+                Direction = ray.direction,
+                MaxDistance = _interactonDistance,
+                LayerMask = _interactionMask
+            };
+            
+            _callback.Interactable = null;
+
+            _raycaster.Raycast(ref raycastParams, ref _filter, ref _callback);
+            _interactorCore.UpdateCandidateUse(_callback.Interactable);
+        }
+
         public void Interact()
         {
+            CheckInteractableBeforeUse();
             _interactorCore.TryInteract();
         }
 
@@ -120,7 +165,7 @@ namespace Game
 
         public void Dispose()
         {
-            _input.OnUseAction -= HandleInput;
+            _input.OnUseAction -= HandleUse;
             _interactorCore.OnPoint -= HandlePoint;
             _interactorCore.OnInteract -= HandleInteract;
         }

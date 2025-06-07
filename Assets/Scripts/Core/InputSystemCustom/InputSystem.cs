@@ -13,7 +13,8 @@ namespace Core
         Use,
         Click,
         Run,
-        Pause
+        Pause,
+        Release
     }
     
     public interface IInput
@@ -24,6 +25,7 @@ namespace Core
         event Action OnNoneAction;
         event Action OnJumpAction;
         event Action OnUseAction;
+        event Action OnReleaseAction;
         event Action OnPauseClicked;
         void EnableInput(bool enable);
     }
@@ -40,6 +42,7 @@ namespace Core
         public event Action OnNoneAction;
         public event Action OnJumpAction;
         public event Action OnUseAction;
+        public event Action OnReleaseAction;
         public event Action OnPauseClicked;
 
         private bool _enabledInput;
@@ -77,6 +80,19 @@ namespace Core
             HandleClick();
             HandleTest();
             HandlePause();
+            HandleRelease();
+        }
+
+        private void HandleRelease()
+        {
+            var isReleased = _inputSource.Released();
+
+            if (!isReleased)
+            {
+                return;
+            }
+            
+            OnReleaseAction?.Invoke();
         }
 
         public void FixedUpdateCustom()

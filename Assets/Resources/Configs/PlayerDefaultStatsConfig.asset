@@ -30,3 +30,4 @@ MonoBehaviour:
     StepCheckDistance: 0.3
     StepHeight: 0.3
     StepMoveDistance: 0.3
+    ThrowForce: 6

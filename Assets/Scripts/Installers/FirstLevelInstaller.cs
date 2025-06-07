@@ -10,6 +10,10 @@ namespace Installers
             Container.Bind<NextLevelObject>()
                 .FromComponentsInHierarchy()
                 .AsCached();
+            
+            Container.Bind<ThrowableItem>()
+                .FromComponentsInHierarchy()
+                .AsCached();
         }
     }
 }

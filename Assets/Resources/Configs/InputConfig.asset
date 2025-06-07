@@ -23,6 +23,7 @@ MonoBehaviour:
     MouseLeft: 0
     MouseRight: 0
     PauseKey: 27
+    ReleaseKey: 102
   _sensitivity: 100
   _maxSensitivity: 200
   _minSensitivity: 10

@@ -4,5 +4,7 @@ namespace Game
     {
         void Interact();
         void StopInteraction();
+        void Outline();
+        void ResetOutline();
     }
 }

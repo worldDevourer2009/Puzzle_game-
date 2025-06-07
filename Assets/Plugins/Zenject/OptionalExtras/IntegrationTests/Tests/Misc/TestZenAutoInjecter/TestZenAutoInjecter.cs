@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Collections;
 using System.Linq;
 using ModestTree;
@@ -130,4 +131,4 @@ namespace Zenject.Tests.AutoInjecter
         }
     }
 }
-
+#endif

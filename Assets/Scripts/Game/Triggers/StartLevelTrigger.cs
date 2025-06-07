@@ -8,14 +8,16 @@ namespace Core
         public TriggerState state { get; set; } = TriggerState.Inactive;
         private readonly ILevelManager _levelManager;
 
-        public async UniTask Execute()
+        public UniTask Execute()
         {
             if (state == TriggerState.Completed)
             {
-                return;
+                return UniTask.CompletedTask;
             }
             
             state = TriggerState.Completed;
+            
+            return UniTask.CompletedTask;
         }
     }
 }

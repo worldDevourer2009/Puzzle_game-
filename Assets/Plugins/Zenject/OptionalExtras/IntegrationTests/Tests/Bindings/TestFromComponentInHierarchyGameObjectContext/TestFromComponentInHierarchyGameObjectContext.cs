@@ -1,4 +1,4 @@
-
+#if UNITY_EDITOR
 using System.Collections;
 using System.Linq;
 using NUnit.Framework;
@@ -43,4 +43,4 @@ namespace Zenject.Tests.Bindings.FromComponentInHierarchyGameObjectContext
         }
     }
 }
-
+#endif

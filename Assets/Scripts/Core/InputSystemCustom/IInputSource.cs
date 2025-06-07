@@ -9,6 +9,7 @@ namespace Core
         bool Pressed();
         bool IsRunning();
         bool Paused();
+        bool Released();
         bool Clicked(out Vector3 pos);
     }
 
@@ -75,6 +76,16 @@ namespace Core
         public bool Paused()
         {
             if (Input.GetKeyDown(_inputConfig.GetKeyboardKey(InputAction.Pause)))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool Released()
+        {
+            if (Input.GetKeyUp(_inputConfig.GetKeyboardKey(InputAction.Release)))
             {
                 return true;
             }

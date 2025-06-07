@@ -18,5 +18,6 @@ namespace Core
         public float StepCheckDistance;
         public float StepHeight;
         public float StepMoveDistance;
+        public float ThrowForce;
     }
 }

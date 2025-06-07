@@ -50,6 +50,8 @@ namespace Core
                     return _keyboardInput.RunKey;
                 case InputAction.Pause:
                     return _keyboardInput.PauseKey;
+                case InputAction.Release:
+                    return _keyboardInput.ReleaseKey;
                 case InputAction.Click:
                 default:
                     _logger.LogError($"Out of range exception in {nameof(GetKeyboardKey)}");
@@ -96,6 +98,7 @@ namespace Core
         public MouseButton MouseLeft;
         public MouseButton MouseRight;
         public KeyCode PauseKey;
+        public KeyCode ReleaseKey;
     }
 
     public enum MouseButton

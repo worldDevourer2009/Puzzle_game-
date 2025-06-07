@@ -16,7 +16,7 @@ MonoBehaviour:
     LayerMask:
       serializedVersion: 2
       m_Bits: 8
-    InteractionDistance: 1.6
+    InteractionDistance: 1
     StepLayerMask:
       serializedVersion: 2
       m_Bits: 1

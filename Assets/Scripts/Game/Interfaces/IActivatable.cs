@@ -1,8 +1,15 @@
 namespace Game
 {
+    public enum ActivationState
+    {
+        Active,
+        Inactive,
+    }
+    
     public interface IActivatable
     {
-        void Activate(IActivatable activatable);
-        void Deactivate(IActivatable activatable);
+        ActivationState State { get; }
+        void Activate();
+        void Deactivate();
     }
 }

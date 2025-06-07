@@ -11,6 +11,7 @@ namespace Game
         event Action<Vector3> OnLookAction;
         event Action OnJumpAction;
         event Action OnUseAction;
+        event Action OnReleaseAction;
         event Action OnNoneAction;
     }
 
@@ -19,6 +20,7 @@ namespace Game
         public event Action<Vector3, bool> OnMoveAction;
         public event Action<Vector3> OnLookAction;
         public event Action OnJumpAction;
+        public event Action OnReleaseAction;
         public event Action OnUseAction;
         public event Action OnNoneAction;
 
@@ -40,7 +42,13 @@ namespace Game
             _input.OnJumpAction += HandleOnJump;
             _input.OnLookAction += HandleLook;
             _input.OnUseAction += HandleUse;
+            _input.OnReleaseAction += HandleRelease;
             _input.OnNoneAction += HandleIdle;
+        }
+
+        private void HandleRelease()
+        {
+            OnReleaseAction?.Invoke();
         }
 
         private void HandleLook(Vector3 dir)

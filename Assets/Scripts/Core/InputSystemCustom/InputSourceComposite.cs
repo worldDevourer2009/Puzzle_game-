@@ -10,6 +10,7 @@ namespace Core
         bool Jumped();
         bool Pressed();
         bool IsRunning();
+        bool Released();
         bool Paused();
         bool Clicked(out Vector3 pos);
     }
@@ -62,7 +63,9 @@ namespace Core
                 }
 
                 if (input.Jumped())
-                    return true; 
+                {
+                    return true;
+                }
             }
 
             return false;
@@ -78,7 +81,9 @@ namespace Core
                 }
                 
                 if (input.Pressed())
-                    return true; 
+                {
+                    return true;
+                }
             }
 
             return false;
@@ -94,7 +99,27 @@ namespace Core
                 }
 
                 if (input.IsRunning())
-                    return true; 
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool Released()
+        {
+            foreach (var input in _inputSources)
+            {
+                if (input == null)
+                {
+                    continue;
+                }
+                
+                if (input.Released())
+                {
+                    return true;
+                }
             }
 
             return false;

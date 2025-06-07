@@ -18,6 +18,7 @@ namespace Core
         StepCheckDistance,
         StepMoveDistance,
         StepHeight,
+        ThrowForce
     }
 
     public enum PlayerInteractionDataType
@@ -68,6 +69,7 @@ namespace Core
         ReactiveProperty<float> PlayerStepMoveDistance { get; }
         ReactiveProperty<float> PlayerRunSpeed { get; }
         ReactiveProperty<float> PlayerJumpForce { get; }
+        ReactiveProperty<float> PlayerThrowForce { get; }
         ReactiveProperty<RaycastParams> PlayerGroundableParams { get; }
         ReactiveProperty<float> PlayerCrouchSpeed { get; }
         UniTask ApplySavedData(PlayerStats stats, PlayerInteraction interaction);
@@ -91,6 +93,7 @@ namespace Core
         public ReactiveProperty<float> PlayerSpeed => _playerSpeed;
         public ReactiveProperty<float> PlayerRunSpeed => _playerRunSpeed;
         public ReactiveProperty<float> PlayerJumpForce => _playerJumpForce;
+        public ReactiveProperty<float> PlayerThrowForce => _playerThrowForce;
         public ReactiveProperty<RaycastParams> PlayerGroundableParams => _playerGroundableParams;
         public ReactiveProperty<float> PlayerCrouchSpeed => _playerCrouchSpeed;
 
@@ -111,6 +114,7 @@ namespace Core
         private readonly ReactiveProperty<float> _playerLookClamp = new();
 
         private readonly ReactiveProperty<float> _playerSpeed = new();
+        private readonly ReactiveProperty<float> _playerThrowForce = new();
         private readonly ReactiveProperty<RaycastParams> _playerGroundableParams = new();
         private readonly ReactiveProperty<float> _playerRunSpeed = new();
         private readonly ReactiveProperty<float> _playerJumpForce = new();
@@ -146,6 +150,7 @@ namespace Core
             _playerMaxStepSlopeAngle.Value = playerStats.MaxStepSlopeAngle;
             _playerStepMoveDistance.Value = playerStats.StepMoveDistance;
             _playerStepHeight.Value = playerStats.StepHeight;
+            _playerThrowForce.Value = playerStats.ThrowForce;
 
             _playerDataStats = new Dictionary<PlayerDataType, IReactiveWrapper>
             {
@@ -158,7 +163,8 @@ namespace Core
                 { PlayerDataType.MaxStepSlopeAngle, new ReactiveWrapper<float>(_playerMaxStepSlopeAngle) },
                 { PlayerDataType.StepCheckDistance, new ReactiveWrapper<float>(_playerStepCheckDistance) },
                 { PlayerDataType.StepMoveDistance, new ReactiveWrapper<float>(_playerStepMoveDistance) },
-                { PlayerDataType.StepHeight, new ReactiveWrapper<float>(_playerStepHeight) }
+                { PlayerDataType.StepHeight, new ReactiveWrapper<float>(_playerStepHeight) },
+                { PlayerDataType.ThrowForce, new ReactiveWrapper<float>(_playerThrowForce) }
             };
 
             var playerInteractionStats = _playerInteractionConfig.PlayerInteraction;
