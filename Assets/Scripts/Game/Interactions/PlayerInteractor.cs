@@ -9,6 +9,7 @@ namespace Game
     {
         event Action<IInteractable> OnInteract; 
         event Action<IInteractable> OnPoint;
+        event Action<IInteractable> OnStopPoint;
         void Interact();
         void Release();
     }
@@ -17,6 +18,7 @@ namespace Game
     {
         public event Action<IInteractable> OnInteract;
         public event Action<IInteractable> OnPoint;
+        public event Action<IInteractable> OnStopPoint;
 
         private readonly IPlayerInputHandler _input;
         private readonly IRaycaster _raycaster;
@@ -86,6 +88,7 @@ namespace Game
             if (candidate != null)
             {
                 candidate.ResetOutline();
+                OnStopPoint?.Invoke(candidate);
             }
         }
 

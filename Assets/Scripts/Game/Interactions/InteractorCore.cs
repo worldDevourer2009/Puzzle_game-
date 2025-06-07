@@ -7,6 +7,7 @@ namespace Core
     {
         public IInteractable Candidate => _candidate;
         public event Action<IInteractable> OnPoint;
+        public event Action<IInteractable> OnStopInteract;
         public event Action<IInteractable> OnInteract;
         public event Action<IInteractable> OnStopPoint;
         
@@ -32,7 +33,6 @@ namespace Core
                     OnPoint?.Invoke(_candidate);
                 }
             }
-
         }
 
         public void UpdateCandidateUse(IInteractable newOne)
@@ -64,6 +64,7 @@ namespace Core
                 _currentInteractedItem.StopInteraction();
                 _currentInteractedItem = null;
                 _candidateUse = null;
+                OnStopInteract?.Invoke(_currentInteractedItem);
             }
         }
     }

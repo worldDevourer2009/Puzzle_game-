@@ -146,6 +146,11 @@ namespace Installers
                 .NonLazy();
             
             Container
+                .BindInterfacesTo<LocalizationDataHolder>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container
                 .BindInterfacesTo<TriggerSystem>()
                 .AsSingle()
                 .NonLazy();

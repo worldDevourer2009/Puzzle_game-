@@ -85,6 +85,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6d7aa0bbf66c04db1b9b8a446bdd72dc
+    m_Address: HudView
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 70294053025e07040a7c3da8fd8a4672
     m_Address: StepSoundPlayer
     m_ReadOnly: 0

@@ -6,6 +6,7 @@ namespace Core
     public interface IInteractorCore
     {
         event Action<IInteractable> OnPoint;
+        event Action<IInteractable> OnStopInteract;
         event Action<IInteractable> OnInteract;
         event Action<IInteractable> OnStopPoint;
 

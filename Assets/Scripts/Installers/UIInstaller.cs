@@ -29,11 +29,18 @@ namespace Installers
             
             Container.Bind<StartNewGameModel>()
                 .AsSingle();
+            
+            Container.Bind<HudModel>()
+                .AsSingle();
         }
 
         private void BindPresenters()
         {
             Container.BindInterfacesAndSelfTo<PauseMenuPresenter>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.BindInterfacesAndSelfTo<HudPresenter>()
                 .AsSingle()
                 .NonLazy();
             

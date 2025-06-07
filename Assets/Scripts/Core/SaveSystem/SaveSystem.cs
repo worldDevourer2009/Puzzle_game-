@@ -32,6 +32,7 @@ namespace Core
         public DateTime SaveTimeUtc;
         public List<ExposedSystemParameter> SystemData;
         public InputData InputData;
+        public bool IsFirstPlay;
     }
 
     public sealed class SaveSystem : ISaveSystem

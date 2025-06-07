@@ -46,6 +46,10 @@ namespace Installers
             Container.Bind<ExternalSettingsConfig>()
                 .FromResource("Configs/ExternalSettingsConfig")
                 .AsSingle();
+            
+            Container.Bind<LocalizationConfig>()
+                .FromResource("Configs/LocalizationConfig")
+                .AsSingle();
         }
     }
 }
