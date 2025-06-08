@@ -5,6 +5,7 @@ namespace Core
 {
     public interface ISaver
     {
+        public void SetCurrentLevelIndex(int index);
         UniTask SaveAll();
         UniTask SaveProgressAsync();
         UniTask SaveSettings();
@@ -18,6 +19,7 @@ namespace Core
         private readonly IPlayerDataHolder _playerDataHolder;
         private readonly IExposedSystemDataHolder _exposedSystemDataHolder;
         private readonly IInputDataHolder _inputDataHolder;
+        private int _currentLevelIndex;
 
         public Saver(ISaveSystem saveSystem, IPlayerDataHolder playerDataHolder,
             IExposedSystemDataHolder exposedSystemDataHolder, IInputDataHolder inputDataHolder)
@@ -26,6 +28,11 @@ namespace Core
             _playerDataHolder = playerDataHolder;
             _exposedSystemDataHolder = exposedSystemDataHolder;
             _inputDataHolder = inputDataHolder;
+        }
+
+        public void SetCurrentLevelIndex(int index)
+        {
+            _currentLevelIndex = index;
         }
 
         public async UniTask SaveAll()
@@ -38,6 +45,7 @@ namespace Core
             data.PlayerInteraction = interaction;
             data.GDName = SaveName;
             data.SaveTimeUtc = DateTime.UtcNow;
+            data.LevelIndex = _currentLevelIndex >= 0 ? _currentLevelIndex : 0;
 
             data.SystemData = await _exposedSystemDataHolder.WriteData();
             data.InputData = await _inputDataHolder.WriteData();

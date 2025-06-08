@@ -6,18 +6,25 @@ namespace Core
     {
         public string Id => "StartLevel_1";
         public TriggerState state { get; set; } = TriggerState.Inactive;
-        private readonly ILevelManager _levelManager;
+        private readonly ISaver _saver;
 
-        public UniTask Execute()
+        private StartLevelTrigger(ISaver saver)
         {
+            _saver = saver;
+        }
+
+        public async UniTask Execute()
+        {
+            Logger.Instance.Log("Executirng start level trigger");
             if (state == TriggerState.Completed)
             {
-                return UniTask.CompletedTask;
+                return;
             }
             
             state = TriggerState.Completed;
+            await _saver.SaveAll();
             
-            return UniTask.CompletedTask;
+            return;
         }
     }
 }

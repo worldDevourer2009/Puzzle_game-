@@ -13,6 +13,7 @@ namespace Core
         UniTask LoadMainMenu();
         UniTask LaunchGame();
         UniTask StartNewGame();
+        UniTask LoadGame(string saveName);
         UniTask LoadLevel();
         UniTask RestartLevel();
         UniTask PauseGame();
@@ -23,28 +24,28 @@ namespace Core
     public class GameManager : IGameManager
     {
         private readonly ScenesConfig _scenesConfig;
-        private readonly IPlayerDataHolder _playerDataHolder;
         private readonly ISceneLoader _sceneLoader;
         private readonly ILevelManager _levelManager;
         private readonly ICameraManager _cameraManager;
         private readonly ISaver _saver;
+        private readonly ILoader _loader;
         private readonly LevelsConfig _levelsConfig;
         private readonly IGameLoop _gameLoop;
 
         private string _lastLoadedLevel;
         
-        public GameManager(ScenesConfig scenesConfig, IPlayerDataHolder playerDataHolder, ISceneLoader sceneLoader,
+        public GameManager(ScenesConfig scenesConfig, ISceneLoader sceneLoader,
             ILevelManager levelManager, ICameraManager cameraManager, ISaver saver, LevelsConfig levelsConfig,
-            IGameLoop gameLoop)
+            IGameLoop gameLoop, ILoader loader)
         {
             _scenesConfig = scenesConfig;
-            _playerDataHolder = playerDataHolder;
             _sceneLoader = sceneLoader;
             _levelManager = levelManager;
             _cameraManager = cameraManager;
             _saver = saver;
             _levelsConfig = levelsConfig;
             _gameLoop = gameLoop;
+            _loader = loader;
         }
 
         public async UniTask LoadMainMenu()
@@ -89,6 +90,16 @@ namespace Core
             await LoadLevelHelper(firstLevelName);
         }
 
+        //TODO make load by save name
+        public async UniTask LoadGame(string saveName)
+        {
+            var firstSave = _loader.ListSaves().AsValueEnumerable().FirstOrDefault();
+            
+            var data = await _loader.Load(firstSave);
+            Logger.Instance.Log($"Loaded data level {data.LevelIndex}");
+            await _levelManager.LoadLevelByIndex(data.LevelIndex);
+        }
+
         public async UniTask LoadLevel()
         {
             var levelName = _levelsConfig.LastLevelData;
@@ -109,8 +120,7 @@ namespace Core
                 Logger.Instance.LogWarning("Can't get level name");
                 return;
             }
-
-            await _playerDataHolder.InitData();
+            
             var op = _levelManager.LoadLevelByName(levelName.LevelName);
             await op;
         }

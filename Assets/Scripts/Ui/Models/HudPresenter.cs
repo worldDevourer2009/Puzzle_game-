@@ -64,6 +64,7 @@ namespace Ui
             else
             {
                 _hudView.Hide();
+                _hudView.HideInteractable();
             }
             
             return default;

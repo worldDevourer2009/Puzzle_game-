@@ -25,6 +25,7 @@ namespace Core
     public class GameData
     {
         public string GDName;
+        public int LevelIndex = 1;
         public Vector3 PlayerPos;
         public PlayerStats PlayerStats;
         public PlayerInteraction PlayerInteraction;

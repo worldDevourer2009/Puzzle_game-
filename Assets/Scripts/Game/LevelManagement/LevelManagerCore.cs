@@ -21,6 +21,7 @@ namespace Core
         UniTask LoadLevelByName(string name);
         UniTask LoadLevelByIndex(int index);
         string GetCurrentLevelId();
+        int GetCurrentLevelIndex();
         string TryGetNextLevelId();
     }
 
@@ -293,6 +294,11 @@ namespace Core
         {
             var levelList = _levelsConfig.LevelData.AsValueEnumerable().Select(x => x.LevelName).ToList();
             return levelList[_currentLevelIndex];
+        }
+
+        public int GetCurrentLevelIndex()
+        {
+            return _currentLevelIndex;
         }
 
         public string TryGetNextLevelId()
