@@ -1,12 +1,10 @@
 using Core;
-using UnityEngine;
 using Zenject;
 
 namespace Game
 {
     public class NextLevelObject : InteractableLogic
     {
-        [SerializeField] private string _sceneToLoad;
         private ILevelManager _levelManager;
 
         [Inject]
@@ -17,7 +15,8 @@ namespace Game
         
         public override async void Interact()
         {
-            await _levelManager.LoadLevelByName(_sceneToLoad);
+            var nextLevelId = _levelManager.TryGetNextLevelId();
+            await _levelManager.LoadLevelByName(nextLevelId);
         }
 
         public override void StopInteraction()

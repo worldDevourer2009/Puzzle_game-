@@ -19,6 +19,9 @@ namespace Core
         UniTask LoadNextLevel();
         UniTask LoadCurrentLevel();
         UniTask LoadLevelByName(string name);
+        UniTask LoadLevelByIndex(int index);
+        string GetCurrentLevelId();
+        string TryGetNextLevelId();
     }
 
     public sealed class LevelManagerCore : ILevelManager
@@ -272,6 +275,36 @@ namespace Core
             InitTriggers(lvlData);
 
             OnLevelLoaded?.Invoke(index);
+        }
+
+        public async UniTask LoadLevelByIndex(int index)
+        {
+            if (index < 0 || index >= _levelsConfig.LevelData.Count)
+            {
+                _logger.LogError($"Invalid level index {index}. Available range: 0-{_levelsConfig.LevelData.Count - 1}");
+                return;
+            }
+
+            var levelData = _levelsConfig.LevelData[index];
+            await LoadLevelByName(levelData.LevelName);
+        }
+
+        public string GetCurrentLevelId()
+        {
+            var levelList = _levelsConfig.LevelData.AsValueEnumerable().Select(x => x.LevelName).ToList();
+            return levelList[_currentLevelIndex];
+        }
+
+        public string TryGetNextLevelId()
+        {
+            var nextIndex = _currentLevelIndex + 1;
+    
+            if (nextIndex >= _levelsConfig.LevelData.Count)
+            {
+                return _levelsConfig.LevelData[0].LevelName;
+            }
+    
+            return _levelsConfig.LevelData[nextIndex].LevelName;
         }
 
         private async UniTask InitLevelManager(LevelData lvlData)

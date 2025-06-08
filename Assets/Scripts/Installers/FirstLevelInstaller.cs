@@ -7,10 +7,6 @@ namespace Installers
     {
         public override void InstallBindings()
         {
-            Container.Bind<NextLevelObject>()
-                .FromComponentsInHierarchy()
-                .AsCached();
-            
             Container.Bind<ThrowableItem>()
                 .FromComponentsInHierarchy()
                 .AsCached();

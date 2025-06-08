@@ -5,6 +5,8 @@ namespace Game
 {
     public abstract class InteractableLogic : MonoBehaviour, IInteractable
     {
+        public virtual InteractableType Type => InteractableType.Usable;
+        
         private Shader _outlineShader;
         private Shader _outlineShaderMask;
         private Material _outlineMaterial;
@@ -50,6 +52,11 @@ namespace Game
             
             foreach (var rend in _renderers)
             {
+                if (rend == null)
+                {
+                    continue;
+                }
+                
                 var mats = new List<Material>(rend.sharedMaterials);
                 mats.Add(_outlineMaterialMask);
                 mats.Add(_outlineMaterial);
@@ -65,14 +72,34 @@ namespace Game
             }
             
             _outlineEnabled = false;
+
+            if (_renderers == null || _renderers.Count == 0)
+            {
+                return;
+            }
             
             foreach (var rend in _renderers)
             {
+                if (rend == null || !rend)
+                {
+                    continue;
+                }
+                
                 if (_originalMaterials.TryGetValue(rend, out var origMats))
                 {
+                    if (origMats == null)
+                    {
+                        continue;
+                    }
+                    
                     rend.materials = origMats;
                 }
             }
+        }
+        
+        protected virtual void OnDestroy()
+        {
+            _outlineEnabled = false;
         }
     }
 }

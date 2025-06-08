@@ -71,7 +71,10 @@ namespace Game
 
         private void HandleInteract(IInteractable candidate)
         {
-            OnInteract?.Invoke(candidate);
+            if (candidate != null)
+            {
+                OnInteract?.Invoke(candidate);
+            }
         }
 
         private void HandlePoint(IInteractable candidate)

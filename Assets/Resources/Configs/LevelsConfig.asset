@@ -19,7 +19,7 @@ MonoBehaviour:
     Entities: []
     Triggers: []
   LevelData:
-  - LevelName: MainScene
+  - LevelName: Level001
     LastTriggeredEventName: 
     PlayerSpawn: {x: 0, y: 0, z: 0}
     Entities:
@@ -28,10 +28,10 @@ MonoBehaviour:
       Rotation: {x: 0, y: 85.47277, z: 0}
       ParentId: 
     Triggers:
-    - TriggerId: StartLevel_1
+    - TriggerId: Level002
       InitialState: 1
       DependsOn: 
-  - LevelName: SecondLevel
+  - LevelName: Level002
     LastTriggeredEventName: 
     PlayerSpawn: {x: 0, y: 0, z: 0}
     Entities: []

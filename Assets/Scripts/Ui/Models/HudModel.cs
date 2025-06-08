@@ -71,6 +71,8 @@ namespace Ui
         {
             _interactorCore.OnPoint -= DisplayInteraction;
             _interactorCore.OnStopPoint -= HideInteraction;
+            _interactorCore.OnInteract -= HandleInteracted;
+            _interactorCore.OnStopInteract -= HandleStopInteraction;
         }
     }
 }

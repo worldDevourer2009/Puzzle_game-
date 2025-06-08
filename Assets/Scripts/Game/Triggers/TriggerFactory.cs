@@ -34,7 +34,7 @@ namespace Core
 
         public ITrigger CreateTrigger(string id)
         {
-            return _triggers[id] ?? null;
+           return _triggers.GetValueOrDefault(id);
         }
     }
 }

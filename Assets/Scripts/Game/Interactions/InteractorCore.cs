@@ -24,7 +24,11 @@ namespace Core
                 
                 if (previousCandidate != null)
                 {
-                    previousCandidate.ResetOutline();
+                    if (IsValidInteractable(previousCandidate))
+                    {
+                        previousCandidate.ResetOutline();
+                    }
+                    
                     OnStopPoint?.Invoke(previousCandidate);
                 }
                 
@@ -51,9 +55,24 @@ namespace Core
         {
             if (_candidateUse != null && _candidateUse != _currentInteractedItem)
             {
+                Logger.Instance.LogWarning("Interacting");
                 _candidateUse.Interact();
-                _currentInteractedItem = _candidateUse;
-                OnInteract?.Invoke(_candidateUse);
+                
+                if (_candidateUse.Type == InteractableType.Usable)
+                {
+                    _currentInteractedItem = _candidateUse;
+                    OnInteract?.Invoke(_candidateUse);
+                }
+            }
+
+            if (_candidateUse == null)
+            {
+                _candidateUse = null;
+            }
+
+            if (_currentInteractedItem == null)
+            {
+                _currentInteractedItem = null;
             }
         }
 
@@ -62,10 +81,21 @@ namespace Core
             if (_currentInteractedItem != null)
             {
                 _currentInteractedItem.StopInteraction();
+                var itemToNotify = _currentInteractedItem;
                 _currentInteractedItem = null;
                 _candidateUse = null;
-                OnStopInteract?.Invoke(_currentInteractedItem);
+                OnStopInteract?.Invoke(itemToNotify);
             }
+        }
+        
+        private bool IsValidInteractable(IInteractable interactable)
+        {
+            if (interactable is UnityEngine.MonoBehaviour mono)
+            {
+                return mono != null && mono;
+            }
+            
+            return interactable != null;
         }
     }
 }
