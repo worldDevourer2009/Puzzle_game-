@@ -21,13 +21,13 @@ namespace Installers
 
         private void BindModels()
         {
-            Container.BindInterfacesAndSelfTo<PauseResumeModel>()
+            Container.BindInterfacesAndSelfTo<PauseMenuModel>()
                 .AsSingle();
 
             Container.BindInterfacesAndSelfTo<SettingsModel>()
                 .AsSingle();
             
-            Container.Bind<StartNewGameModel>()
+            Container.Bind<MainMenuModel>()
                 .AsSingle();
             
             Container.Bind<HudModel>()
@@ -48,7 +48,7 @@ namespace Installers
                 .AsSingle()
                 .NonLazy();
             
-            Container.Bind<StartNewGamePresenter>()
+            Container.Bind<MainMenuPresenter>()
                 .AsSingle()
                 .NonLazy();
             

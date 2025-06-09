@@ -41,7 +41,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 123def72310f2403098823bb4d3d49d9
-    m_Address: PauseResumeView
+    m_Address: PauseMenuView
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -116,7 +116,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b647c5c103a8e44ef83cf21e33278958
-    m_Address: StartNewGameView
+    m_Address: MainMenuView
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

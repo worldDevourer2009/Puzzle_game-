@@ -10,22 +10,22 @@ namespace Ui
 {
     public class PauseMenuPresenter : IUIPresenter,  IDisposable
     {
-        private const string PauseResumeViewId = "PauseResumeView";
+        private const string PauseResumeViewId = "PauseMenuView";
         private const string SettingViewId = "SettingsView";
         
         private readonly CompositeDisposable _compositeDisposable;
-        private readonly PauseResumeModel _pauseResumeModel;
+        private readonly PauseMenuModel _pauseMenuModel;
         private readonly IGameStateManager _gameStateManager;
         private readonly IFactorySystem _factorySystem;
         private readonly IUISystem _uiSystem;
         private readonly IInput _input;
         private bool _isPaused;
         
-        private IPauseResumeView _pauseResumeView;
+        private IPauseMenuView _pauseMenuView;
 
-        public PauseMenuPresenter(PauseResumeModel pauseResumeModel, IFactorySystem factorySystem, IGameStateManager gameStateManager, IUISystem uiSystem, IInput input)
+        public PauseMenuPresenter(PauseMenuModel pauseMenuModel, IFactorySystem factorySystem, IGameStateManager gameStateManager, IUISystem uiSystem, IInput input)
         {
-            _pauseResumeModel = pauseResumeModel;
+            _pauseMenuModel = pauseMenuModel;
             _factorySystem = factorySystem;
             _gameStateManager = gameStateManager;
             _uiSystem = uiSystem;
@@ -36,13 +36,13 @@ namespace Ui
         
         public async UniTask Initialize()
         {
-            _pauseResumeView = await _factorySystem.CreateFromInterface<IPauseResumeView>(PauseResumeViewId);
-            _uiSystem.RegisterView(PauseResumeViewId, _pauseResumeView);
-            _pauseResumeView.Hide();
-            await _uiSystem.ParentUnderCanvas(_pauseResumeView, CanvasType.Windows);
+            _pauseMenuView = await _factorySystem.CreateFromInterface<IPauseMenuView>(PauseResumeViewId);
+            _uiSystem.RegisterView(PauseResumeViewId, _pauseMenuView);
+            _pauseMenuView.Hide();
+            await _uiSystem.ParentUnderCanvas(_pauseMenuView, CanvasType.Windows);
             
-            _pauseResumeView.OnDestroyed += Dispose;
-            _pauseResumeView.OnPauseMenuClicked += HandleViewClick;
+            _pauseMenuView.OnDestroyed += Dispose;
+            _pauseMenuView.OnPauseMenuClicked += HandleViewClick;
             _input.OnPauseClicked += HandleClick;
             
             _gameStateManager.OnGameStateChanged.Subscribe(HandleViewDisplay)
@@ -53,24 +53,24 @@ namespace Ui
         {
             if (!_isPaused)
             {
-                _pauseResumeModel.Pause().Forget();
-                var targetScale = _pauseResumeView.GetScale();
+                _pauseMenuModel.Pause().Forget();
+                var targetScale = _pauseMenuView.GetScale();
 
                 if (targetScale != null)
                 {
-                    _pauseResumeView.SetScale(Vector3.zero);
-                    _pauseResumeView.Show();
-                    _pauseResumeView.PlayScaleAnimation((Vector3)targetScale).Forget();
+                    _pauseMenuView.SetScale(Vector3.zero);
+                    _pauseMenuView.Show();
+                    _pauseMenuView.PlayScaleAnimation((Vector3)targetScale).Forget();
                 }
                 else
                 {
-                    _pauseResumeView.Show();
+                    _pauseMenuView.Show();
                 }
             }
             else
             {
                 await HideViewWithAnimation();
-                _pauseResumeModel.Resume().Forget();
+                _pauseMenuModel.Resume().Forget();
             }
         }
 
@@ -78,7 +78,7 @@ namespace Ui
         {
             Logger.Instance.Log($"Recived state {state}");
             
-            if (_pauseResumeView == null)
+            if (_pauseMenuView == null)
             {
                 Logger.Instance.Log("View is null");
                 return;
@@ -96,7 +96,7 @@ namespace Ui
                 case GameState.MainMenu:
                 case GameState.NewGame:
                 case GameState.LoadGame:
-                    _pauseResumeView.Hide();
+                    _pauseMenuView.Hide();
                     break;
                 default:
                     break;
@@ -105,17 +105,17 @@ namespace Ui
 
         private async UniTask HideViewWithAnimation()
         {
-            var targetScale = _pauseResumeView.GetScale();
+            var targetScale = _pauseMenuView.GetScale();
             
             if (targetScale != null)
             {
-                await _pauseResumeView.PlayScaleAnimation(Vector3.zero);
-                _pauseResumeView.Hide();
-                _pauseResumeView.SetScale((Vector3)targetScale);
+                await _pauseMenuView.PlayScaleAnimation(Vector3.zero);
+                _pauseMenuView.Hide();
+                _pauseMenuView.SetScale((Vector3)targetScale);
             }
             else
             {
-                _pauseResumeView.Hide();
+                _pauseMenuView.Hide();
             }
         }
 
@@ -125,14 +125,14 @@ namespace Ui
             {
                 case PauseMenuButtonAction.Resume:
                     await HideViewWithAnimation();
-                    await _pauseResumeModel.Resume();
+                    await _pauseMenuModel.Resume();
                     break;
                 case PauseMenuButtonAction.MainMenu:
-                    _pauseResumeView.Hide();
-                    await _pauseResumeModel.GoToMainMenu();
+                    _pauseMenuView.Hide();
+                    await _pauseMenuModel.GoToMainMenu();
                     break;
                 case PauseMenuButtonAction.Settings:
-                    _uiSystem.ShowViewById(SettingViewId);
+                    await _uiSystem.ShowViewById(SettingViewId);
                     break;
                 case PauseMenuButtonAction.None:
                 default:
@@ -145,10 +145,10 @@ namespace Ui
             _input.OnPauseClicked -= HandleClick;
             _compositeDisposable.Dispose();
             
-            if (_pauseResumeView != null)
+            if (_pauseMenuView != null)
             {
-                _pauseResumeView.OnPauseMenuClicked -= HandleViewClick;
-                _pauseResumeView.OnDestroyed -= Dispose;
+                _pauseMenuView.OnPauseMenuClicked -= HandleViewClick;
+                _pauseMenuView.OnDestroyed -= Dispose;
             }
         }
     }

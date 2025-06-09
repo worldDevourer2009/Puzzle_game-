@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Ui
 {
-    public interface IPauseResumeView : IUIView
+    public interface IPauseMenuView : IUIView
     {
         event Action OnDestroyed;
         event Action<PauseMenuButtonAction> OnPauseMenuClicked;
@@ -18,7 +18,7 @@ namespace Ui
         Settings
     }
     
-    public class PauseResumeView : MonoBehaviour, IPauseResumeView
+    public class PauseMenuView : MonoBehaviour, IPauseMenuView
     {
         public bool IsVisible => gameObject.activeInHierarchy;
         public event Action<PauseMenuButtonAction> OnPauseMenuClicked;

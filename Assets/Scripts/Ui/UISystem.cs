@@ -14,7 +14,7 @@ namespace Ui
         UniTask ParentUnderCanvas(Transform objectToParent, CanvasType type);
         UniTask ParentUnderCanvas(IUIView view, CanvasType type);
         UniTask<GameObject> ShowView(string id, CanvasType type);
-        void ShowViewById(string id);
+        UniTask ShowViewById(string id);
         void HideViewById(string id);
         UniTask<IUIView> ShowViewFromInterface(string id, CanvasType type);
         void RegisterView(string id, IUIView view);
@@ -94,18 +94,25 @@ namespace Ui
 
             var view = await _factorySystem.Create(id);
             await ParentUnderCanvas(view.transform, type);
+            view.transform.SetAsLastSibling();
             view.gameObject.SetActive(true);
             return view;
         }
 
-        public void ShowViewById(string id)
+        public UniTask ShowViewById(string id)
         {
             if (!_activeViews.TryGetValue(id, out var view))
             {
-                return;
+                return UniTask.CompletedTask;
             }
 
+            if (view is MonoBehaviour mono)
+            {
+                mono.transform.SetAsLastSibling();
+            }
+            
             view.Show();
+            return UniTask.CompletedTask;
         }
 
         public void HideViewById(string id)
@@ -127,6 +134,12 @@ namespace Ui
 
             var view = await _factorySystem.CreateFromInterface<IUIView>(id);
             view.Parent(GetCanvasByType(type).transform);
+            
+            if (view is MonoBehaviour mono)
+            {
+                mono.transform.SetAsLastSibling();
+            }
+            
             view.Show();
             return view;
         }

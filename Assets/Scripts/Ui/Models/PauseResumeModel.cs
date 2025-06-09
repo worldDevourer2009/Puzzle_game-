@@ -6,14 +6,14 @@ using Cysharp.Threading.Tasks.Linq;
 
 namespace Ui
 {
-    public class PauseResumeModel : IDisposable
+    public class PauseMenuModel : IDisposable
     {
         private readonly IGameStateManager _gameStateManager;
         
         private readonly ReactiveProperty<GameState> _currentState;
         private readonly CompositeDisposable _compositeDisposable;
 
-        public PauseResumeModel(IGameStateManager gameStateManager)
+        public PauseMenuModel(IGameStateManager gameStateManager)
         {
             _gameStateManager = gameStateManager;
             _compositeDisposable = new CompositeDisposable();
