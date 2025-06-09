@@ -1,7 +1,6 @@
-using Core;
 using UnityEngine;
 
-namespace Game
+namespace Core
 {
     public interface ICamera
     {
