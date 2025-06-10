@@ -14,6 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AddressableIds:
   - Type: 0
+    Category: 1
     Id: Player
   - Type: 2
+    Category: 0
     Id: NextLevel
+  - Type: 3
+    Category: 0
+    Id: ThrowableCube
+  - Type: 4
+    Category: 2
+    Id: ButtonPressable

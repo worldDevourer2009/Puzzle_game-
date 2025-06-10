@@ -14,19 +14,34 @@ namespace Core
         {
             return AddressableIds.AsValueEnumerable().FirstOrDefault(x => x.Type == type && !string.IsNullOrEmpty(x.Id)).Id;
         }
+        
+        public ObjectCategory GetCategoryByType(ObjectType type)
+        {
+            return AddressableIds.AsValueEnumerable().FirstOrDefault(x => x.Type == type && !string.IsNullOrEmpty(x.Id)).Category;
+        }
     }
 
     [Serializable]
     public struct AddressableId
     {
         public ObjectType Type;
+        public ObjectCategory Category;
         public string Id;
+    }
+
+    public enum ObjectCategory
+    {
+        Interactable,
+        Player,
+        Activatable
     }
 
     public enum ObjectType
     {
         Player,
         Cube,
-        NextLevel
+        NextLevel,
+        ThrowableCube,
+        PressableButton,
     }
 }

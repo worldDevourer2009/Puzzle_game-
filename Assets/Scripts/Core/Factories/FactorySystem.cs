@@ -103,7 +103,7 @@ namespace Core
         public async UniTask<GameObject> Create(string id, Vector3 position, Transform parent)
         {
             var (result, container) = await InternalCreate(id);
-            result.transform.SetParent(parent);
+            result.transform.SetParent(parent, worldPositionStays: true);
             result.transform.position = position;
             container.InjectGameObject(result);
             return result;

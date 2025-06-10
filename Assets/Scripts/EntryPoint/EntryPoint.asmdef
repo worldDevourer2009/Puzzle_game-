@@ -1,0 +1,23 @@
+{
+  "name": "EntryPoint",
+  "rootNamespace": "EntryPoint",
+  "references": [
+    "Core",
+    "Game",
+    "UI",
+    "Extensions",
+    "UniTask",
+    "Unity.Addressables",
+    "Unity.ResourceManager",
+    "Zenject"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

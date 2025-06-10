@@ -1,0 +1,20 @@
+{
+  "name": "Extensions",
+  "rootNamespace": "Extensions",
+  "references": [
+    "Core",
+    "UniTask",
+    "Unity.Addressables",
+    "Unity.ResourceManager",
+    "Zenject"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

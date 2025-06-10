@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using Game;
 using UnityEngine;
 using ZLinq;
 using Object = UnityEngine.Object;
@@ -27,6 +26,7 @@ namespace Core
 
     public sealed class LevelManagerCore : ILevelManager
     {
+        private const string LevelManagerId = "LevelManager";
         public event Action OnPlayerCreated;
         public event Action<int> OnLevelLoaded;
         public IPlayerFacade PlayerEntity => _playerFacade;
@@ -43,6 +43,8 @@ namespace Core
         private readonly Dictionary<string, List<IEntity>> _entities;
         private readonly Dictionary<string, List<IInteractable>> _interactables;
         private readonly Dictionary<string, List<IActivatable>> _activatables;
+        
+        private LevelManager _levelManager;
 
         private LevelData CurrentLevel
         {
@@ -115,6 +117,25 @@ namespace Core
             }
 
             GameObject obj;
+
+            if (parent == null)
+            {
+                var category = _addressablesIdsConfig.GetCategoryByType(objectType);
+
+                switch (category)
+                {
+                    case ObjectCategory.Interactable:
+                        parent = _levelManager.InteractableObjectsRoot;
+                        break;
+                    case ObjectCategory.Player:
+                        break;
+                    case ObjectCategory.Activatable:
+                        parent = _levelManager.ActivatableObjectsRoot;
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             if (parent != null)
             {
@@ -271,9 +292,9 @@ namespace Core
 
             CleanupPreviousLevelEntities(previousLevelName);
 
-            await InitLevelManager(lvlData);
+            await InitLevel(lvlData);
 
-            InitTriggers(lvlData);
+            await InitTriggers(lvlData);
 
             OnLevelLoaded?.Invoke(index);
         }
@@ -313,8 +334,9 @@ namespace Core
             return _levelsConfig.LevelData[nextIndex].LevelName;
         }
 
-        private async UniTask InitLevelManager(LevelData lvlData)
+        private async UniTask InitLevel(LevelData lvlData)
         {
+            await InitLevelManager();
             await InitPlayer(lvlData.PlayerSpawn);
 
             foreach (var entityConfig in lvlData.Entities)
@@ -330,12 +352,35 @@ namespace Core
             }
         }
 
+        private async UniTask InitLevelManager()
+        {
+            var levelManagers = Object.FindObjectsByType<LevelManager>(FindObjectsSortMode.None);
+
+            LevelManager levelManager = null;
+            
+            foreach (var levelManagerObj in levelManagers)
+            {
+                if (levelManagerObj != null)
+                {
+                    levelManager = levelManagerObj;
+                    break;
+                }
+            }
+
+            if (!levelManager)
+            {
+                levelManager = await _factorySystem.Create<LevelManager>(LevelManagerId);
+            }
+            
+            _levelManager = levelManager;
+        }
+
         private bool TryParseObjectType(string entityId, out ObjectType result)
         {
             return Enum.TryParse(entityId, true, out result);
         }
 
-        private void InitTriggers(LevelData lvlData)
+        private async UniTask InitTriggers(LevelData lvlData)
         {
             _triggerSystem.ClearAllTriggers();
 
@@ -345,7 +390,7 @@ namespace Core
 
             foreach (var triggerConfig in lvlData.Triggers)
             {
-                _triggerSystem.SetTriggerState(triggerConfig.TriggerId, triggerConfig.InitialState).Forget();
+                await _triggerSystem.SetTriggerState(triggerConfig.TriggerId, triggerConfig.InitialState);
             }
         }
 

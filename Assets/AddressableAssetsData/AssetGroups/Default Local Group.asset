@@ -65,6 +65,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2dd9160bc9e5541bea5df38a1f72f519
+    m_Address: ButtonPressable
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4477eaf6404e04d4cbe2bafb479ce2bd
     m_Address: UIRoot
     m_ReadOnly: 0
@@ -105,6 +110,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 959374e026f8e401ca66afe890c05c0a
+    m_Address: ThrowableCube
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 99c9720ab356a0642a771bea13969a05
     m_Address: Level001
     m_ReadOnly: 0
@@ -117,6 +127,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b647c5c103a8e44ef83cf21e33278958
     m_Address: MainMenuView
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cddb932c9764d49f8a2678d0bb424666
+    m_Address: LevelManager
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

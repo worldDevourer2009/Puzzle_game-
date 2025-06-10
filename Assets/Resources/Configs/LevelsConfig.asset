@@ -27,6 +27,14 @@ MonoBehaviour:
       Position: {x: 14.477589, y: 0.62, z: -8.33}
       Rotation: {x: 0, y: 85.47277, z: 0}
       ParentId: 
+    - EntityId: PressableButton
+      Position: {x: 27.3, y: 0.33, z: 12.23}
+      Rotation: {x: 0, y: 0, z: 0}
+      ParentId: 
+    - EntityId: ThrowableCube
+      Position: {x: 11.6, y: 0.33, z: 20.8}
+      Rotation: {x: 0, y: 0, z: 0}
+      ParentId: 
     Triggers:
     - TriggerId: Level002
       InitialState: 1

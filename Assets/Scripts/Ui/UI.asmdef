@@ -1,0 +1,24 @@
+{
+  "name": "UI",
+  "rootNamespace": "UI",
+  "references": [
+    "Core",
+    "UniTask",
+    "Unity.Addressables",
+    "Unity.ResourceManager",
+    "Zenject",
+    "R3.Unity",
+    "DOTween.Modules",
+    "UniTask.Linq",
+    "Unity.TextMeshPro"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

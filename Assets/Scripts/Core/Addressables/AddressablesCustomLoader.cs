@@ -33,7 +33,8 @@ namespace Core
             var asyncOp = Addressables.LoadAssetAsync<T>(id);
             try
             {
-                var result = await asyncOp.ToUniTask();
+                await asyncOp.ToUniTask();
+                var result = asyncOp.Result;
                 return result;
             }
             catch
@@ -48,7 +49,8 @@ namespace Core
             var asyncOp = Addressables.InstantiateAsync(id);
             try
             {
-                var result = await asyncOp.ToUniTask();
+                await asyncOp.ToUniTask();
+                var result = asyncOp.Result;
                 return result;
             }
             catch
@@ -63,7 +65,14 @@ namespace Core
             var asyncOp = Addressables.InstantiateAsync(id);
             try
             {
-                var result = await asyncOp.ToUniTask();
+                await asyncOp.ToUniTask();
+                var result = asyncOp.Result;
+                if (result == null)
+                {
+                    Logger.Instance.LogWarning($"Can't load asset at path {id}");
+                    return default;
+                }
+                
                 if (result.TryGetComponent(out T comp))
                 {
                     return comp;
@@ -106,11 +115,18 @@ namespace Core
             var asyncOp = Addressables.UnloadSceneAsync(scene, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
             try
             {
-                await asyncOp.ToUniTask();
+                while (!asyncOp.IsDone)
+                {
+                    await UniTask.Yield();
+                }
+
+                if (asyncOp.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Failed)
+                {
+                    throw new System.Exception($"Failed to unload scene: {asyncOp.OperationException}");
+                }
             }
-            catch
+            finally
             {
-                _logger.LogWarning($"Can't undload scene at path {scene.Scene.path}");
             }
         }
     }

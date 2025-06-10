@@ -1,4 +1,3 @@
-#if TESTS
 using System.IO;
 using Core;
 using NUnit.Framework;
@@ -65,4 +64,3 @@ namespace Tests
         }
     }
 }
-#endif

@@ -1,0 +1,23 @@
+{
+  "name": "Game",
+  "rootNamespace": "Game",
+  "references": [
+    "Core",
+    "UniTask",
+    "Unity.Addressables",
+    "Unity.ResourceManager",
+    "Zenject",
+    "R3.Unity",
+    "DOTween.Modules",
+    "Extensions"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
