@@ -1,4 +1,4 @@
-# Portfolio Game
+# Puzzle Game
 
 A Unity 3D game project built with Unity 6000.0.36f1 and modern C# development practices.
 
